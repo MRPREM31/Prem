@@ -31,6 +31,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  outline: none !important;
 }
 
 html, body {
@@ -104,10 +105,12 @@ ul {
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(60px);
   z-index: 0;
-  opacity: 0.5;
-  animation: float 10s infinite ease-in-out alternate;
+  opacity: 0.4;
+  animation: float 15s infinite ease-in-out alternate;
+  pointer-events: none;
+  will-change: transform;
 }
 
 @keyframes float {
