@@ -50,13 +50,8 @@
   object-fit: cover;
   border: 2px solid var(--accent-primary);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0;
-  transform: translateX(-20px) scale(0.5);
-}
-
-.nav-profile-img.visible {
   opacity: 1;
-  transform: translateX(0) scale(1);
+  transform: scale(1);
 }
 
 .navbar.scrolled .nav-profile-img {
@@ -65,8 +60,8 @@
   z-index: -1;
   width: 32px;
   height: 32px;
-  opacity: 0.6;
-  filter: blur(1px);
+  opacity: 0.5;
+  filter: blur(1px) grayscale(30%);
 }
 
 .logo {

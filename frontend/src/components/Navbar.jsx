@@ -67,7 +67,7 @@ const Navbar = () => {
           <img 
             src={profileImage} 
             alt="MR.PREM" 
-            className={`nav-profile-img ${scrolled ? 'visible' : ''}`} 
+            className="nav-profile-img" 
           />
           <span className="logo gradient-text">MR.PREM</span>
         </a>
