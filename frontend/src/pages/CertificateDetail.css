@@ -1,6 +1,8 @@
 .cert-detail-page {
   padding-top: 120px;
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .back-btn {

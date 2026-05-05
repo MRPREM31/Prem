@@ -2,12 +2,15 @@
   display: flex;
   gap: 3rem;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .about-text {
   flex: 2;
   padding: 2.5rem;
   border-radius: 20px;
+  box-sizing: border-box;
 }
 
 .about-text p {
@@ -74,7 +77,20 @@
 }
 
 @media (max-width: 600px) {
+  .about-text {
+    padding: 1.5rem;
+  }
+
   .about-stats {
     flex-direction: column;
+    width: 100%;
+  }
+
+  .stat-card {
+    padding: 1.5rem;
+  }
+
+  .stat-card h3 {
+    font-size: 2rem;
   }
 }

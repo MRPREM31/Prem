@@ -3,6 +3,8 @@
   gap: 3rem;
   padding: 3rem;
   border-radius: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .contact-info {

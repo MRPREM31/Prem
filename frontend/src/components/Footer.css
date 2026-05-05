@@ -1,16 +1,25 @@
 .footer-premium {
   background: rgba(15, 23, 42, 0.95);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 5rem 0 2rem;
+  padding: 5rem 0 0;
   backdrop-filter: blur(20px);
   color: var(--text-main);
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.footer-top {
+  padding-bottom: 2rem;
+  width: 100%;
 }
 
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1.5fr 1.5fr;
   gap: 4rem;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .footer-brand h2 {
@@ -111,11 +120,13 @@
 }
 
 .footer-bottom {
-  padding-top: 2rem;
+  padding: 1.5rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
   color: var(--text-muted);
   font-size: 0.9rem;
+  width: 100%;
+  margin: 0;
 }
 
 @media (max-width: 992px) {
