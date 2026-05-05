@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   // --- FETCH DATA ---
   const fetchMessages = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/messages', { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.status === 403 || res.status === 401) return handleLogout();
       const data = await res.json();
       setMessages(data);
@@ -67,23 +67,23 @@ const AdminDashboard = () => {
 
   const fetchProfileImage = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/profile-image');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`);
       const data = await res.json();
-      setCurrentImage(data.imageUrl.startsWith('/uploads') ? `http://localhost:5000${data.imageUrl}` : data.imageUrl);
+      setCurrentImage(data.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.imageUrl}` : data.imageUrl);
     } catch (err) { console.error(err); }
   };
 
   const fetchResume = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/resume');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resume`);
       const data = await res.json();
-      setCurrentResume(data.resumeUrl.startsWith('/uploads') ? `http://localhost:5000${data.resumeUrl}` : data.resumeUrl);
+      setCurrentResume(data.resumeUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.resumeUrl}` : data.resumeUrl);
     } catch (err) { console.error(err); }
   };
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/projects?t=${Date.now()}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects?t=${Date.now()}`);
       const data = await res.json();
       setProjects(data);
     } catch (err) { console.error(err); }
@@ -91,9 +91,9 @@ const AdminDashboard = () => {
 
   const fetchFavicon = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/favicon?t=${Date.now()}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favicon?t=${Date.now()}`);
       const data = await res.json();
-      const favUrl = data.faviconUrl.startsWith('/uploads') ? `http://localhost:5000${data.faviconUrl}?t=${Date.now()}` : data.faviconUrl;
+      const favUrl = data.faviconUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.faviconUrl}?t=${Date.now()}` : data.faviconUrl;
       setCurrentFavicon(favUrl);
       
       let link = document.querySelector("link[rel~='icon']");
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
 
   const fetchCertificates = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/certificates?t=${Date.now()}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates?t=${Date.now()}`);
       const data = await res.json();
       setCertificates(data);
     } catch (err) { console.error(err); }
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
       else if (type === 'resume') endpoint = 'upload-resume';
       else if (type === 'favicon') endpoint = 'upload-favicon';
       
-      const res = await fetch(`http://localhost:5000/api/admin/${endpoint}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -149,8 +149,8 @@ const AdminDashboard = () => {
     try {
       const method = editingProject ? 'PUT' : 'POST';
       const url = editingProject 
-        ? `http://localhost:5000/api/admin/projects/${editingProject.id}` 
-        : 'http://localhost:5000/api/admin/projects';
+        ? `${import.meta.env.VITE_API_URL}/api/admin/projects/${editingProject.id}` 
+        : `${import.meta.env.VITE_API_URL}/api/admin/projects`;
       
       const res = await fetch(url, {
         method,
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
   const deleteProject = async (id) => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`http://localhost:5000/api/admin/projects/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -192,8 +192,8 @@ const AdminDashboard = () => {
 
       const method = editingCert ? 'PUT' : 'POST';
       const url = editingCert 
-        ? `http://localhost:5000/api/admin/certificates/${editingCert.id}` 
-        : 'http://localhost:5000/api/admin/certificates';
+        ? `${import.meta.env.VITE_API_URL}/api/admin/certificates/${editingCert.id}` 
+        : `${import.meta.env.VITE_API_URL}/api/admin/certificates`;
       
       const res = await fetch(url, {
         method,
@@ -212,7 +212,7 @@ const AdminDashboard = () => {
   const deleteCertificate = async (id) => {
     if (!window.confirm('Are you sure you want to delete this certificate?')) return;
     try {
-      await fetch(`http://localhost:5000/api/admin/certificates/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/certificates/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -223,7 +223,7 @@ const AdminDashboard = () => {
   const deleteMessage = async (id) => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
     try {
-      await fetch(`http://localhost:5000/api/admin/messages/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

@@ -11,7 +11,7 @@ function App() {
   useEffect(() => {
     const fetchFavicon = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/favicon');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favicon`);
         const data = await res.json();
         let link = document.querySelector("link[rel~='icon']");
         if (!link) {
@@ -19,7 +19,7 @@ function App() {
           link.rel = 'icon';
           document.getElementsByTagName('head')[0].appendChild(link);
         }
-        link.href = data.faviconUrl.startsWith('/uploads') ? `http://localhost:5000${data.faviconUrl}?t=${new Date().getTime()}` : data.faviconUrl;
+        link.href = data.faviconUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.faviconUrl}?t=${new Date().getTime()}` : data.faviconUrl;
       } catch (err) {
         console.error('Error fetching favicon:', err);
       }

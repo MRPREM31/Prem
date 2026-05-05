@@ -14,7 +14,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/projects/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${id}`);
         if (!res.ok) {
           navigate('/');
           return;

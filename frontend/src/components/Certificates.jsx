@@ -9,7 +9,7 @@ const Certificates = () => {
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/certificates?t=${Date.now()}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates?t=${Date.now()}`);
         const data = await res.json();
         setCertificates(data);
       } catch (err) {
@@ -30,7 +30,7 @@ const Certificates = () => {
               <div className="certificate-card glass-panel" key={cert.id} onClick={() => navigate(`/certificate/${cert.id}`)}>
                 <div className="cert-image-container">
                   <img 
-                    src={cert.image.startsWith('/uploads') ? `http://localhost:5000${cert.image}` : cert.image} 
+                    src={cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image} 
                     alt={cert.title} 
                     className="cert-img" 
                   />

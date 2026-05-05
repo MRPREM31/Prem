@@ -32,7 +32,7 @@ const Contact = () => {
       });
 
       // Send to local backend admin dashboard
-      const localPromise = fetch('http://localhost:5000/api/contact', {
+      const localPromise = fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

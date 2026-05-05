@@ -32,12 +32,12 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/profile-image')
+    fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`)
       .then(res => res.json())
       .then(data => {
         if (data.imageUrl) {
           if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(`http://localhost:5000${data.imageUrl}`);
+            setProfileImage(`${import.meta.env.VITE_API_URL}${data.imageUrl}`);
           } else {
             setProfileImage(data.imageUrl);
           }

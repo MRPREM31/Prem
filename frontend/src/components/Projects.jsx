@@ -9,7 +9,7 @@ const Projects = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/projects?t=${Date.now()}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/projects?t=${Date.now()}`)
       .then(res => res.json())
       .then(data => setProjects(data))
       .catch(err => console.error('Error fetching projects:', err));

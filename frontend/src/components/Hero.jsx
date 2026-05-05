@@ -10,13 +10,13 @@ const Hero = () => {
 
   useEffect(() => {
     // Fetch profile image
-    fetch('http://localhost:5000/api/profile-image')
+    fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`)
       .then(res => res.json())
       .then(data => {
         if (data.imageUrl) {
           const timestamp = Date.now();
           if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(`http://localhost:5000${data.imageUrl}?t=${timestamp}`);
+            setProfileImage(`${import.meta.env.VITE_API_URL}${data.imageUrl}?t=${timestamp}`);
           } else {
             setProfileImage(`${data.imageUrl}?t=${timestamp}`);
           }
@@ -25,13 +25,13 @@ const Hero = () => {
       .catch(err => console.error('Error fetching profile image:', err));
 
     // Fetch resume URL
-    fetch('http://localhost:5000/api/resume')
+    fetch(`${import.meta.env.VITE_API_URL}/api/resume`)
       .then(res => res.json())
       .then(data => {
         if (data.resumeUrl) {
           const timestamp = Date.now();
           if (data.resumeUrl.startsWith('/uploads')) {
-            setResumeUrl(`http://localhost:5000${data.resumeUrl}?t=${timestamp}`);
+            setResumeUrl(`${import.meta.env.VITE_API_URL}${data.resumeUrl}?t=${timestamp}`);
           } else {
             setResumeUrl(`${data.resumeUrl}?t=${timestamp}`);
           }

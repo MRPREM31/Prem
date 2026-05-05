@@ -13,7 +13,7 @@ const CertificateDetail = () => {
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/certificates/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates/${id}`);
         if (!res.ok) {
           navigate('/');
           return;
@@ -57,7 +57,7 @@ const CertificateDetail = () => {
           <div className="cert-detail-container glass-panel">
             <div className="cert-detail-image-wrapper">
               <img 
-                src={certificate.image.startsWith('/uploads') ? `http://localhost:5000${certificate.image}` : certificate.image} 
+                src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
                 alt={certificate.title} 
                 className="cert-detail-img" 
               />
