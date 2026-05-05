@@ -2,59 +2,42 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { dbPromise, setupDatabase } = require('./database');
+const supabase = require('./supabase');
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const app = express();
+
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Ensure uploads directory exists
-const fs = require('fs');
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// Configure Multer for image uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    if (file.fieldname === 'resume') {
-      cb(null, 'Prem_Prasad_Pradhan_cv.pdf');
-    } else if (file.fieldname === 'image') {
-      cb(null, 'Prem_Prasad_Pradhan_Image' + path.extname(file.originalname));
-    } else if (file.fieldname === 'favicon') {
-      cb(null, 'favicon' + path.extname(file.originalname));
-    } else {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
+// Configure Multer Storage for Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'portfolio',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'pdf', 'svg', 'ico'],
+    resource_type: 'auto'
   }
 });
-const upload = multer({
+
+const upload = multer({ 
   storage: storage,
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|pdf|ico|svg/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype) || file.mimetype === 'application/pdf' || file.mimetype.includes('svg');
-    if (mimetype && extname) {
-      return cb(null, true);
-    }
-    cb(new Error('Only .png, .jpg, .jpeg, .pdf, .ico, and .svg formats allowed!'));
-  },
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
+
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_here';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
-
-// Initialize DB
-setupDatabase();
 
 // Middleware to verify JWT
 const verifyToken = (req, res, next) => {
@@ -74,6 +57,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // API: Submit Contact Form
+// API: Submit Contact Form
 app.post('/api/contact', async (req, res) => {
   const { name, email, message } = req.body;
   if (!name || !email || !message) {
@@ -81,16 +65,16 @@ app.post('/api/contact', async (req, res) => {
   }
 
   try {
-    const db = await dbPromise;
-    const date = new Date().toISOString();
-    await db.run(
-      'INSERT INTO messages (name, email, message, date) VALUES (?, ?, ?, ?)',
-      [name, email, message, date]
-    );
-    res.status(201).json({ success: true, message: 'Message sent successfully' });
+    const { data, error } = await supabase
+      .from('messages')
+      .insert([{ name, email, message, date: new Date().toISOString() }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, id: data ? data[0].id : null });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -108,90 +92,102 @@ app.post('/api/admin/login', (req, res) => {
 // API: Get Messages (Protected)
 app.get('/api/admin/messages', verifyToken, async (req, res) => {
   try {
-    const db = await dbPromise;
-    const messages = await db.all('SELECT * FROM messages ORDER BY id DESC');
-    res.json(messages);
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Delete Message (Protected)
-app.delete('/api/admin/messages/:id', verifyToken, async (req, res) => {
+app.get('/api/admin/messages/:id', verifyToken, async (req, res) => {
   try {
-    const db = await dbPromise;
-    await db.run('DELETE FROM messages WHERE id = ?', [req.params.id]);
+    const { error } = await supabase
+      .from('messages')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
     res.json({ success: true, message: 'Message deleted' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Get Profile Image Path
 app.get('/api/profile-image', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const setting = await db.get('SELECT value FROM settings WHERE key = ?', ['profileImage']);
-    res.json({ imageUrl: setting ? setting.value : '/assets/profile.jpg' });
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'profileImage')
+      .single();
+
+    res.json({ imageUrl: data ? data.value : '/assets/profile.jpg' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Upload Profile Image (Protected)
 app.post('/api/admin/upload-profile', verifyToken, upload.single('image'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No image uploaded' });
-  }
+  if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
   
-  const imageUrl = `/uploads/${req.file.filename}`;
+  const imageUrl = req.file.path; // Cloudinary URL
   
   try {
-    const db = await dbPromise;
-    await db.run(
-      'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?',
-      ['profileImage', imageUrl, imageUrl]
-    );
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'profileImage', value: imageUrl });
+
+    if (error) throw error;
     res.json({ success: true, imageUrl, message: 'Profile image updated' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Get Resume Path
 app.get('/api/resume', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const setting = await db.get('SELECT value FROM settings WHERE key = ?', ['resumeUrl']);
-    res.json({ resumeUrl: setting ? setting.value : '/resume.pdf' });
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'resumeUrl')
+      .single();
+
+    res.json({ resumeUrl: data ? data.value : '/resume.pdf' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Upload Resume (Protected)
 app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No resume uploaded' });
-  }
+  if (!req.file) return res.status(400).json({ error: 'No resume uploaded' });
   
-  const resumeUrl = `/uploads/${req.file.filename}`;
+  const resumeUrl = req.file.path; // Cloudinary URL
   
   try {
-    const db = await dbPromise;
-    await db.run(
-      'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?',
-      ['resumeUrl', resumeUrl, resumeUrl]
-    );
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'resumeUrl', value: resumeUrl });
+
+    if (error) throw error;
     res.json({ success: true, resumeUrl, message: 'Resume updated' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -200,28 +196,37 @@ app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async
 // API: Get All Projects
 app.get('/api/projects', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const projects = await db.all('SELECT * FROM projects ORDER BY id DESC');
-    res.json(projects);
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Get Single Project
 app.get('/api/projects/:id', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const project = await db.get('SELECT * FROM projects WHERE id = ?', [req.params.id]);
-    if (project) {
-      res.json(project);
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) throw error;
+    if (data) {
+      res.json(data);
     } else {
       res.status(404).json({ error: 'Project not found' });
     }
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -229,15 +234,16 @@ app.get('/api/projects/:id', async (req, res) => {
 app.post('/api/admin/projects', verifyToken, async (req, res) => {
   const { title, description, tags, link, github, pptLink } = req.body;
   try {
-    const db = await dbPromise;
-    const result = await db.run(
-      'INSERT INTO projects (title, description, tags, link, github, pptLink) VALUES (?, ?, ?, ?, ?, ?)',
-      [title, description, tags, link, github, pptLink]
-    );
-    res.status(201).json({ success: true, id: result.lastID });
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([{ title, description, tags, link, github, pptLink }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, id: data[0].id });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -245,27 +251,32 @@ app.post('/api/admin/projects', verifyToken, async (req, res) => {
 app.put('/api/admin/projects/:id', verifyToken, async (req, res) => {
   const { title, description, tags, link, github, pptLink } = req.body;
   try {
-    const db = await dbPromise;
-    await db.run(
-      'UPDATE projects SET title = ?, description = ?, tags = ?, link = ?, github = ?, pptLink = ? WHERE id = ?',
-      [title, description, tags, link, github, pptLink, req.params.id]
-    );
+    const { error } = await supabase
+      .from('projects')
+      .update({ title, description, tags, link, github, pptLink })
+      .eq('id', req.params.id);
+
+    if (error) throw error;
     res.json({ success: true });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Delete Project (Protected)
 app.delete('/api/admin/projects/:id', verifyToken, async (req, res) => {
   try {
-    const db = await dbPromise;
-    await db.run('DELETE FROM projects WHERE id = ?', [req.params.id]);
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
     res.json({ success: true });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -274,33 +285,35 @@ app.delete('/api/admin/projects/:id', verifyToken, async (req, res) => {
 // API: Get Favicon Path
 app.get('/api/favicon', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const setting = await db.get('SELECT value FROM settings WHERE key = ?', ['faviconUrl']);
-    res.json({ faviconUrl: setting ? setting.value : '/vite.svg' });
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'faviconUrl')
+      .single();
+
+    res.json({ faviconUrl: data ? data.value : '/vite.svg' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Upload Favicon (Protected)
 app.post('/api/admin/upload-favicon', verifyToken, upload.single('favicon'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No favicon uploaded' });
-  }
+  if (!req.file) return res.status(400).json({ error: 'No favicon uploaded' });
   
-  const faviconUrl = `/uploads/${req.file.filename}`;
+  const faviconUrl = req.file.path; // Cloudinary URL
   
   try {
-    const db = await dbPromise;
-    await db.run(
-      'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = ?',
-      ['faviconUrl', faviconUrl, faviconUrl]
-    );
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'faviconUrl', value: faviconUrl });
+
+    if (error) throw error;
     res.json({ success: true, faviconUrl, message: 'Favicon updated' });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -309,28 +322,37 @@ app.post('/api/admin/upload-favicon', verifyToken, upload.single('favicon'), asy
 // API: Get All Certificates
 app.get('/api/certificates', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const certificates = await db.all('SELECT * FROM certificates ORDER BY id DESC');
-    res.json(certificates);
+    const { data, error } = await supabase
+      .from('certificates')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Get Single Certificate
 app.get('/api/certificates/:id', async (req, res) => {
   try {
-    const db = await dbPromise;
-    const certificate = await db.get('SELECT * FROM certificates WHERE id = ?', [req.params.id]);
-    if (certificate) {
-      res.json(certificate);
+    const { data, error } = await supabase
+      .from('certificates')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) throw error;
+    if (data) {
+      res.json(data);
     } else {
       res.status(404).json({ error: 'Certificate not found' });
     }
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -339,55 +361,58 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
   const { title, description, date } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
-  const imageUrl = `/uploads/${req.file.filename}`;
+  const imageUrl = req.file.path; // Cloudinary URL
   
   try {
-    const db = await dbPromise;
-    const result = await db.run(
-      'INSERT INTO certificates (title, description, date, image) VALUES (?, ?, ?, ?)',
-      [title, description, date, imageUrl]
-    );
-    res.status(201).json({ success: true, id: result.lastID });
+    const { data, error } = await supabase
+      .from('certificates')
+      .insert([{ title, description, date, image: imageUrl }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, id: data[0].id });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Update Certificate (Protected)
 app.put('/api/admin/certificates/:id', verifyToken, upload.single('certificate_image'), async (req, res) => {
   const { title, description, date } = req.body;
+  const updateData = { title, description, date };
+  
+  if (req.file) {
+    updateData.image = req.file.path;
+  }
   
   try {
-    const db = await dbPromise;
-    if (req.file) {
-      const imageUrl = `/uploads/${req.file.filename}`;
-      await db.run(
-        'UPDATE certificates SET title = ?, description = ?, date = ?, image = ? WHERE id = ?',
-        [title, description, date, imageUrl, req.params.id]
-      );
-    } else {
-      await db.run(
-        'UPDATE certificates SET title = ?, description = ?, date = ? WHERE id = ?',
-        [title, description, date, req.params.id]
-      );
-    }
+    const { error } = await supabase
+      .from('certificates')
+      .update(updateData)
+      .eq('id', req.params.id);
+
+    if (error) throw error;
     res.json({ success: true });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // API: Delete Certificate (Protected)
 app.delete('/api/admin/certificates/:id', verifyToken, async (req, res) => {
   try {
-    const db = await dbPromise;
-    await db.run('DELETE FROM certificates WHERE id = ?', [req.params.id]);
+    const { error } = await supabase
+      .from('certificates')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
     res.json({ success: true });
   } catch (error) {
-    console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
