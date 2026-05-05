@@ -22,11 +22,14 @@ cloudinary.config({
 // Configure Multer Storage for Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'portfolio',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'pdf', 'svg', 'ico'],
-    resource_type: 'auto'
-  }
+  params: async (req, file) => {
+    const isPDF = file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf');
+    return {
+      folder: 'portfolio',
+      resource_type: isPDF ? 'raw' : 'auto',
+      public_id: Date.now() + '-' + file.originalname.replace(/\.[^/.]+$/, ""),
+    };
+  },
 });
 
 const upload = multer({ 
