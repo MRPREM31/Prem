@@ -1,29 +1,26 @@
 .navbar {
   position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 95%;
-  max-width: 1200px;
-  padding: 0.8rem 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.2rem 0;
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px; /* Modern pill shape */
+  background: rgba(15, 23, 42, 0.4); /* Subtle glass by default */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-sizing: border-box;
 }
 
 .navbar.scrolled {
-  top: 10px;
-  width: 98%;
-  padding: 0.6rem 0;
-  background: rgba(15, 23, 42, 0.8);
+  padding: 0.8rem 0;
+  background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15); /* Distinct separation line */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
 /* Mirror/Sheen Effect */
@@ -176,12 +173,22 @@
 
 @media (max-width: 768px) {
   .navbar {
-    width: 92%;
-    padding: 0.6rem 0;
+    top: 10px;
+    width: 94%;
+    left: 3%;
+    border-radius: 15px;
+    padding: 0.8rem 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
 
   .navbar.scrolled {
-    width: 95%;
+    top: 5px;
+    width: 96%;
+    left: 2%;
+    padding: 0.6rem 0;
   }
 
   [data-theme="light"] .navbar {
