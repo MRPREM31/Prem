@@ -67,7 +67,7 @@ const verifyToken = (req, res, next) => {
   }
 
   jwt.verify(tokenParts[1], JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(500).json({ error: 'Failed to authenticate token.' });
+    if (err) return res.status(401).json({ error: 'Session expired. Please login again.' });
     req.userId = decoded.id;
     next();
   });

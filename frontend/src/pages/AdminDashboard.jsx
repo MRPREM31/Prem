@@ -162,8 +162,14 @@ const AdminDashboard = () => {
         setShowProjectForm(false);
         setEditingProject(null);
         setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '' });
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || 'Failed to save project'}`);
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      alert('Network error: Could not connect to the backend.');
+    }
   };
 
   const deleteProject = async (id) => {
@@ -205,8 +211,14 @@ const AdminDashboard = () => {
         setShowCertForm(false);
         setEditingCert(null);
         setCertForm({ title: '', description: '', date: '', image: null });
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || 'Failed to save certificate'}`);
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      alert('Network error: Could not connect to the backend.');
+    }
   };
 
   const deleteCertificate = async (id) => {

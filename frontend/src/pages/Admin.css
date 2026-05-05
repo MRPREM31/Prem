@@ -9,6 +9,8 @@
 .dashboard-page {
   flex-direction: column;
   justify-content: flex-start;
+  position: relative;
+  z-index: 10;
 }
 
 .admin-login-box {
