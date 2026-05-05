@@ -258,7 +258,7 @@ const AdminDashboard = () => {
         fetchCertificates();
         setShowCertForm(false);
         setEditingCert(null);
-        setProjectForm({ title: '', description: '', date: '', image: null });
+        setCertForm({ title: '', description: '', date: '', image: null });
         showToast(editingCert ? 'Certificate updated' : 'Certificate created');
       } else {
         const data = await res.json();
@@ -530,6 +530,7 @@ const AdminDashboard = () => {
         </div>
       </div>
       <Footer />
+      </div>
     </div>
   );
 };
