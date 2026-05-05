@@ -159,7 +159,91 @@ app.post('/api/admin/upload-profile', verifyToken, upload.single('image'), async
   }
 });
 
-// API: Get Resume Path
+// API: Get Navbar Image Path
+app.get('/api/navbar-image', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'navbarImage')
+      .single();
+
+    res.json({ imageUrl: data ? data.value : '/assets/profile.jpg' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Upload Navbar Image (Protected)
+app.post('/api/admin/upload-navbar', verifyToken, upload.single('navbar'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
+  const imageUrl = req.file.path;
+  try {
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'navbarImage', value: imageUrl });
+
+    if (error) throw error;
+    res.json({ success: true, imageUrl, message: 'Navbar image updated' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Get Portfolio Stats
+app.get('/api/stats', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('key, value')
+      .in('key', ['stats_years_exp', 'stats_projects_completed', 'stats_startups_leadership']);
+
+    if (error) throw error;
+    
+    const stats = {
+      years_exp: '2+',
+      projects_completed: '10+',
+      startups_leadership: '2'
+    };
+    
+    if (data) {
+      data.forEach(item => {
+        if (item.key === 'stats_years_exp') stats.years_exp = item.value;
+        if (item.key === 'stats_projects_completed') stats.projects_completed = item.value;
+        if (item.key === 'stats_startups_leadership') stats.startups_leadership = item.value;
+      });
+    }
+    
+    res.json(stats);
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Update Portfolio Stats (Protected)
+app.post('/api/admin/stats', verifyToken, async (req, res) => {
+  const { years_exp, projects_completed, startups_leadership } = req.body;
+  try {
+    const statsData = [
+      { key: 'stats_years_exp', value: years_exp },
+      { key: 'stats_projects_completed', value: projects_completed },
+      { key: 'stats_startups_leadership', value: startups_leadership }
+    ];
+    
+    const { error } = await supabase
+      .from('settings')
+      .upsert(statsData);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Stats updated' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 app.get('/api/resume', async (req, res) => {
   try {
     const { data, error } = await supabase

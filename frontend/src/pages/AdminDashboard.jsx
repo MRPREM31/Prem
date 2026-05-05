@@ -38,6 +38,19 @@ const AdminDashboard = () => {
   const [selectedSignature, setSelectedSignature] = useState(null);
   const [uploadSigStatus, setUploadSigStatus] = useState('');
   const [currentSignature, setCurrentSignature] = useState('');
+
+  // Stats states
+  const [stats, setStats] = useState({
+    years_exp: '',
+    projects_completed: '',
+    startups_leadership: ''
+  });
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  // Navbar image states
+  const [selectedNavbarImg, setSelectedNavbarImg] = useState(null);
+  const [uploadNavStatus, setUploadNavStatus] = useState('');
+  const [currentNavbarImg, setCurrentNavbarImg] = useState('');
   
   const [greeting, setGreeting] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
@@ -69,6 +82,8 @@ const AdminDashboard = () => {
     fetchFavicon();
     fetchCertificates();
     fetchSignature();
+    fetchStats();
+    fetchNavbarImage();
   }, [token, navigate]);
 
   const showToast = (message, type = 'success') => {
@@ -149,6 +164,22 @@ const AdminDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stats`);
+      const data = await res.json();
+      setStats(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchNavbarImage = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/navbar-image`);
+      const data = await res.json();
+      setCurrentNavbarImg(data.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.imageUrl}` : data.imageUrl);
+    } catch (err) { console.error(err); }
+  };
+
   // --- UPLOADS ---
   const handleUpload = async (file, type, setStatusCallback, fetchCallback) => {
     if (!file) return showToast('Please select a file first.', 'error');
@@ -161,6 +192,7 @@ const AdminDashboard = () => {
       else if (type === 'resume') endpoint = 'upload-resume';
       else if (type === 'favicon') endpoint = 'upload-favicon';
       else if (type === 'signature') endpoint = 'upload-signature';
+      else if (type === 'navbar') endpoint = 'upload-navbar';
       
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, {
         method: 'POST',
@@ -308,6 +340,28 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleStatsSubmit = async (e) => {
+    e.preventDefault();
+    setStatsLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(stats)
+      });
+      if (res.ok) {
+        showToast('Stats updated successfully');
+      } else {
+        showToast('Failed to update stats', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error', 'error');
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   const downloadCSV = () => {
     if (messages.length === 0) return showToast('No messages to download', 'error');
     const headers = ['Date', 'Name', 'Email', 'Message'];
@@ -403,7 +457,48 @@ const AdminDashboard = () => {
                 </form>
                 {uploadSigStatus && <p className="upload-status">{uploadSigStatus}</p>}
               </div>
+
+              {/* NAVBAR IMAGE UPLOAD */}
+              <div className="admin-section">
+                <h3>Navbar Logo Image</h3>
+                <div className="preview-container">
+                  {currentNavbarImg && <img src={currentNavbarImg} alt="Current Navbar Logo" className="preview-img" style={{width: '32px', height: '32px'}} />}
+                </div>
+                <form onSubmit={(e) => { e.preventDefault(); handleUpload(selectedNavbarImg, 'navbar', setUploadNavStatus, fetchNavbarImage); setSelectedNavbarImg(null); e.target.reset(); }} className="upload-form">
+                  <input type="file" accept="image/*" onChange={(e) => setSelectedNavbarImg(e.target.files[0])} className="file-input" />
+                  <button type="submit" className="btn btn-primary" disabled={!selectedNavbarImg}><FaUpload /> Upload</button>
+                </form>
+                {uploadNavStatus && <p className="upload-status">{uploadNavStatus}</p>}
+              </div>
             </div>
+          </div>
+
+          {/* PORTFOLIO STATS SECTION */}
+          <div className="dashboard-content glass-panel mb-4">
+            <div className="section-header">
+              <h3>Portfolio Statistics</h3>
+            </div>
+            <form onSubmit={handleStatsSubmit} className="project-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Years of Experience (e.g., 2+)</label>
+                  <input type="text" value={stats.years_exp} onChange={e => setStats({...stats, years_exp: e.target.value})} className="form-input" placeholder="2+" required />
+                </div>
+                <div className="form-group">
+                  <label>Projects Completed (e.g., 10+)</label>
+                  <input type="text" value={stats.projects_completed} onChange={e => setStats({...stats, projects_completed: e.target.value})} className="form-input" placeholder="10+" required />
+                </div>
+                <div className="form-group">
+                  <label>Startups / Leadership (e.g., 2)</label>
+                  <input type="text" value={stats.startups_leadership} onChange={e => setStats({...stats, startups_leadership: e.target.value})} className="form-input" placeholder="2" required />
+                </div>
+              </div>
+              <div className="form-actions" style={{marginTop: '1rem'}}>
+                <button type="submit" className="btn btn-primary" disabled={statsLoading}>
+                  {statsLoading ? 'Updating...' : 'Update Statistics'}
+                </button>
+              </div>
+            </form>
           </div>
 
           {/* PROJECTS SECTION */}

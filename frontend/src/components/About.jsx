@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './About.css';
 
 const About = () => {
+  const [stats, setStats] = useState({
+    years_exp: '2+',
+    projects_completed: '10+',
+    startups_leadership: '2'
+  });
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/stats`)
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(err => console.error('Error fetching stats:', err));
+  }, []);
+
   return (
     <section id="about" className="section about-section">
       <div className="container">
@@ -40,15 +53,15 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <div className="stat-card glass-panel">
-              <h3>2+</h3>
+              <h3>{stats.years_exp}</h3>
               <p>Years Experience</p>
             </div>
             <div className="stat-card glass-panel">
-              <h3>10+</h3>
+              <h3>{stats.projects_completed}</h3>
               <p>Projects Completed</p>
             </div>
             <div className="stat-card glass-panel">
-              <h3>2</h3>
+              <h3>{stats.startups_leadership}</h3>
               <p>Startups / Leadership</p>
             </div>
           </motion.div>

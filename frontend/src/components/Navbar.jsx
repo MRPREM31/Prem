@@ -32,7 +32,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/navbar-image`)
       .then(res => res.json())
       .then(data => {
         if (data.imageUrl) {
@@ -43,7 +43,7 @@ const Navbar = () => {
           }
         }
       })
-      .catch(err => console.error('Error fetching profile image:', err));
+      .catch(err => console.error('Error fetching navbar image:', err));
   }, []);
 
   useEffect(() => {
