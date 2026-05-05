@@ -231,6 +231,30 @@ const AdminDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
+  const downloadCSV = () => {
+    if (messages.length === 0) return alert('No messages to download');
+    const headers = ['Date', 'Name', 'Email', 'Message'];
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+    
+    messages.forEach(msg => {
+      const date = new Date(msg.date).toLocaleString().replace(/,/g, '');
+      const name = `"${msg.name.replace(/"/g, '""')}"`;
+      const email = `"${msg.email.replace(/"/g, '""')}"`;
+      const message = `"${msg.message.replace(/"/g, '""')}"`;
+      csvRows.push([date, name, email, message].join(','));
+    });
+    
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `contact_messages_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="admin-page dashboard-page">
       <div className="dashboard-header">
@@ -375,16 +399,26 @@ const AdminDashboard = () => {
 
       {/* MESSAGES SECTION */}
       <div className="dashboard-content glass-panel">
-        <h3 className="section-title-small">Contact Submissions</h3>
+        <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 className="section-title-small" style={{ margin: 0 }}>Contact Submissions</h3>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
+              Download CSV
+            </button>
+            <a href="https://docs.google.com/spreadsheets/d/1nkRm0hxYI0L8hNzEYPt_Dv4w39xKEyMRte-KGOtBRV8/edit?gid=1786163301#gid=1786163301" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
+              Open Google Sheet
+            </a>
+          </div>
+        </div>
         <div className="table-responsive">
           <table className="admin-table">
             <thead>
-              <tr><th>Date</th><th>Name</th><th>Email</th><th>Message</th><th>Action</th></tr>
+              <tr><th>Date & Time</th><th>Name</th><th>Email</th><th>Message</th><th>Action</th></tr>
             </thead>
             <tbody>
               {messages.length > 0 ? messages.map(msg => (
                 <tr key={msg.id}>
-                  <td>{new Date(msg.date).toLocaleDateString()}</td>
+                  <td>{new Date(msg.date).toLocaleString()}</td>
                   <td>{msg.name}</td>
                   <td><a href={`mailto:${msg.email}`}>{msg.email}</a></td>
                   <td className="msg-cell">{msg.message}</td>

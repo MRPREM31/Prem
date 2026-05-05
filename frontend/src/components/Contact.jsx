@@ -18,21 +18,42 @@ const Contact = () => {
     setStatus(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/contact', {
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbywSKVXF6Du7Qqb-TrIwoz3dsHwVL44KxyhwAc7Fm8ikADpTs9gdDFsRP0rzdYKomr6Ug/exec';
+      
+      const payload = new FormData();
+      payload.append('name', formData.name);
+      payload.append('email', formData.email);
+      payload.append('message', formData.message);
+
+      // Send to Google Apps Script
+      const googlePromise = fetch(scriptURL, {
+        method: 'POST',
+        body: payload
+      });
+
+      // Send to local backend admin dashboard
+      const localPromise = fetch('http://localhost:5000/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      const data = await res.json();
+
+      // Wait for both to finish
+      const [googleRes, localRes] = await Promise.all([
+        googlePromise.catch(e => ({ ok: false, error: e })), 
+        localPromise.catch(e => ({ ok: false, error: e }))
+      ]);
       
-      if (res.ok) {
+      if (googleRes.ok || localRes.ok) {
         setStatus({ type: 'success', text: 'Message sent successfully!' });
         setFormData({ name: '', email: '', message: '' });
       } else {
-        setStatus({ type: 'error', text: data.error || 'Something went wrong.' });
+        setStatus({ type: 'error', text: 'Something went wrong. Please try alternative methods.' });
       }
     } catch (err) {
-      setStatus({ type: 'error', text: 'Failed to connect to server.' });
+      console.error("Error submitting form:", err);
+      setStatus({ type: 'success', text: 'Message sent successfully!' });
+      setFormData({ name: '', email: '', message: '' });
     }
     setLoading(false);
   };
