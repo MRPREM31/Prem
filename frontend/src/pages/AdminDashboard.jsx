@@ -32,6 +32,14 @@ const AdminDashboard = () => {
   const [uploadFavStatus, setUploadFavStatus] = useState('');
   const [currentFavicon, setCurrentFavicon] = useState('');
 
+  // Signature states
+  const [selectedSignature, setSelectedSignature] = useState(null);
+  const [uploadSigStatus, setUploadSigStatus] = useState('');
+  const [currentSignature, setCurrentSignature] = useState('');
+  
+  const [greeting, setGreeting] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+
   // Certificates states
   const [certificates, setCertificates] = useState([]);
   const [showCertForm, setShowCertForm] = useState(false);
@@ -46,13 +54,25 @@ const AdminDashboard = () => {
       navigate('/admin');
       return;
     }
+
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good Morning');
+    else if (hour < 18) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
+
     fetchMessages();
     fetchProfileImage();
     fetchResume();
     fetchProjects();
     fetchFavicon();
     fetchCertificates();
+    fetchSignature();
   }, [token, navigate]);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -118,9 +138,18 @@ const AdminDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
+  const fetchSignature = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/signature?t=${Date.now()}`);
+      const data = await res.json();
+      const sigUrl = data.signatureUrl && data.signatureUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.signatureUrl}` : data.signatureUrl;
+      setCurrentSignature(sigUrl || '');
+    } catch (err) { console.error(err); }
+  };
+
   // --- UPLOADS ---
   const handleUpload = async (file, type, setStatusCallback, fetchCallback) => {
-    if (!file) return setStatusCallback('Please select a file first.');
+    if (!file) return showToast('Please select a file first.', 'error');
     const formData = new FormData();
     formData.append(type, file);
     try {
@@ -129,6 +158,7 @@ const AdminDashboard = () => {
       if (type === 'image') endpoint = 'upload-profile';
       else if (type === 'resume') endpoint = 'upload-resume';
       else if (type === 'favicon') endpoint = 'upload-favicon';
+      else if (type === 'signature') endpoint = 'upload-signature';
       
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, {
         method: 'POST',
@@ -138,12 +168,15 @@ const AdminDashboard = () => {
       const data = await res.json();
       if (res.ok) {
         setStatusCallback('Upload successful!');
+        showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`);
         fetchCallback();
       } else {
-        setStatusCallback(`Upload failed: ${data.error}`);
+        setStatusCallback(`Error`);
+        showToast(data.error || 'Upload failed', 'error');
       }
     } catch (err) {
-      setStatusCallback('Error uploading file.');
+      setStatusCallback('Error');
+      showToast('Network error during upload', 'error');
     }
   };
 
@@ -166,25 +199,34 @@ const AdminDashboard = () => {
         setShowProjectForm(false);
         setEditingProject(null);
         setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '' });
+        showToast(editingProject ? 'Project updated' : 'Project created');
       } else {
         const data = await res.json();
-        alert(`Error: ${data.error || 'Failed to save project'}`);
+        showToast(data.error || 'Failed to save project', 'error');
       }
     } catch (err) { 
       console.error(err);
-      alert('Network error: Could not connect to the backend.');
+      showToast('Network error: Could not connect to the backend.', 'error');
     }
   };
 
   const deleteProject = async (id) => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      fetchProjects();
-    } catch (err) { console.error(err); }
+      if (res.ok) {
+        showToast('Project deleted');
+        fetchProjects();
+      } else {
+        showToast('Failed to delete project', 'error');
+      }
+    } catch (err) { 
+      console.error(err);
+      showToast('Network error', 'error');
+    }
   };
 
   const handleCertSubmit = async (e) => {
@@ -214,41 +256,58 @@ const AdminDashboard = () => {
         fetchCertificates();
         setShowCertForm(false);
         setEditingCert(null);
-        setCertForm({ title: '', description: '', date: '', image: null });
+        setProjectForm({ title: '', description: '', date: '', image: null });
+        showToast(editingCert ? 'Certificate updated' : 'Certificate created');
       } else {
         const data = await res.json();
-        alert(`Error: ${data.error || 'Failed to save certificate'}`);
+        showToast(data.error || 'Failed to save certificate', 'error');
       }
     } catch (err) { 
       console.error(err);
-      alert('Network error: Could not connect to the backend.');
+      showToast('Network error: Could not connect to the backend.', 'error');
     }
   };
 
   const deleteCertificate = async (id) => {
     if (!window.confirm('Are you sure you want to delete this certificate?')) return;
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/certificates/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/certificates/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      fetchCertificates();
-    } catch (err) { console.error(err); }
+      if (res.ok) {
+        showToast('Certificate deleted');
+        fetchCertificates();
+      } else {
+        showToast('Failed to delete certificate', 'error');
+      }
+    } catch (err) { 
+      console.error(err);
+      showToast('Network error', 'error');
+    }
   };
 
   const deleteMessage = async (id) => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      fetchMessages();
-    } catch (err) { console.error(err); }
+      if (res.ok) {
+        showToast('Message deleted');
+        fetchMessages();
+      } else {
+        showToast('Failed to delete message', 'error');
+      }
+    } catch (err) { 
+      console.error(err);
+      showToast('Network error', 'error');
+    }
   };
 
   const downloadCSV = () => {
-    if (messages.length === 0) return alert('No messages to download');
+    if (messages.length === 0) return showToast('No messages to download', 'error');
     const headers = ['Date', 'Name', 'Email', 'Message'];
     const csvRows = [];
     csvRows.push(headers.join(','));
@@ -273,8 +332,16 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-page dashboard-page">
-      <div className="dashboard-header">
-        <h2 className="gradient-text">Admin Dashboard</h2>
+      {toast.show && (
+        <div className={`custom-toast ${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
+      <div className="dashboard-header glass-panel">
+        <div>
+          <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
+          <p className="text-muted">Manage your portfolio with ease.</p>
+        </div>
         <button onClick={handleLogout} className="btn btn-outline"><FaSignOutAlt /> Logout</button>
       </div>
 
@@ -317,6 +384,19 @@ const AdminDashboard = () => {
               <button type="submit" className="btn btn-primary" disabled={!selectedFavicon}><FaUpload /> Upload</button>
             </form>
             {uploadFavStatus && <p className="upload-status">{uploadFavStatus}</p>}
+          </div>
+
+          {/* SIGNATURE UPLOAD */}
+          <div className="admin-section">
+            <h3>Signature Image</h3>
+            <div className="preview-container">
+              {currentSignature && <img src={currentSignature} alt="Current Signature" className="preview-img signature-preview" />}
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpload(selectedSignature, 'signature', setUploadSigStatus, fetchSignature); setSelectedSignature(null); e.target.reset(); }} className="upload-form">
+              <input type="file" accept="image/*" onChange={(e) => setSelectedSignature(e.target.files[0])} className="file-input" />
+              <button type="submit" className="btn btn-primary" disabled={!selectedSignature}><FaUpload /> Upload</button>
+            </form>
+            {uploadSigStatus && <p className="upload-status">{uploadSigStatus}</p>}
           </div>
         </div>
       </div>

@@ -304,16 +304,36 @@ app.get('/api/favicon', async (req, res) => {
 // API: Upload Favicon (Protected)
 app.post('/api/admin/upload-favicon', verifyToken, upload.single('favicon'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No favicon uploaded' });
-  
-  const faviconUrl = req.file.path; // Cloudinary URL
-  
+  const faviconUrl = req.file.path;
   try {
-    const { error } = await supabase
-      .from('settings')
-      .upsert({ key: 'faviconUrl', value: faviconUrl });
-
+    const { error } = await supabase.from('settings').upsert({ key: 'faviconUrl', value: faviconUrl });
     if (error) throw error;
     res.json({ success: true, faviconUrl, message: 'Favicon updated' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Get Signature Path
+app.get('/api/signature', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('settings').select('value').eq('key', 'signatureUrl').single();
+    res.json({ signatureUrl: data ? data.value : '' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Upload Signature (Protected)
+app.post('/api/admin/upload-signature', verifyToken, upload.single('signature'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No signature uploaded' });
+  const signatureUrl = req.file.path;
+  try {
+    const { error } = await supabase.from('settings').upsert({ key: 'signatureUrl', value: signatureUrl });
+    if (error) throw error;
+    res.json({ success: true, signatureUrl, message: 'Signature updated' });
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });

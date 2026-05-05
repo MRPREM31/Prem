@@ -56,11 +56,26 @@ const CertificateDetail = () => {
           
           <div className="cert-detail-container glass-panel">
             <div className="cert-detail-image-wrapper">
-              <img 
-                src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
-                alt={certificate.title} 
-                className="cert-detail-img" 
-              />
+              {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
+                <div className="pdf-viewer-container">
+                  <iframe 
+                    src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                    title={certificate.title}
+                    className="pdf-iframe"
+                  />
+                  <div className="pdf-actions">
+                    <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
+                       Open PDF in New Tab
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <img 
+                  src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                  alt={certificate.title} 
+                  className="cert-detail-img" 
+                />
+              )}
             </div>
             
             <div className="cert-detail-info">
