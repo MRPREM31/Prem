@@ -396,7 +396,7 @@ const AdminDashboard = () => {
               {toast.message}
             </div>
           )}
-          <div className="dashboard-header glass-panel">
+          <div className="dashboard-header">
             <div>
               <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
               <p className="text-muted">Manage your portfolio with ease.</p>
@@ -595,7 +595,7 @@ const AdminDashboard = () => {
 
           {/* MESSAGES SECTION */}
           <div className="dashboard-content glass-panel">
-            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div className="section-header contact-header">
               <h3 className="section-title-small" style={{ margin: 0 }}>Contact Submissions</h3>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
