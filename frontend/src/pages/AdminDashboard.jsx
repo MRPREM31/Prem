@@ -4,6 +4,10 @@ import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus } from 'react-icons/fa'
 import './Admin.css';
 
 const AdminDashboard = () => {
+  useEffect(() => {
+    document.title = "Admin Dashboard | Prem Prasad Pradhan";
+  }, []);
+  
   const [messages, setMessages] = useState([]);
   
   // Image & Resume states

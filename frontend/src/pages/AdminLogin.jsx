@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css';
 
@@ -6,6 +6,10 @@ const AdminLogin = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    document.title = "Admin Login | Prem Prasad Pradhan";
+  }, []);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
