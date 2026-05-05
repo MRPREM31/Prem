@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus } from 'react-icons/fa';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -331,19 +333,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-page dashboard-page">
-      {toast.show && (
-        <div className={`custom-toast ${toast.type}`}>
-          {toast.message}
+    <div className="portfolio-page">
+      <Navbar />
+      <div className="admin-page dashboard-page">
+        {toast.show && (
+          <div className={`custom-toast ${toast.type}`}>
+            {toast.message}
+          </div>
+        )}
+        <div className="dashboard-header glass-panel">
+          <div>
+            <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
+            <p className="text-muted">Manage your portfolio with ease.</p>
+          </div>
+          <button onClick={handleLogout} className="btn btn-outline"><FaSignOutAlt /> Logout</button>
         </div>
-      )}
-      <div className="dashboard-header glass-panel">
-        <div>
-          <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
-          <p className="text-muted">Manage your portfolio with ease.</p>
-        </div>
-        <button onClick={handleLogout} className="btn btn-outline"><FaSignOutAlt /> Logout</button>
-      </div>
 
       <div className="dashboard-content glass-panel mb-4">
         <div className="admin-grid">
@@ -525,6 +529,7 @@ const AdminDashboard = () => {
           </table>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

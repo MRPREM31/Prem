@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { FaDownload, FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import './Hero.css';
+import { RESUME_LINK } from '../config';
 
 const Hero = () => {
   const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
@@ -25,19 +26,23 @@ const Hero = () => {
       .catch(err => console.error('Error fetching profile image:', err));
 
     // Fetch resume URL
-    fetch(`${import.meta.env.VITE_API_URL}/api/resume`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.resumeUrl) {
-          const timestamp = Date.now();
-          if (data.resumeUrl.startsWith('/uploads')) {
-            setResumeUrl(`${import.meta.env.VITE_API_URL}${data.resumeUrl}?t=${timestamp}`);
-          } else {
-            setResumeUrl(`${data.resumeUrl}?t=${timestamp}`);
+    if (RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf") {
+      setResumeUrl(RESUME_LINK);
+    } else {
+      fetch(`${import.meta.env.VITE_API_URL}/api/resume`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.resumeUrl) {
+            const timestamp = Date.now();
+            if (data.resumeUrl.startsWith('/uploads')) {
+              setResumeUrl(`${import.meta.env.VITE_API_URL}${data.resumeUrl}?t=${timestamp}`);
+            } else {
+              setResumeUrl(`${data.resumeUrl}?t=${timestamp}`);
+            }
           }
-        }
-      })
-      .catch(err => console.error('Error fetching resume:', err));
+        })
+        .catch(err => console.error('Error fetching resume:', err));
+    }
   }, []);
   return (
     <section id="home" className="section hero-section">

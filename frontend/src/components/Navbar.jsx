@@ -58,10 +58,12 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isHome = window.location.pathname === '/';
+
   return (
     <nav className={`navbar ${scrolled ? 'scrolled glass-panel' : ''}`}>
       <div className="container nav-container">
-        <a href="#home" className="logo-container">
+        <a href={isHome ? "#home" : "/#home"} className="logo-container">
           <img 
             src={profileImage} 
             alt="MR.PREM" 
@@ -72,12 +74,12 @@ const Navbar = () => {
         
         <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`}>
           <ul className="nav-links">
-            <li><a href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-            <li><a href="#skills" onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-            <li><a href="#experience" onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
-            <li><a href="#projects" onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-            <li><a href="#certificates" onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
-            <li><a href="#contact" className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+            <li><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
+            <li><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
+            <li><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
+            <li><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+            <li><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+            <li><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
             <li className="theme-toggle-container">
               <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
