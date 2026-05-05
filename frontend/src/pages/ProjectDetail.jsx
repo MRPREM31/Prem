@@ -35,10 +35,12 @@ const ProjectDetail = () => {
     return (
       <div className="portfolio-page">
         <Navbar />
-        <div className="proj-detail-loading">
-          <div className="spinner"></div>
-          <p>Loading project details...</p>
-        </div>
+        <main className="main-content">
+          <div className="proj-detail-loading">
+            <div className="spinner"></div>
+            <p>Loading project details...</p>
+          </div>
+        </main>
         <Footer />
       </div>
     );
@@ -49,49 +51,51 @@ const ProjectDetail = () => {
   return (
     <div className="portfolio-page">
       <Navbar />
-      <div className="proj-detail-page section">
-        <div className="container">
-          <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
-            &larr; Back to Portfolio
-          </button>
-          
-          <div className="proj-detail-container glass-panel">
-            <div className="proj-detail-info">
-              <h1 className="proj-detail-title gradient-text">{project.title}</h1>
-              
-              <div className="proj-detail-tags">
-                {project.tags.split(',').map((tag, i) => (
-                  <span key={i} className="tag">{tag.trim()}</span>
-                ))}
-              </div>
+      <main className="main-content">
+        <div className="proj-detail-page section">
+          <div className="container">
+            <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
+              &larr; Back to Portfolio
+            </button>
+            
+            <div className="proj-detail-container glass-panel">
+              <div className="proj-detail-info">
+                <h1 className="proj-detail-title gradient-text">{project.title}</h1>
+                
+                <div className="proj-detail-tags">
+                  {project.tags.split(',').map((tag, i) => (
+                    <span key={i} className="tag">{tag.trim()}</span>
+                  ))}
+                </div>
 
-              <div className="proj-detail-links">
-                {project.github && (
-                  <a href={project.github} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                    <FaGithub /> GitHub Repository
-                  </a>
-                )}
-                {project.link && (
-                  <a href={project.link} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
-                    <FaExternalLinkAlt /> Live Project
-                  </a>
-                )}
-                {project.pptLink && (
-                  <a href={project.pptLink} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm" style={{borderColor: '#ff5722', color: '#ff5722'}}>
-                    <FaFilePowerpoint /> View PPT
-                  </a>
-                )}
-              </div>
+                <div className="proj-detail-links">
+                  {project.github && (
+                    <a href={project.github} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+                      <FaGithub /> GitHub Repository
+                    </a>
+                  )}
+                  {project.link && (
+                    <a href={project.link} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
+                      <FaExternalLinkAlt /> Live Project
+                    </a>
+                  )}
+                  {project.pptLink && (
+                    <a href={project.pptLink} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm" style={{borderColor: '#ff5722', color: '#ff5722'}}>
+                      <FaFilePowerpoint /> View PPT
+                    </a>
+                  )}
+                </div>
 
-              <div className="proj-detail-desc">
-                {project.description.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+                <div className="proj-detail-desc">
+                  {project.description.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

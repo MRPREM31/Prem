@@ -34,10 +34,12 @@ const CertificateDetail = () => {
     return (
       <div className="portfolio-page">
         <Navbar />
-        <div className="cert-detail-loading">
-          <div className="spinner"></div>
-          <p>Loading certificate details...</p>
-        </div>
+        <main className="main-content">
+          <div className="cert-detail-loading">
+            <div className="spinner"></div>
+            <p>Loading certificate details...</p>
+          </div>
+        </main>
         <Footer />
       </div>
     );
@@ -48,50 +50,52 @@ const CertificateDetail = () => {
   return (
     <div className="portfolio-page">
       <Navbar />
-      <div className="cert-detail-page section">
-        <div className="container">
-          <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
-            &larr; Back to Portfolio
-          </button>
-          
-          <div className="cert-detail-container glass-panel">
-            <div className="cert-detail-image-wrapper">
-              {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
-                <div className="pdf-viewer-container">
-                  <iframe 
-                    src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
-                    title={certificate.title}
-                    className="pdf-iframe"
-                  />
-                  <div className="pdf-actions">
-                    <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
-                       Open PDF in New Tab
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <img 
-                  src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
-                  alt={certificate.title} 
-                  className="cert-detail-img" 
-                />
-              )}
-            </div>
+      <main className="main-content">
+        <div className="cert-detail-page section">
+          <div className="container">
+            <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
+              &larr; Back to Portfolio
+            </button>
             
-            <div className="cert-detail-info">
-              <h1 className="cert-detail-title gradient-text">{certificate.title}</h1>
-              <div className="cert-detail-meta">
-                <span className="cert-detail-date">{certificate.date}</span>
+            <div className="cert-detail-container glass-panel">
+              <div className="cert-detail-image-wrapper">
+                {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
+                  <div className="pdf-viewer-container">
+                    <iframe 
+                      src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                      title={certificate.title}
+                      className="pdf-iframe"
+                    />
+                    <div className="pdf-actions">
+                      <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
+                         Open PDF in New Tab
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <img 
+                    src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                    alt={certificate.title} 
+                    className="cert-detail-img" 
+                  />
+                )}
               </div>
-              <div className="cert-detail-desc">
-                {certificate.description.split('\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+              
+              <div className="cert-detail-info">
+                <h1 className="cert-detail-title gradient-text">{certificate.title}</h1>
+                <div className="cert-detail-meta">
+                  <span className="cert-detail-date">{certificate.date}</span>
+                </div>
+                <div className="cert-detail-desc">
+                  {certificate.description.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
