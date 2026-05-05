@@ -113,7 +113,7 @@ app.get('/api/admin/messages', verifyToken, async (req, res) => {
     res.json(messages);
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -125,7 +125,7 @@ app.delete('/api/admin/messages/:id', verifyToken, async (req, res) => {
     res.json({ success: true, message: 'Message deleted' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -137,7 +137,7 @@ app.get('/api/profile-image', async (req, res) => {
     res.json({ imageUrl: setting ? setting.value : '/assets/profile.jpg' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -158,7 +158,7 @@ app.post('/api/admin/upload-profile', verifyToken, upload.single('image'), async
     res.json({ success: true, imageUrl, message: 'Profile image updated' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -170,7 +170,7 @@ app.get('/api/resume', async (req, res) => {
     res.json({ resumeUrl: setting ? setting.value : '/resume.pdf' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -191,7 +191,7 @@ app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async
     res.json({ success: true, resumeUrl, message: 'Resume updated' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -205,7 +205,7 @@ app.get('/api/projects', async (req, res) => {
     res.json(projects);
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -221,7 +221,7 @@ app.get('/api/projects/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -237,7 +237,7 @@ app.post('/api/admin/projects', verifyToken, async (req, res) => {
     res.status(201).json({ success: true, id: result.lastID });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -253,7 +253,7 @@ app.put('/api/admin/projects/:id', verifyToken, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -265,7 +265,7 @@ app.delete('/api/admin/projects/:id', verifyToken, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -279,7 +279,7 @@ app.get('/api/favicon', async (req, res) => {
     res.json({ faviconUrl: setting ? setting.value : '/vite.svg' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -300,7 +300,7 @@ app.post('/api/admin/upload-favicon', verifyToken, upload.single('favicon'), asy
     res.json({ success: true, faviconUrl, message: 'Favicon updated' });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -314,7 +314,7 @@ app.get('/api/certificates', async (req, res) => {
     res.json(certificates);
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -330,7 +330,7 @@ app.get('/api/certificates/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -350,7 +350,7 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
     res.status(201).json({ success: true, id: result.lastID });
   } catch (error) {
     console.error('Database Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 });
 
