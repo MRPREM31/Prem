@@ -17,14 +17,16 @@ const Portfolio = () => {
   return (
     <div className="portfolio-page">
       <Navbar />
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <Projects />
-      <Certificates />
-      <Journey />
-      <Contact />
+      <main className="main-content">
+        <Hero />
+        <About />
+        <Skills />
+        <Experience />
+        <Projects />
+        <Certificates />
+        <Journey />
+        <Contact />
+      </main>
       <Footer />
     </div>
   )
