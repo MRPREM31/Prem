@@ -76,12 +76,15 @@ const Navbar = () => {
           <span className="logo gradient-text">MR.PREM</span>
         </a>
         
-        <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div 
+          className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`}
+          onClick={() => setIsMobileMenuOpen(false)} // Close when clicking backdrop
+        >
           {/* Close button inside the menu for better reach */}
           <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
             <FaTimes />
           </button>
-          <ul className="nav-links">
+          <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
             <li><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
             <li><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
             <li><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
@@ -89,7 +92,7 @@ const Navbar = () => {
             <li><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
             <li><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
             <li className="theme-toggle-container">
-              <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
+              <button className="theme-toggle" onClick={(e) => { e.stopPropagation(); toggleTheme(); }} aria-label="Toggle Theme">
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
             </li>
