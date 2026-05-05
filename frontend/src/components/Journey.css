@@ -1,0 +1,86 @@
+.journey-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.journey-step {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.journey-year {
+  flex: 0 0 150px;
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-tertiary);
+}
+
+.journey-node {
+  width: 15px;
+  height: 15px;
+  background: var(--text-main);
+  border-radius: 50%;
+  position: relative;
+}
+
+.journey-node::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  bottom: -30px;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: -1;
+}
+
+.journey-step:first-child .journey-node::before {
+  top: 0;
+}
+
+.journey-step:last-child .journey-node::before {
+  bottom: 0;
+}
+
+.journey-event {
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.journey-event p {
+  color: var(--text-main);
+  font-size: 1.05rem;
+}
+
+@media (max-width: 768px) {
+  .journey-step {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    padding-left: 30px;
+  }
+  
+  .journey-year {
+    text-align: left;
+    flex: auto;
+  }
+  
+  .journey-node {
+    position: absolute;
+    left: 0;
+    top: 5px;
+  }
+  
+  .journey-node::before {
+    top: -20px;
+    bottom: -150px;
+  }
+}
