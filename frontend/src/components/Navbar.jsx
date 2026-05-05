@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
+import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -78,25 +78,39 @@ const Navbar = () => {
         
         <div 
           className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`}
-          onClick={() => setIsMobileMenuOpen(false)} // Close when clicking backdrop
+          onClick={() => setIsMobileMenuOpen(false)}
         >
-          {/* Close button inside the menu for better reach */}
-          <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
-            <FaTimes />
-          </button>
-          <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
-            <li><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-            <li><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-            <li><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
-            <li><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-            <li><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
-            <li><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
-            <li className="theme-toggle-container">
-              <button className="theme-toggle" onClick={(e) => { e.stopPropagation(); toggleTheme(); }} aria-label="Toggle Theme">
-                {theme === 'dark' ? <FaSun /> : <FaMoon />}
+          <div className="mobile-menu-content" onClick={(e) => e.stopPropagation()}>
+            <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+              <FaTimes />
+            </button>
+            
+            <div className="mobile-menu-header">
+              <span className="logo gradient-text">MR.PREM</span>
+              <p className="text-muted">Software Developer</p>
+            </div>
+
+            <ul className="nav-links">
+              <li style={{"--i": 1}}><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
+              <li style={{"--i": 2}}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
+              <li style={{"--i": 3}}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
+              <li style={{"--i": 4}}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+              <li style={{"--i": 5}}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+              <li style={{"--i": 6}}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn-mobile" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+            </ul>
+
+            <div className="mobile-menu-footer">
+              <div className="mobile-socials">
+                <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer"><FaGithub /></a>
+                <a href="https://linkedin.com/in/mrprem31" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+                <a href="https://instagram.com/mr.prem_31" target="_blank" rel="noreferrer"><FaInstagram /></a>
+                <a href="https://wa.me/917846835010" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
+              </div>
+              <button className="theme-toggle-mobile" onClick={toggleTheme}>
+                {theme === 'dark' ? <><FaSun /> Light Mode</> : <><FaMoon /> Dark Mode</>}
               </button>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
         
         <div className="nav-actions">
