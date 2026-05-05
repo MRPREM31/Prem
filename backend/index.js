@@ -74,7 +74,7 @@ app.post('/api/contact', async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.status(201).json({ success: true, id: data ? data[0].id : null });
+    res.status(201).json({ success: true, id: (data && data.length > 0) ? data[0].id : null });
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
@@ -243,7 +243,7 @@ app.post('/api/admin/projects', verifyToken, async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.status(201).json({ success: true, id: data[0].id });
+    res.status(201).json({ success: true, id: (data && data.length > 0) ? data[0].id : null });
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
@@ -373,7 +373,7 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
       .select();
 
     if (error) throw error;
-    res.status(201).json({ success: true, id: data[0].id });
+    res.status(201).json({ success: true, id: (data && data.length > 0) ? data[0].id : null });
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
@@ -419,6 +419,14 @@ app.delete('/api/admin/certificates/:id', verifyToken, async (req, res) => {
   }
 });
 
+// Global Error Handler (Prevents HTML error pages)
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(err.status || 500).json({
+    error: err.message || 'An unexpected server error occurred.'
+  });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
