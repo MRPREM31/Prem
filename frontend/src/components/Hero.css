@@ -43,7 +43,8 @@
 
 .hero-info {
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 0.8rem;
   margin-bottom: 2.5rem;
   color: var(--text-muted);
   font-size: 0.95rem;

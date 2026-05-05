@@ -57,7 +57,9 @@ const Hero = () => {
                 2000,
                 'Software Developer',
                 2000,
-                'Founder QCDS',
+                'Team Lead @ DesiCrew Pvt Ltd',
+                2000,
+                'Founder @ QCDS',
                 2000
               ]}
               wrapper="span"
@@ -71,6 +73,7 @@ const Hero = () => {
           
           <div className="hero-info">
             <span><FaEnvelope /> premprasadpradhan@zohomail.in</span>
+            <span><FaEnvelope /> mr.prem2006@gmail.com</span>
             <span>📍 Odisha, India</span>
           </div>
 
