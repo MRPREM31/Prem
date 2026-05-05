@@ -53,10 +53,14 @@ const Navbar = () => {
       } else {
         setScrolled(false);
       }
+      // Auto-close mobile menu on scroll
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobileMenuOpen]);
 
   const isHome = window.location.pathname === '/';
 
@@ -73,6 +77,10 @@ const Navbar = () => {
         </a>
         
         <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`}>
+          {/* Close button inside the menu for better reach */}
+          <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+            <FaTimes />
+          </button>
           <ul className="nav-links">
             <li><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
             <li><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
@@ -89,8 +97,8 @@ const Navbar = () => {
         </div>
         
         <div className="nav-actions">
-          <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+          <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(true)}>
+            <FaBars />
           </button>
         </div>
       </div>

@@ -161,7 +161,8 @@
   color: var(--accent-primary);
 }
 
-.mobile-toggle {
+.mobile-toggle,
+.mobile-close-btn {
   display: none;
   background: transparent;
   border: none;
@@ -196,6 +197,19 @@
   }
 
   .mobile-toggle {
+    display: block;
+  }
+
+  .mobile-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 101;
     display: block;
   }
   
