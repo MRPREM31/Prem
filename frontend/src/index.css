@@ -123,6 +123,9 @@ ul {
   .section {
     padding: 80px 5%;
   }
+  .main-content {
+    padding-top: 60px; /* Ensure content is below floating navbar */
+  }
 }
 
 @media (max-width: 480px) {
