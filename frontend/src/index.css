@@ -227,20 +227,12 @@ ul {
   will-change: transform;
 }
 
-/* Custom Scrollbar - Restricted to root to prevent duplicates */
+/* Hide scrollbar while keeping functionality */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
 html::-webkit-scrollbar {
-  width: 8px;
-}
-
-html::-webkit-scrollbar-track {
-  background: var(--bg-color);
-}
-
-html::-webkit-scrollbar-thumb {
-  background: var(--accent-secondary);
-  border-radius: 4px;
-}
-
-html::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
+  display: none; /* Chrome, Safari, Opera */
 }

@@ -305,10 +305,14 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 5rem 2rem 3rem;
-    box-sizing: border-box;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .nav-links-wrapper::-webkit-scrollbar {
+    display: none;
   }
 
   .nav-links-wrapper.open {
