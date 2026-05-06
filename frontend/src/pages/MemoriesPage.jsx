@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../components/MemorableImages.css'; // Reuse CSS
 
 const MemoriesPage = () => {
   const [images, setImages] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,6 +23,9 @@ const MemoriesPage = () => {
       <main className="main-content">
         <section className="section memories-page-section" style={{ paddingTop: '120px' }}>
           <div className="container">
+            <button className="btn btn-outline back-btn" onClick={() => navigate(-1)} style={{ marginBottom: '2rem' }}>
+              &larr; Back to Portfolio
+            </button>
             <motion.h1 
               className="section-title gradient-text text-center"
               initial={{ opacity: 0, y: -20 }}
