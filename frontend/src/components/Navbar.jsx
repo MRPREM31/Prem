@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import './Navbar.css';
+
+const navLinks = [
+  { name: 'About', id: 'about' },
+  { name: 'Skills', id: 'skills' },
+  { name: 'Experience', id: 'experience' },
+  { name: 'Projects', id: 'projects' },
+  { name: 'Certificates', id: 'certificates' },
+  { name: 'Contact Me', id: 'contact' },
+];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-
-  // Theme logic
+  const [hoveredSection, setHoveredSection] = useState(null);
   const [theme, setTheme] = useState('dark');
   const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
 
+  // Theme logic
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
@@ -31,6 +41,7 @@ const Navbar = () => {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  // Profile image fetch
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/navbar-image`)
       .then(res => res.json())
@@ -46,32 +57,15 @@ const Navbar = () => {
       .catch(err => console.error('Error fetching navbar image:', err));
   }, []);
 
+  // Section observer
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-      if (isMobileMenuOpen) setIsMobileMenuOpen(false);
-    };
-
-    const updateIndicator = () => {
-      const activeLink = document.querySelector('.nav-links li.activeSection');
-      const indicator = document.querySelector('.nav-indicator-line');
-      if (activeLink && indicator) {
-        const { offsetLeft, offsetWidth } = activeLink;
-        indicator.style.left = `${offsetLeft}px`;
-        indicator.style.width = `${offsetWidth}px`;
-        indicator.style.opacity = '1';
-      } else if (indicator) {
-        indicator.style.opacity = '0';
-      }
+      setScrolled(window.scrollY > 20);
     };
 
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -70% 0px',
+      rootMargin: '-40% 0px -40% 0px',
       threshold: 0
     };
 
@@ -84,84 +78,141 @@ const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
-    const sections = ['home', 'about', 'skills', 'experience', 'projects', 'certificates', 'contact'];
+    const sections = ['home', ...navLinks.map(link => link.id)];
     sections.forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', updateIndicator);
-    
-    // Initial update
-    updateIndicator();
-    setTimeout(updateIndicator, 100);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateIndicator);
       sections.forEach(id => {
         const el = document.getElementById(id);
         if (el) observer.unobserve(el);
       });
     };
-  }, [isMobileMenuOpen, activeSection]);
+  }, []);
 
   const isHome = window.location.pathname === '/';
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled glass-panel' : ''}`}>
-      <div className="container nav-container">
-        <a href={isHome ? "#home" : "/#home"} className="logo-container">
-          <img src={profileImage} alt="MR.PREM" className="nav-profile-img" />
-          <span className="logo gradient-text">MR.PREM</span>
-        </a>
-
-        <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
-          <div className="mobile-menu-header-premium">
-            <span className="logo gradient-text">MR.PREM</span>
-            <p className="mobile-subtitle">Software Developer</p>
-          </div>
-
-          <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
-            <FaTimes />
-          </button>
-
-          <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
-            <li style={{"--i": 1}} className={activeSection === 'about' ? 'activeSection' : ''}><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-            <li style={{"--i": 2}} className={activeSection === 'skills' ? 'activeSection' : ''}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-            <li style={{"--i": 3}} className={activeSection === 'experience' ? 'activeSection' : ''}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
-            <li style={{"--i": 4}} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-            <li style={{"--i": 5}} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
-            <li style={{"--i": 6}} className={activeSection === 'contact' ? 'activeSection' : ''}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
-            <div className="nav-indicator-line"></div>
-            
-            <li className="theme-toggle-container desktop-only">
-              <button className="theme-toggle" onClick={(e) => { e.stopPropagation(); toggleTheme(); }} aria-label="Toggle Theme">
-                {theme === 'dark' ? <FaSun /> : <FaMoon />}
-              </button>
-            </li>
-          </ul>
-
-          <div className="mobile-menu-footer-premium" onClick={(e) => e.stopPropagation()}>
-            <div className="mobile-socials">
-              <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer"><FaGithub /></a>
-              <a href="https://linkedin.com/in/mrprem31" target="_blank" rel="noreferrer"><FaLinkedin /></a>
-              <a href="https://instagram.com/mr.prem_31" target="_blank" rel="noreferrer"><FaInstagram /></a>
-              <a href="https://wa.me/917846835010" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
+    <nav className={`navbar-wrapper ${scrolled ? 'navbar-scrolled' : ''}`}>
+      <div className="navbar-capsule">
+        {/* Left: Brand */}
+        <div className="navbar-left">
+          <a href={isHome ? "#home" : "/#home"} className="navbar-brand">
+            <div className="brand-avatar">
+              <img src={profileImage} alt="MR.PREM" />
             </div>
-            <button className="theme-toggle-btn-mobile" onClick={toggleTheme}>
-              {theme === 'dark' ? <><FaSun /> Light Mode</> : <><FaMoon /> Dark Mode</>}
-            </button>
-          </div>
+            <span className="brand-name gradient-text">MR.PREM</span>
+          </a>
         </div>
 
-        <div className="nav-actions">
-          <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(true)}>
+        {/* Center: Desktop Links */}
+        <div className="navbar-center desktop-only">
+          <ul className="nav-menu">
+            {navLinks.map((link) => (
+              <li 
+                key={link.id}
+                onMouseEnter={() => setHoveredSection(link.id)}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <a 
+                  href={isHome ? `#${link.id}` : `/#${link.id}`}
+                  className={`nav-link ${activeSection === link.id ? 'active' : ''}`}
+                >
+                  {link.name}
+                </a>
+                
+                {/* Sliding Highlight */}
+                <AnimatePresence>
+                  {(hoveredSection === link.id || (activeSection === link.id && !hoveredSection)) && (
+                    <motion.div
+                      layoutId="nav-highlight"
+                      className="nav-highlight-pill"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </AnimatePresence>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="navbar-right">
+          <button className="theme-btn desktop-only" onClick={toggleTheme} aria-label="Toggle Theme">
+            {theme === 'dark' ? <FaSun /> : <FaMoon />}
+          </button>
+          <button className="mobile-toggle-btn" onClick={() => setIsMobileMenuOpen(true)}>
             <FaBars />
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              className="mobile-overlay-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div 
+              className="mobile-menu-drawer"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            >
+              <div className="mobile-menu-header">
+                <span className="brand-name gradient-text">MR.PREM</span>
+                <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                  <FaTimes />
+                </button>
+              </div>
+
+              <ul className="mobile-nav-links">
+                {navLinks.map((link, idx) => (
+                  <motion.li 
+                    key={link.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <a 
+                      href={isHome ? `#${link.id}` : `/#${link.id}`} 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={activeSection === link.id ? 'active' : ''}
+                    >
+                      {link.name}
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+
+              <div className="mobile-menu-footer">
+                <div className="mobile-socials">
+                  <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer"><FaGithub /></a>
+                  <a href="https://linkedin.com/in/mrprem31" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+                  <a href="https://instagram.com/mr.prem_31" target="_blank" rel="noreferrer"><FaInstagram /></a>
+                  <a href="https://wa.me/917846835010" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
+                </div>
+                <button className="mobile-theme-btn" onClick={toggleTheme}>
+                  {theme === 'dark' ? <><FaSun /> Light Mode</> : <><FaMoon /> Dark Mode</>}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
