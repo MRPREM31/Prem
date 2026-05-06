@@ -12,7 +12,7 @@ const experiences = [
   {
     title: 'Team Lead',
     company: 'DesiCrew',
-    date: 'Past',
+    date: 'Present',
     description: 'Managed AI data projects and led a remote team. Ensured quality control, detailed reporting, and timely project delivery.',
   }
 ];
@@ -21,7 +21,7 @@ const Experience = () => {
   return (
     <section id="experience" className="section experience-section">
       <div className="container">
-        <motion.h2 
+        <motion.h2
           className="section-title gradient-text"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -33,8 +33,8 @@ const Experience = () => {
 
         <div className="timeline">
           {experiences.map((exp, index) => (
-            <motion.div 
-              key={index} 
+            <motion.div
+              key={index}
               className="timeline-item"
               initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
               whileInView={{ opacity: 1, x: 0 }}

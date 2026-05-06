@@ -58,7 +58,7 @@ const Hero = () => {
           <h3 className="title">
             <TypeAnimation
               sequence={[
-                'B.Tech Student',
+                'B.Tech Student @ NIST University',
                 2000,
                 'Software Developer',
                 2000,
