@@ -43,11 +43,18 @@
   font-size: 1rem;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .skill-list li::before {
   content: '▹';
   color: var(--accent-primary);
-  margin-right: 0.5rem;
   font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.item-icon {
+  display: flex;
+  align-items: center;
+  color: var(--accent-secondary);
+  font-size: 1.1rem;
 }
