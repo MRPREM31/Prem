@@ -444,9 +444,11 @@ const AdminDashboard = () => {
         body: JSON.stringify(skillCategories)
       });
       if (res.ok) {
-        showToast('Skills updated successfully');
+        showToast('Skills updated successfully! Refreshing...');
+        fetchSkills(); // Re-fetch to ensure sync
       } else {
-        showToast('Failed to update skills', 'error');
+        const errorData = await res.json();
+        showToast(errorData.error || 'Failed to update skills', 'error');
       }
     } catch (err) {
       console.error(err);

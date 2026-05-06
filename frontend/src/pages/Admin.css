@@ -358,3 +358,33 @@
 .mt-3 {
   margin-top: 1.5rem;
 }
+
+@media (max-width: 768px) {
+  .category-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .category-inputs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .category-skills-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-skill-item {
+    flex-wrap: wrap;
+  }
+  
+  .skill-name-input {
+    flex: 1;
+    min-width: 60%;
+  }
+  
+  .skill-icon-input {
+    flex: 1;
+    min-width: 30%;
+  }
+}
