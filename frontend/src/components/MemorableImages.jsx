@@ -49,11 +49,17 @@ const MemorableImages = () => {
           ))}
         </div>
 
-        <div className="text-center mt-5">
-          <button className="btn btn-primary" onClick={() => navigate('/memories')}>
+        <motion.div 
+          className="memories-footer"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <button className="btn btn-primary see-all-btn" onClick={() => navigate('/memories')}>
             See All Memories
           </button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

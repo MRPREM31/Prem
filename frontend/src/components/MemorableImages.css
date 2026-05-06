@@ -106,3 +106,24 @@
     grid-template-columns: 1fr;
   }
 }
+.memories-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+  width: 100%;
+}
+
+.see-all-btn {
+  padding: 1rem 3rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+  border-radius: 50px !important;
+  box-shadow: 0 4px 15px var(--shadow-color);
+  transition: all 0.3s ease !important;
+}
+
+.see-all-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px var(--shadow-color);
+}
