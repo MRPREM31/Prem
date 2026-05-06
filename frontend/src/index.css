@@ -1,30 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root, [data-theme="dark"] {
-  --bg-color: #0f172a;
-  --surface-color: rgba(30, 41, 59, 0.7);
-  --surface-hover: rgba(51, 65, 85, 0.8);
-  --text-main: #f8fafc;
+  --bg-color: #0b1120;
+  --surface-color: rgba(15, 23, 42, 0.6);
+  --surface-hover: rgba(30, 41, 59, 0.8);
+  --text-main: #f1f5f9;
   --text-muted: #94a3b8;
   --accent-primary: #3b82f6;
   --accent-secondary: #8b5cf6;
   --accent-tertiary: #14b8a6;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.37);
-  --gradient-text: linear-gradient(to right, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --gradient-text: linear-gradient(135deg, #60a5fa, #a78bfa, #2dd4bf);
+  --blob-1: rgba(59, 130, 246, 0.25);
+  --blob-2: rgba(139, 92, 246, 0.25);
+  --signature-filter: brightness(0) invert(1);
 }
 
 [data-theme="light"] {
   --bg-color: #f8fafc;
-  --surface-color: rgba(255, 255, 255, 0.7);
-  --surface-hover: rgba(241, 245, 249, 0.8);
+  --surface-color: rgba(255, 255, 255, 0.6);
+  --surface-hover: rgba(241, 245, 249, 0.9);
   --text-main: #0f172a;
-  --text-muted: #475569;
+  --text-muted: #64748b;
   --accent-primary: #2563eb;
   --accent-secondary: #7c3aed;
   --accent-tertiary: #0d9488;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --gradient-text: linear-gradient(135deg, #2563eb, #7c3aed, #0d9488);
+  --blob-1: rgba(37, 99, 235, 0.1);
+  --blob-2: rgba(124, 58, 237, 0.1);
+  --signature-filter: brightness(0);
 }
 
 * {
@@ -157,10 +168,10 @@ ul {
 }
 
 .glass-panel {
-  background: var(--surface-color);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--glass-border);
   box-shadow: 0 8px 32px 0 var(--shadow-color);
 }
 
@@ -190,7 +201,7 @@ ul {
   height: 35vw;
   max-width: 40vw;
   max-height: 40vw;
-  background: rgba(59, 130, 246, 0.3);
+  background: var(--blob-1);
   animation-delay: 0s;
   will-change: transform;
 }
@@ -202,7 +213,7 @@ ul {
   height: 35vw;
   max-width: 40vw;
   max-height: 40vw;
-  background: rgba(139, 92, 246, 0.3);
+  background: var(--blob-2);
   animation-delay: -5s;
   will-change: transform;
 }

@@ -15,8 +15,8 @@
 
 .skill-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  border-color: var(--accent-secondary);
 }
 
 .skill-icon {
