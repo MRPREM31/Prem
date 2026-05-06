@@ -119,7 +119,10 @@ const Navbar = () => {
 
         <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
           <div className="mobile-menu-header-premium">
-            <span className="logo gradient-text">MR.PREM</span>
+            <div className="logo-container">
+              <img src={profileImage} alt="MR.PREM" className="nav-profile-img mobile-header-img" />
+              <span className="logo gradient-text">MR.PREM</span>
+            </div>
             <p className="mobile-subtitle">Software Developer</p>
           </div>
 
