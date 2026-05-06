@@ -523,6 +523,89 @@ app.delete('/api/admin/certificates/:id', verifyToken, async (req, res) => {
   }
 });
 
+// --- SKILLS APIs ---
+
+// API: Get All Skills (from settings)
+app.get('/api/skills', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'portfolio_skills')
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows found"
+    
+    if (data) {
+      res.json(JSON.parse(data.value));
+    } else {
+      // Return default skills if none found in DB
+      const defaultSkills = [
+        {
+          title: 'Languages',
+          icon: 'FaCode',
+          skills: [
+            { name: 'C', icon: 'SiC' },
+            { name: 'C++', icon: 'SiCplusplus' },
+            { name: 'Python', icon: 'FaPython' },
+            { name: 'JavaScript', icon: 'FaJs' }
+          ]
+        },
+        {
+          title: 'Technologies',
+          icon: 'FaLaptopCode',
+          skills: [
+            { name: 'HTML', icon: 'FaHtml5' },
+            { name: 'CSS', icon: 'FaCss3Alt' },
+            { name: 'React', icon: 'FaReact' },
+            { name: 'Node.js', icon: 'FaNodeJs' },
+            { name: 'Flask', icon: 'FaFlask' },
+            { name: 'APIs', icon: 'FaPlug' }
+          ]
+        },
+        {
+          title: 'Tools',
+          icon: 'FaTools',
+          skills: [
+            { name: 'GitHub', icon: 'FaGithub' },
+            { name: 'Android Studio', icon: 'FaMobileAlt' },
+            { name: 'Google Apps Script', icon: 'FaFileCode' }
+          ]
+        },
+        {
+          title: 'Other',
+          icon: 'FaDatabase',
+          skills: [
+            { name: 'DBMS', icon: 'FaDatabase' },
+            { name: 'Canva (Design)', icon: 'FaPaintBrush' },
+            { name: 'AI/Data Annotation', icon: 'FaBrain' }
+          ]
+        }
+      ];
+      res.json(defaultSkills);
+    }
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Update Skills (Protected)
+app.post('/api/admin/skills', verifyToken, async (req, res) => {
+  const skillsData = req.body;
+  try {
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'portfolio_skills', value: JSON.stringify(skillsData) });
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Skills updated' });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Global Error Handler (Prevents HTML error pages)
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);

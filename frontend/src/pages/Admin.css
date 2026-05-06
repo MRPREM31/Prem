@@ -279,3 +279,82 @@
 .edit-btn:hover {
   transform: scale(1.2);
 }
+
+.admin-skill-category {
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+.category-inputs {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.category-title-input {
+  flex: 2;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.category-icon-input {
+  flex: 1;
+}
+
+.category-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.admin-skill-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.skill-name-input {
+  flex: 2;
+}
+
+.skill-icon-input {
+  flex: 1;
+}
+
+.delete-btn-small {
+  background: none;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.delete-btn-small:hover {
+  transform: scale(1.2);
+}
+
+.add-skill-btn {
+  height: 100%;
+}
+
+.mt-3 {
+  margin-top: 1.5rem;
+}

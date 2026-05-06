@@ -61,6 +61,10 @@ const AdminDashboard = () => {
   const [editingCert, setEditingCert] = useState(null);
   const [certForm, setCertForm] = useState({ title: '', description: '', date: '', image: null });
 
+  // Skills states
+  const [skillCategories, setSkillCategories] = useState([]);
+  const [skillsLoading, setSkillsLoading] = useState(false);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -84,6 +88,7 @@ const AdminDashboard = () => {
     fetchSignature();
     fetchStats();
     fetchNavbarImage();
+    fetchSkills();
   }, [token, navigate]);
 
   const showToast = (message, type = 'success') => {
@@ -177,6 +182,14 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/navbar-image`);
       const data = await res.json();
       setCurrentNavbarImg(data.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.imageUrl}` : data.imageUrl);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchSkills = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/skills`);
+      const data = await res.json();
+      setSkillCategories(data);
     } catch (err) { console.error(err); }
   };
 
@@ -386,6 +399,63 @@ const AdminDashboard = () => {
     document.body.removeChild(link);
   };
 
+  // --- SKILLS MANAGEMENT ---
+  const handleAddCategory = () => {
+    setSkillCategories([...skillCategories, { title: 'New Category', icon: 'FaCode', skills: [] }]);
+  };
+
+  const handleDeleteCategory = (index) => {
+    if (!window.confirm('Delete this entire category and all its skills?')) return;
+    const newCats = [...skillCategories];
+    newCats.splice(index, 1);
+    setSkillCategories(newCats);
+  };
+
+  const handleUpdateCategory = (index, field, value) => {
+    const newCats = [...skillCategories];
+    newCats[index][field] = value;
+    setSkillCategories(newCats);
+  };
+
+  const handleAddSkill = (catIndex) => {
+    const newCats = [...skillCategories];
+    newCats[catIndex].skills.push({ name: 'New Skill', icon: 'FaCheck' });
+    setSkillCategories(newCats);
+  };
+
+  const handleDeleteSkill = (catIndex, skillIndex) => {
+    const newCats = [...skillCategories];
+    newCats[catIndex].skills.splice(skillIndex, 1);
+    setSkillCategories(newCats);
+  };
+
+  const handleUpdateSkill = (catIndex, skillIndex, field, value) => {
+    const newCats = [...skillCategories];
+    newCats[catIndex].skills[skillIndex][field] = value;
+    setSkillCategories(newCats);
+  };
+
+  const handleSkillsSubmit = async () => {
+    setSkillsLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/skills`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(skillCategories)
+      });
+      if (res.ok) {
+        showToast('Skills updated successfully');
+      } else {
+        showToast('Failed to update skills', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error', 'error');
+    } finally {
+      setSkillsLoading(false);
+    }
+  };
+
   return (
     <div className="portfolio-page">
       <Navbar />
@@ -590,6 +660,73 @@ const AdminDashboard = () => {
                   )) : <tr><td colSpan="3" className="text-center">No certificates found.</td></tr>}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* SKILLS SECTION */}
+          <div className="dashboard-content glass-panel mb-4">
+            <div className="section-header">
+              <h3>Manage Skills</h3>
+              <button className="btn btn-primary btn-sm" onClick={handleAddCategory}>
+                <FaPlus /> Add Category
+              </button>
+            </div>
+            
+            <div className="skills-admin-list">
+              {skillCategories.map((cat, catIdx) => (
+                <div key={catIdx} className="admin-skill-category glass-panel mb-3">
+                  <div className="category-header">
+                    <div className="category-inputs">
+                      <input 
+                        type="text" 
+                        value={cat.title} 
+                        onChange={(e) => handleUpdateCategory(catIdx, 'title', e.target.value)}
+                        className="form-input category-title-input"
+                        placeholder="Category Title"
+                      />
+                      <input 
+                        type="text" 
+                        value={cat.icon} 
+                        onChange={(e) => handleUpdateCategory(catIdx, 'icon', e.target.value)}
+                        className="form-input category-icon-input"
+                        placeholder="Icon (e.g. FaCode)"
+                      />
+                    </div>
+                    <button onClick={() => handleDeleteCategory(catIdx)} className="delete-btn"><FaTrash /></button>
+                  </div>
+                  
+                  <div className="category-skills-grid mt-3">
+                    {cat.skills.map((skill, skillIdx) => (
+                      <div key={skillIdx} className="admin-skill-item">
+                        <input 
+                          type="text" 
+                          value={skill.name} 
+                          onChange={(e) => handleUpdateSkill(catIdx, skillIdx, 'name', e.target.value)}
+                          className="form-input skill-name-input"
+                          placeholder="Skill Name"
+                        />
+                        <input 
+                          type="text" 
+                          value={skill.icon} 
+                          onChange={(e) => handleUpdateSkill(catIdx, skillIdx, 'icon', e.target.value)}
+                          className="form-input skill-icon-input"
+                          placeholder="Icon (e.g. FaJs)"
+                        />
+                        <button onClick={() => handleDeleteSkill(catIdx, skillIdx)} className="delete-btn-small"><FaTrash /></button>
+                      </div>
+                    ))}
+                    <button className="btn btn-outline btn-sm add-skill-btn" onClick={() => handleAddSkill(catIdx)}>
+                      <FaPlus /> Add Skill
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="form-actions mt-3">
+              <button onClick={handleSkillsSubmit} className="btn btn-primary" disabled={skillsLoading}>
+                {skillsLoading ? 'Saving...' : 'Save All Skills Changes'}
+              </button>
             </div>
           </div>
 

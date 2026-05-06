@@ -1,57 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FaCode, FaLaptopCode, FaTools, FaDatabase,
-  FaPython, FaJs, FaHtml5, FaCss3Alt, FaReact, FaNodeJs, FaFlask, FaPlug,
-  FaGithub, FaMobileAlt, FaPaintBrush, FaBrain, FaFileCode
-} from 'react-icons/fa';
-import { SiC, SiCplusplus } from 'react-icons/si';
+import * as FaIcons from 'react-icons/fa';
+import * as SiIcons from 'react-icons/si';
 import './Skills.css';
 
-const skillCategories = [
-  {
-    title: 'Languages',
-    icon: <FaCode />,
-    skills: [
-      { name: 'C', icon: <SiC /> },
-      { name: 'C++', icon: <SiCplusplus /> },
-      { name: 'Python', icon: <FaPython /> },
-      { name: 'JavaScript', icon: <FaJs /> }
-    ]
-  },
-  {
-    title: 'Technologies',
-    icon: <FaLaptopCode />,
-    skills: [
-      { name: 'HTML', icon: <FaHtml5 /> },
-      { name: 'CSS', icon: <FaCss3Alt /> },
-      { name: 'React', icon: <FaReact /> },
-      { name: 'Node.js', icon: <FaNodeJs /> },
-      { name: 'Flask', icon: <FaFlask /> },
-      { name: 'APIs', icon: <FaPlug /> }
-    ]
-  },
-  {
-    title: 'Tools',
-    icon: <FaTools />,
-    skills: [
-      { name: 'GitHub', icon: <FaGithub /> },
-      { name: 'Android Studio', icon: <FaMobileAlt /> },
-      { name: 'Google Apps Script', icon: <FaFileCode /> }
-    ]
-  },
-  {
-    title: 'Other',
-    icon: <FaDatabase />,
-    skills: [
-      { name: 'DBMS', icon: <FaDatabase /> },
-      { name: 'Canva (Design)', icon: <FaPaintBrush /> },
-      { name: 'AI/Data Annotation', icon: <FaBrain /> }
-    ]
-  }
-];
+const IconRenderer = ({ iconName }) => {
+  const IconComponent = FaIcons[iconName] || SiIcons[iconName];
+  return IconComponent ? <IconComponent /> : <FaIcons.FaCode />;
+};
 
 const Skills = () => {
+  const [skillCategories, setSkillCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/skills`);
+        const data = await res.json();
+        setSkillCategories(data);
+      } catch (err) {
+        console.error('Error fetching skills:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  if (loading) return null;
+
   return (
     <section id="skills" className="section skills-section">
       <div className="container">
@@ -76,13 +54,15 @@ const Skills = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <div className="skill-icon">
-                {category.icon}
+                <IconRenderer iconName={category.icon} />
               </div>
               <h3>{category.title}</h3>
               <ul className="skill-list">
                 {category.skills.map((skill, i) => (
                   <li key={i}>
-                    <span className="item-icon">{skill.icon}</span> {skill.name}
+                    <span className="item-icon">
+                      <IconRenderer iconName={skill.icon} />
+                    </span> {skill.name}
                   </li>
                 ))}
               </ul>
