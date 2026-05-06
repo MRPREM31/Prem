@@ -303,10 +303,12 @@
     visibility: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: 2rem;
+    padding: 5rem 2rem 3rem;
     box-sizing: border-box;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .nav-links-wrapper.open {
@@ -387,8 +389,8 @@
   }
 
   .mobile-header-img {
-    width: 45px !important;
-    height: 45px !important;
+    width: 32px !important;
+    height: 32px !important;
     opacity: 1 !important;
     filter: none !important;
     position: relative !important;
