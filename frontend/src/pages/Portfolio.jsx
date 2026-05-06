@@ -7,6 +7,7 @@ import Experience from '../components/Experience'
 import Projects from '../components/Projects'
 import Certificates from '../components/Certificates'
 import Journey from '../components/Journey'
+import MemorableImages from '../components/MemorableImages'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 
@@ -25,6 +26,7 @@ const Portfolio = () => {
         <Projects />
         <Certificates />
         <Journey />
+        <MemorableImages />
         <Contact />
       </main>
       <Footer />

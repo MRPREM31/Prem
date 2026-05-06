@@ -5,6 +5,7 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import CertificateDetail from './pages/CertificateDetail'
 import ProjectDetail from './pages/ProjectDetail'
+import MemoriesPage from './pages/MemoriesPage'
 import './App.css'
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/dashboard" element={<AdminDashboard />} />
         <Route path="/certificate/:id" element={<CertificateDetail />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/memories" element={<MemoriesPage />} />
       </Routes>
     </>
   )

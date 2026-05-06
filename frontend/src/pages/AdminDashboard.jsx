@@ -61,6 +61,12 @@ const AdminDashboard = () => {
   const [editingCert, setEditingCert] = useState(null);
   const [certForm, setCertForm] = useState({ title: '', description: '', date: '', image: null });
 
+  // Memorable Images states
+  const [memorableImages, setMemorableImages] = useState([]);
+  const [showMemImageForm, setShowMemImageForm] = useState(false);
+  const [memImageForm, setMemImageForm] = useState({ title: '', image: null });
+  const [memImageLoading, setMemImageLoading] = useState(false);
+
   // Skills states
   const [skillCategories, setSkillCategories] = useState([]);
   const [skillsLoading, setSkillsLoading] = useState(false);
@@ -89,6 +95,7 @@ const AdminDashboard = () => {
     fetchStats();
     fetchNavbarImage();
     fetchSkills();
+    fetchMemorableImages();
   }, [token, navigate]);
 
   const showToast = (message, type = 'success') => {
@@ -190,6 +197,14 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/skills`);
       const data = await res.json();
       setSkillCategories(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchMemorableImages = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images?t=${Date.now()}`);
+      const data = await res.json();
+      setMemorableImages(data);
     } catch (err) { console.error(err); }
   };
 
@@ -327,6 +342,56 @@ const AdminDashboard = () => {
         fetchCertificates();
       } else {
         showToast('Failed to delete certificate', 'error');
+      }
+    } catch (err) { 
+      console.error(err);
+      showToast('Network error', 'error');
+    }
+  };
+
+  const handleMemImageSubmit = async (e) => {
+    e.preventDefault();
+    if (!memImageForm.image) return showToast('Please select an image', 'error');
+    setMemImageLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', memImageForm.title);
+      formData.append('image', memImageForm.image);
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/memorable-images`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      if (res.ok) {
+        fetchMemorableImages();
+        setShowMemImageForm(false);
+        setMemImageForm({ title: '', image: null });
+        showToast('Memorable image uploaded');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to upload image', 'error');
+      }
+    } catch (err) { 
+      console.error(err);
+      showToast('Network error', 'error');
+    } finally {
+      setMemImageLoading(false);
+    }
+  };
+
+  const deleteMemImage = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this image?')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/memorable-images/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Image deleted');
+        fetchMemorableImages();
+      } else {
+        showToast('Failed to delete image', 'error');
       }
     } catch (err) { 
       console.error(err);
@@ -660,6 +725,51 @@ const AdminDashboard = () => {
                       </td>
                     </tr>
                   )) : <tr><td colSpan="3" className="text-center">No certificates found.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* MEMORABLE IMAGES SECTION */}
+          <div className="dashboard-content glass-panel mb-4">
+            <div className="section-header">
+              <h3>Memorable Images</h3>
+              <button className="btn btn-primary btn-sm" onClick={() => { setShowMemImageForm(!showMemImageForm); setMemImageForm({ title: '', image: null }); }}>
+                <FaPlus /> Add Memory
+              </button>
+            </div>
+
+            {showMemImageForm && (
+              <form className="project-form" onSubmit={handleMemImageSubmit}>
+                <input type="text" placeholder="Image Title" value={memImageForm.title} onChange={e => setMemImageForm({...memImageForm, title: e.target.value})} required className="form-input" />
+                <div className="form-row">
+                  <input type="file" accept="image/*" onChange={e => setMemImageForm({...memImageForm, image: e.target.files[0]})} required className="form-input" />
+                </div>
+                <div className="form-actions">
+                  <button type="submit" className="btn btn-primary" disabled={memImageLoading}>
+                    {memImageLoading ? 'Uploading...' : 'Upload Image'}
+                  </button>
+                  <button type="button" className="btn btn-outline" onClick={() => setShowMemImageForm(false)}>Cancel</button>
+                </div>
+              </form>
+            )}
+
+            <div className="table-responsive">
+              <table className="admin-table">
+                <thead>
+                  <tr><th>Title</th><th>Upload Date & Time</th><th>Type</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  {memorableImages.length > 0 ? memorableImages.map(img => (
+                    <tr key={img.id}>
+                      <td>{img.title}</td>
+                      <td>{new Date(img.upload_date).toLocaleString()}</td>
+                      <td style={{textTransform: 'capitalize'}}>{img.aspect_ratio}</td>
+                      <td className="actions-cell">
+                        <button onClick={() => deleteMemImage(img.id)} className="delete-btn"><FaTrash /></button>
+                      </td>
+                    </tr>
+                  )) : <tr><td colSpan="4" className="text-center">No memorable images found.</td></tr>}
                 </tbody>
               </table>
             </div>

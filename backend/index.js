@@ -606,6 +606,71 @@ app.post('/api/admin/skills', verifyToken, async (req, res) => {
   }
 });
 
+// --- MEMORABLE IMAGES APIs ---
+
+// API: Get All Memorable Images
+app.get('/api/memorable-images', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('memorable_images')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Create Memorable Image (Protected)
+app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), async (req, res) => {
+  const { title } = req.body;
+  if (!req.file) return res.status(400).json({ error: 'Image is required' });
+  
+  const imageUrl = req.file.path; // Cloudinary URL
+  
+  // Note: width and height are available on req.file in multer-storage-cloudinary
+  const width = req.file.width;
+  const height = req.file.height;
+  const aspectRatio = (width && height) ? (width >= height ? 'landscape' : 'portrait') : 'landscape';
+  
+  try {
+    const { data, error } = await supabase
+      .from('memorable_images')
+      .insert([{ 
+        title, 
+        image_url: imageUrl, 
+        aspect_ratio: aspectRatio,
+        upload_date: new Date().toISOString() 
+      }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, id: (data && data.length > 0) ? data[0].id : null });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Delete Memorable Image (Protected)
+app.delete('/api/admin/memorable-images/:id', verifyToken, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('memorable_images')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Global Error Handler (Prevents HTML error pages)
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
