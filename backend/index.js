@@ -631,16 +631,18 @@ app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), asy
   
   const imageUrl = req.file.path; // Cloudinary URL
   
-  // Note: width and height are available on req.file in multer-storage-cloudinary
-  const width = req.file.width;
-  const height = req.file.height;
-  const aspectRatio = (width && height) ? (width >= height ? 'landscape' : 'portrait') : 'landscape';
+  // Note: width and height are available on req.file in some multer-storage-cloudinary versions
+  // We handle it safely here.
+  let aspectRatio = 'landscape';
+  if (req.file.width && req.file.height) {
+    aspectRatio = req.file.width >= req.file.height ? 'landscape' : 'portrait';
+  }
   
   try {
     const { data, error } = await supabase
       .from('memorable_images')
       .insert([{ 
-        title, 
+        title: title || 'Untitled Memory', 
         image_url: imageUrl, 
         aspect_ratio: aspectRatio,
         upload_date: new Date().toISOString() 
@@ -651,7 +653,7 @@ app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), asy
     res.status(201).json({ success: true, id: (data && data.length > 0) ? data[0].id : null });
   } catch (error) {
     console.error('Supabase Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: `Database Error: ${error.message}` });
   }
 });
 
