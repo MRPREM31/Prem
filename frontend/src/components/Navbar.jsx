@@ -84,7 +84,7 @@ const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
-    const sections = ['home', 'about', 'skills', 'experience', 'projects', 'journey', 'certificates', 'contact'];
+    const sections = ['home', 'about', 'skills', 'experience', 'projects', 'certificates', 'journey', 'contact'];
     sections.forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
@@ -129,11 +129,11 @@ const Navbar = () => {
 
           <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
             <li style={{ "--i": 1 }} className={activeSection === 'about' ? 'activeSection' : ''}><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-            <li style={{ "--i": 2 }} className={activeSection === 'journey' ? 'activeSection' : ''}><a href={isHome ? "#journey" : "/#journey"} onClick={() => setIsMobileMenuOpen(false)}>My Journey</a></li>
-            <li style={{ "--i": 3 }} className={activeSection === 'skills' ? 'activeSection' : ''}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-            <li style={{ "--i": 4 }} className={activeSection === 'experience' ? 'activeSection' : ''}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
-            <li style={{ "--i": 5 }} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-            <li style={{ "--i": 6 }} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+            <li style={{ "--i": 2 }} className={activeSection === 'skills' ? 'activeSection' : ''}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
+            <li style={{ "--i": 3 }} className={activeSection === 'experience' ? 'activeSection' : ''}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
+            <li style={{ "--i": 4 }} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+            <li style={{ "--i": 5 }} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+            <li style={{ "--i": 6 }} className={activeSection === 'journey' ? 'activeSection' : ''}><a href={isHome ? "#journey" : "/#journey"} onClick={() => setIsMobileMenuOpen(false)}>My Journey</a></li>
             <li style={{ "--i": 7 }} className={activeSection === 'contact' ? 'activeSection' : ''}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
             <div className="nav-indicator-line"></div>
 
