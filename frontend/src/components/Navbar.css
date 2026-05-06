@@ -140,6 +140,42 @@
   color: var(--accent-primary);
 }
 
+.nav-resource-link a {
+  opacity: 0.8;
+  font-size: 0.85rem !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 1rem;
+}
+
+[data-theme="light"] .nav-resource-link a {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-resource-link a:hover {
+  opacity: 1;
+}
+
+@media (max-width: 1200px) {
+  .nav-resource-link {
+    display: none; /* Hide these on smaller desktop screens to prevent crowding */
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-resource-link {
+    display: block !important; /* Show them in the mobile menu */
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
+  }
+  
+  .nav-resource-link a {
+    border-left: none;
+    padding-left: 0;
+    font-size: 1rem !important;
+  }
+}
+
 /* Navbar Indicator Logic */
 .nav-links {
   position: relative;

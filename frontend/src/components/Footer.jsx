@@ -38,6 +38,9 @@ const Footer = () => {
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#certificates">Certificates</a></li>
+                <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noreferrer">QCDS Solutions</a></li>
+                <li><a href="https://www.quantumcoderstechlab.codes/" target="_blank" rel="noreferrer">QCTL Home</a></li>
+                <li><a href="/admin">Admin Portal</a></li>
               </ul>
             </div>
 

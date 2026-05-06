@@ -134,6 +134,13 @@ const Navbar = () => {
             <li style={{"--i": 4}} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
             <li style={{"--i": 5}} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
             <li style={{"--i": 6}} className={activeSection === 'contact' ? 'activeSection' : ''}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+            
+            {/* Professional Resources Dropdown/Links */}
+            <li style={{"--i": 7}} className="nav-resource-link"><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noreferrer">QCDS Solutions</a></li>
+            <li style={{"--i": 8}} className="nav-resource-link"><a href="https://www.quantumcoderstechlab.codes/" target="_blank" rel="noreferrer">QCTL Tech Lab</a></li>
+            <li style={{"--i": 9}} className="nav-resource-link"><a href="https://www.quantumcoderstechlab.codes/qcds_items/profile.html?uid=9827775230" target="_blank" rel="noreferrer">Digital Identity</a></li>
+            <li style={{"--i": 10}} className="nav-resource-link"><a href="/admin" target="_blank" rel="noreferrer">Admin Portal</a></li>
+            
             <div className="nav-indicator-line"></div>
             
             <li className="theme-toggle-container desktop-only">
