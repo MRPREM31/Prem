@@ -130,6 +130,21 @@ const ChatBot = () => {
   const handleContactStep = async (input) => {
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    // Intelligence: Detect if user wants to cancel or expresses refusal
+    const lowerInput = input.toLowerCase().trim();
+    const cancellationPhrases = ['no', 'cancel', 'stop', 'exit', 'not now', 'nevermind', 'not need', 'not really', 'not today', 'dont want'];
+    
+    if (cancellationPhrases.includes(lowerInput) || (lowerInput.length < 4 && cancellationPhrases.some(p => lowerInput.includes(p)))) {
+      setContactStep(null);
+      setContactData({ name: '', email: '', message: '' });
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: "SYSTEM_RECOVERY: Understood. Contact flow cancelled. What other information can I provide? I can discuss Prem's **Technical Skills**, **Featured Projects**, or his **Career Journey**.",
+        time: currentTime
+      }]);
+      return;
+    }
 
     if (contactStep === 'name') {
       setContactData(prev => ({ ...prev, name: input }));
