@@ -32,12 +32,19 @@ const Footer = () => {
             </div>
             
             <div className="footer-links-section">
-              <h4>Navigation</h4>
+              <h4>Quick Links</h4>
               <ul>
+                {/* Internal Section Links */}
                 <li><a href="#about">About</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#certificates">Certificates</a></li>
+                
+                {/* External Professional Links */}
+                <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noopener noreferrer">QCDS</a></li>
+                <li><a href="https://www.quantumcoderstechlab.codes/qcds_items/profile.html?uid=9827775230" target="_blank" rel="noopener noreferrer">QCDS ID Card</a></li>
+                <li><a href="https://www.quantumcoderstechlab.codes/" target="_blank" rel="noopener noreferrer">QCTL</a></li>
+                <li><a href="/prem-login-2026" target="_blank" rel="noopener noreferrer">Admin Login</a></li>
               </ul>
             </div>
 
