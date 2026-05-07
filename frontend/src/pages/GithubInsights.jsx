@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 import { 
   FaGithub, FaStar, FaCodeBranch, FaUsers, FaBook, FaChartLine, 
-  FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode
+  FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode, FaThLarge
 } from 'react-icons/fa';
 import { FiActivity, FiGitPullRequest } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -235,7 +235,7 @@ const GithubInsights = () => {
           {/* Top Repositories */}
           <div className="repos-section">
             <div className="section-header">
-              <Layout className="text-primary" />
+              <FaThLarge className="text-primary" />
               <h2>Top Repositories</h2>
             </div>
             <div className="repo-grid">
