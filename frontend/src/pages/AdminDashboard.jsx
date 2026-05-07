@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
-import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus } from 'react-icons/fa';
+import { useNavigate, Link } from 'react-router-dom';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { RESUME_LINK } from '../config';
@@ -9,6 +9,8 @@ import './Admin.css';
 
 const AdminDashboard = () => {
   const [messages, setMessages] = useState([]);
+  const [totalMessages, setTotalMessages] = useState(0);
+  const [selectedMessage, setSelectedMessage] = useState(null);
   
   // Image & Resume states
   const [selectedImage, setSelectedImage] = useState(null);
@@ -130,10 +132,14 @@ const AdminDashboard = () => {
   // --- FETCH DATA ---
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+      // Fetch top 10 for dashboard
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/messages?limit=10`, { 
+        headers: { 'Authorization': `Bearer ${token}` } 
+      });
       if (res.status === 403 || res.status === 401) return handleLogout();
       const data = await res.json();
-      setMessages(data);
+      setMessages(data.messages || []);
+      setTotalMessages(data.totalCount || 0);
     } catch (err) { console.error(err); }
   };
 
@@ -1121,35 +1127,80 @@ const AdminDashboard = () => {
           {/* MESSAGES SECTION */}
           <div id="admin-messages" className="dashboard-content glass-panel">
             <div className="section-header contact-header">
-              <h3 className="section-title-small" style={{ margin: 0 }}>Contact Submissions</h3>
+              <div>
+                <h3 className="section-title-small" style={{ margin: 0 }}>Recent Contact Submissions</h3>
+                <p className="text-muted small">Showing latest 10 of {totalMessages} messages</p>
+              </div>
               <div style={{ display: 'flex', gap: '10px' }}>
+                <Link to="/all-messages" className="btn btn-outline btn-sm">See All Messages</Link>
                 <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
                   Download CSV
                 </button>
-                <a href="https://docs.google.com/spreadsheets/d/1nkRm0hxYI0L8hNzEYPt_Dv4w39xKEyMRte-KGOtBRV8/edit?gid=1786163301#gid=1786163301" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
-                  Open Google Sheet
-                </a>
               </div>
             </div>
             <div className="table-responsive">
               <table className="admin-table">
                 <thead>
-                  <tr><th>Date & Time</th><th>Name</th><th>Email</th><th>Message</th><th>Action</th></tr>
+                  <tr><th>Date & Time</th><th>Name</th><th>Email</th><th>Message Preview</th><th>Action</th></tr>
                 </thead>
                 <tbody>
                   {messages.length > 0 ? messages.map(msg => (
-                    <tr key={msg.id}>
-                      <td>{new Date(msg.date).toLocaleString()}</td>
+                    <tr key={msg.id} className="message-row">
+                      <td>{new Date(msg.date).toLocaleDateString()}</td>
                       <td>{msg.name}</td>
-                      <td><a href={`mailto:${msg.email}`}>{msg.email}</a></td>
-                      <td className="msg-cell">{msg.message}</td>
-                      <td><button onClick={() => deleteMessage(msg.id)} className="delete-btn"><FaTrash /></button></td>
+                      <td><a href={`mailto:${msg.email}`} className="email-link">{msg.email}</a></td>
+                      <td className="msg-cell">
+                        {msg.message.split(' ').slice(0, 4).join(' ')}{msg.message.split(' ').length > 4 ? '...' : ''}
+                      </td>
+                      <td className="actions-cell">
+                        <button onClick={() => setSelectedMessage(msg)} className="edit-btn" title="View Details"><FaEye /></button>
+                        <button onClick={() => deleteMessage(msg.id)} className="delete-btn" title="Delete"><FaTrash /></button>
+                      </td>
                     </tr>
                   )) : <tr><td colSpan="5" className="text-center">No messages found.</td></tr>}
                 </tbody>
               </table>
             </div>
           </div>
+
+          {/* MESSAGE DETAIL MODAL */}
+          {selectedMessage && (
+            <div className="modal-overlay" onClick={() => setSelectedMessage(null)}>
+              <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>Message Details</h3>
+                  <button className="close-btn" onClick={() => setSelectedMessage(null)}>&times;</button>
+                </div>
+                <div className="modal-body">
+                  <div className="detail-item">
+                    <label><FaUser /> From:</label>
+                    <p>{selectedMessage.name} ({selectedMessage.email})</p>
+                  </div>
+                  <div className="detail-item">
+                    <label><FaClock /> Received On:</label>
+                    <p>{new Date(selectedMessage.date).toLocaleString()}</p>
+                  </div>
+                  <div className="detail-item mt-3">
+                    <label>Full Message:</label>
+                    <div className="full-message-box">
+                      {selectedMessage.message}
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <a 
+                    href={`mailto:${selectedMessage.email}?subject=Reply from Prem Prasad Pradhan&body=Hello ${selectedMessage.name}, regarding your message: "${selectedMessage.message.substring(0, 50)}..."\\n\\n`}
+                    className="btn btn-primary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaReply /> Reply via Gmail
+                  </a>
+                  <button className="btn btn-outline" onClick={() => setSelectedMessage(null)}>Close</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

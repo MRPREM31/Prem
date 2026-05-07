@@ -505,13 +505,34 @@ app.post('/api/admin/change-password', verifyToken, async (req, res) => {
   }
 });
 
-// API: Get Messages (Protected)
+// API: Get Messages (Protected, with Pagination)
 app.get('/api/admin/messages', verifyToken, async (req, res) => {
+  const { page = 1, limit = 50 } = req.query;
+  const offset = (page - 1) * limit;
+
+  try {
+    const { data, error, count } = await supabase
+      .from('messages')
+      .select('*', { count: 'exact' })
+      .order('id', { ascending: false })
+      .range(offset, offset + parseInt(limit) - 1);
+
+    if (error) throw error;
+    res.json({ messages: data, totalCount: count });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Get Message Detail (Protected)
+app.get('/api/admin/messages/detail/:id', verifyToken, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('messages')
       .select('*')
-      .order('id', { ascending: false });
+      .eq('id', req.params.id)
+      .single();
 
     if (error) throw error;
     res.json(data);
@@ -522,7 +543,7 @@ app.get('/api/admin/messages', verifyToken, async (req, res) => {
 });
 
 // API: Delete Message (Protected)
-app.get('/api/admin/messages/:id', verifyToken, async (req, res) => {
+app.delete('/api/admin/messages/:id', verifyToken, async (req, res) => {
   try {
     const { error } = await supabase
       .from('messages')
