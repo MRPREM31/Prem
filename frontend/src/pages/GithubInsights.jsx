@@ -158,14 +158,16 @@ const GithubInsights = () => {
               <h2>Contribution Calendar</h2>
             </div>
             <div className="calendar-container">
-              <GitHubCalendar 
-                username={data.user.login} 
-                theme={{
-                  light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
-                  dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
-                }}
-                colorScheme="dark"
-              />
+              <div className="calendar-scroll-wrapper">
+                <GitHubCalendar 
+                  username={data.user.login} 
+                  theme={{
+                    light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                    dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+                  }}
+                  colorScheme="dark"
+                />
+              </div>
             </div>
           </motion.div>
 
@@ -180,7 +182,7 @@ const GithubInsights = () => {
               <h2>Tech Breakdown</h2>
             </div>
             <div className="chart-container">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="99%" height={300}>
                 <PieChart>
                   <Pie
                     data={data.languageStats}

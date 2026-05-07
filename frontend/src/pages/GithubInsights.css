@@ -102,6 +102,9 @@
 .contribution-section {
   grid-column: span 2;
   padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .section-header {
@@ -109,6 +112,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .section-header h2 {
@@ -117,8 +121,15 @@
 }
 
 .calendar-container {
+  width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 1rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.calendar-scroll-wrapper {
+  min-width: 800px;
 }
 
 /* Charts Section */
@@ -327,10 +338,6 @@
   }
   .calendar-container {
     padding: 0.5rem 0;
-  }
-  /* Force calendar to scroll instead of breaking layout */
-  .calendar-container > div {
-    min-width: 750px;
   }
 }
 
