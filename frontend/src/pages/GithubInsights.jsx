@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import GitHubCalendar from 'react-github-calendar';
+import { GitHubCalendar } from 'react-github-calendar';
 import { motion } from 'framer-motion';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
