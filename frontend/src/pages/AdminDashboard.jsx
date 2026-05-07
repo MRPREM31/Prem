@@ -667,6 +667,11 @@ const AdminDashboard = () => {
               <p className="text-muted">Manage your portfolio with ease.</p>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
+              {isSuperAdmin && (
+                <button onClick={() => navigate('/personal-vault')} className="btn btn-primary">
+                  Access Personal Data
+                </button>
+              )}
               <button onClick={() => setShowPasswordForm(!showPasswordForm)} className="btn btn-outline">
                 {showPasswordForm ? 'Cancel' : 'Change Password'}
               </button>

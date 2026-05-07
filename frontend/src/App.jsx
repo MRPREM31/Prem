@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import CertificateDetail from './pages/CertificateDetail'
 import ProjectDetail from './pages/ProjectDetail'
 import MemoriesPage from './pages/MemoriesPage'
+import PersonalVault from './pages/PersonalVault'
 import './App.css'
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         {/* Secure Admin Routes */}
         <Route path="/prem-login-2026" element={<AdminLogin />} />
         <Route path="/prem-dashboard-2026" element={<AdminDashboard />} />
+        <Route path="/personal-vault" element={<PersonalVault />} />
         
         {/* Redirect old admin routes to home */}
         <Route path="/admin" element={<Navigate to="/" replace />} />

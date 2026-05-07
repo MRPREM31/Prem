@@ -254,6 +254,96 @@ app.post('/api/admin/reset-admin-password', verifyToken, async (req, res) => {
   }
 });
 
+// --- PERSONAL VAULT SYSTEM (SUPER ADMIN ONLY) ---
+
+// Middleware for Vault Access
+const verifySuperAdmin = (req, res, next) => {
+  if (req.user && req.user.email === 'mr.prem2006@gmail.com') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access Denied: Personal Vault is only for the Primary Super Admin.' });
+  }
+};
+
+// API: Get Vault Files
+app.get('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('personal_files')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Add Vault File
+app.post('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, res) => {
+  const { title, file_url, category } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('personal_files')
+      .insert([{ title, file_url, category: category || 'Other' }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Update Vault File
+app.put('/api/admin/vault-files/:id', verifyToken, verifySuperAdmin, async (req, res) => {
+  const { title, file_url, category } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('personal_files')
+      .update({ title, file_url, category })
+      .eq('id', req.params.id)
+      .select();
+
+    if (error) throw error;
+    res.json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Delete Vault File
+app.delete('/api/admin/vault-files/:id', verifyToken, verifySuperAdmin, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('personal_files')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Securely Open Vault File (Redirect)
+app.get('/api/admin/open-vault-file/:id', verifyToken, verifySuperAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('personal_files')
+      .select('file_url')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error || !data) throw new Error('File not found');
+    res.redirect(data.file_url);
+  } catch (error) {
+    res.status(404).send('File not found or unauthorized.');
+  }
+});
+
 // --- FORGOT PASSWORD & OTP SYSTEM ---
 
 // API: Request Password Reset OTP
