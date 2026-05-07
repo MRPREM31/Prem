@@ -25,7 +25,7 @@ const AdminLogin = () => {
       
       if (data.auth) {
         localStorage.setItem('adminToken', data.token);
-        navigate('/dashboard');
+        navigate('/prem-dashboard-2026');
       } else {
         setError(data.error || 'Invalid login');
       }

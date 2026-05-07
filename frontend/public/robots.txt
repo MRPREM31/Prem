@@ -4,6 +4,8 @@ Allow: /
 # Block indexing of administrative areas
 Disallow: /admin
 Disallow: /dashboard
+Disallow: /prem-login-2026
+Disallow: /prem-dashboard-2026
 
 # Link to the sitemap
 Sitemap: https://mrprem.in/sitemap.xml

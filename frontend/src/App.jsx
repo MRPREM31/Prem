@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { useEffect } from 'react'
 import Portfolio from './pages/Portfolio'
@@ -36,11 +36,21 @@ function App() {
       
       <Routes>
         <Route path="/" element={<Portfolio />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/dashboard" element={<AdminDashboard />} />
+        
+        {/* Secure Admin Routes */}
+        <Route path="/prem-login-2026" element={<AdminLogin />} />
+        <Route path="/prem-dashboard-2026" element={<AdminDashboard />} />
+        
+        {/* Redirect old admin routes to home */}
+        <Route path="/admin" element={<Navigate to="/" replace />} />
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+        
         <Route path="/certificate/:id" element={<CertificateDetail />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/memories" element={<MemoriesPage />} />
+        
+        {/* Catch-all redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HelmetProvider>
   )

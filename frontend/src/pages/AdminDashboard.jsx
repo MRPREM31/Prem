@@ -73,7 +73,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate('/admin');
+      navigate('/prem-login-2026');
       return;
     }
 
@@ -102,7 +102,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
-    navigate('/admin');
+    navigate('/prem-login-2026');
   };
 
   // --- FETCH DATA ---
