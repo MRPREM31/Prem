@@ -99,10 +99,18 @@ app.post('/api/admin/login', async (req, res) => {
       .eq('email', email)
       .single();
 
-    if (error || !admin) {
-      // Fallback: Check if this is the bootstrap login using ENV variables if table is empty
-      const { count } = await supabase.from('admins').select('*', { count: 'exact', head: true });
-      if (count === 0 && email === 'mr.prem2006@gmail.com' && password === ADMIN_PASSWORD) {
+    if (error) {
+      // Check if the table even exists (PostgREST error code 42P01 is "undefined_table")
+      if (error.code === '42P01') {
+        return res.status(500).json({ 
+          error: 'Database Error: The "admins" table does not exist in Supabase. Please create it to enable the new security system.' 
+        });
+      }
+
+      // If table is empty, try bootstrap login
+      const { count, error: countError } = await supabase.from('admins').select('*', { count: 'exact', head: true });
+      
+      if (!countError && count === 0 && email === 'mr.prem2006@gmail.com' && password === ADMIN_PASSWORD) {
         // First time setup: Auto-create the super admin
         const hashedPassword = await bcrypt.hash(password, 10);
         await supabase.from('admins').insert([{ email, password: hashedPassword, is_super_admin: true }]);
@@ -110,7 +118,10 @@ app.post('/api/admin/login', async (req, res) => {
         const token = jwt.sign({ id: email, email, isSuperAdmin: true }, JWT_SECRET, { expiresIn: '8h' });
         return res.json({ auth: true, token, email });
       }
-      return res.status(401).json({ auth: false, error: 'Unauthorized Access: Email not in whitelist' });
+
+      if (!admin) {
+        return res.status(401).json({ auth: false, error: 'Unauthorized Access: Email not in whitelist' });
+      }
     }
 
     // 2. Verify password
