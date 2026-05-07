@@ -37,8 +37,18 @@ function App() {
     };
     fetchFavicon();
     
-    // Track Visitor
-    fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { method: 'POST' })
+    // Track Visitor with Session ID
+    let sessionId = sessionStorage.getItem('visitor_session_id');
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).substring(2, 15) + Date.now();
+      sessionStorage.setItem('visitor_session_id', sessionId);
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId })
+    })
       .catch(err => console.error('Visitor tracking failed:', err));
   }, []);
 

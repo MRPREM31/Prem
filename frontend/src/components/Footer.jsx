@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import './Footer.css';
 
@@ -20,25 +20,45 @@ const Footer = () => {
       .then(res => res.json())
       .then(data => setVisitorCount(data.totalVisitors))
       .catch(err => console.error('Error fetching visitor stats:', err));
-  }, []);
+
+    // Real-time update polling (Every 30 seconds)
+    const interval = setInterval(() => {
+      fetch(`${import.meta.env.VITE_API_URL}/api/visitor-stats`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.totalVisitors !== visitorCount) {
+            setVisitorCount(data.totalVisitors);
+          }
+        })
+        .catch(err => console.error('Error polling visitor stats:', err));
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [visitorCount]);
 
   const AnimatedCounter = ({ end }) => {
-    const [count, setCount] = useState(1);
+    const [count, setCount] = useState(end > 10 ? end - 5 : 1);
+    const prevEnd = useRef(end);
     
     useEffect(() => {
-      let start = 1;
+      let start = count;
+      const target = end;
+      if (start === target) return;
+
       const duration = 2000;
-      const increment = Math.max(1, Math.floor(end / (duration / 16)));
+      const stepTime = 16;
+      const totalSteps = duration / stepTime;
+      const increment = (target - start) / totalSteps;
       
       const timer = setInterval(() => {
         start += increment;
-        if (start >= end) {
-          setCount(end);
+        if ((increment > 0 && start >= target) || (increment < 0 && start <= target)) {
+          setCount(target);
           clearInterval(timer);
         } else {
-          setCount(start);
+          setCount(Math.floor(start));
         }
-      }, 16);
+      }, stepTime);
       
       return () => clearInterval(timer);
     }, [end]);

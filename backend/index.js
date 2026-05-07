@@ -1135,15 +1135,20 @@ app.delete('/api/admin/memorable-images/:id', verifyToken, async (req, res) => {
 
 // API: Track Visitor
 app.post('/api/track-visitor', async (req, res) => {
+  const { sessionId } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const userAgent = req.headers['user-agent'];
   
   try {
-    // Unique ID per IP + User Agent per Day to prevent spam/inflation
-    const today = new Date().toISOString().split('T')[0];
-    const uniqueId = crypto.createHash('md5').update(`${ip}-${userAgent}-${today}`).digest('hex');
+    // Unique ID: Use sessionId from frontend if available, else fallback to IP+UA hash
+    let uniqueId;
+    if (sessionId) {
+      uniqueId = crypto.createHash('md5').update(sessionId).digest('hex');
+    } else {
+      const today = new Date().toISOString().split('T')[0];
+      uniqueId = crypto.createHash('md5').update(`${ip}-${userAgent}-${today}`).digest('hex');
+    }
 
-    // Attempt to insert/update. If table doesn't exist, this will error safely.
     const { error } = await supabase
       .from('visitors')
       .upsert(
