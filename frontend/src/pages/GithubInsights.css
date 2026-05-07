@@ -361,10 +361,13 @@
   100% { background-position: -200% 0; }
 }
 
-/* Responsive Grid */
+/* Responsive Grid & Scaling */
 @media (max-width: 1200px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .insights-header-info h1 {
+    font-size: 3rem;
   }
 }
 
@@ -372,24 +375,93 @@
   .dashboard-main-grid {
     grid-template-columns: 1fr;
   }
-  .insights-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2rem;
+  .contribution-section, .repos-section {
+    grid-column: span 1;
+  }
+  .activity-card {
+    grid-row: auto;
   }
 }
 
-@media (max-width: 600px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .github-insights-page {
+    padding-top: 80px;
   }
   .github-insights-container {
-    padding: 0 1rem 2rem;
+    padding: 0 1rem 3rem;
+  }
+  .insights-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
   }
   .insights-header-info h1 {
     font-size: 2.2rem;
   }
+  .stat-card {
+    padding: 1.2rem;
+  }
+  .stat-info h3 {
+    font-size: 1.8rem;
+  }
   .glass-panel-futuristic {
     padding: 1.5rem;
+  }
+  .section-header h2 {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+  .stat-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+  .stat-icon {
+    margin-bottom: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+  .stat-info h3 {
+    font-size: 1.4rem;
+  }
+  .stat-info p {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+  }
+  .stat-badge {
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.6rem;
+  }
+  .insights-header-info h1 {
+    font-size: 1.8rem;
+  }
+  .repo-card {
+    padding: 1.5rem;
+  }
+  .repo-title {
+    font-size: 1.1rem;
+  }
+  .calendar-container {
+    padding: 0.5rem;
+  }
+  .calendar-scroll-wrapper {
+    min-width: 750px;
+  }
+}
+
+/* Specific fix for ultra-small screens */
+@media (max-width: 360px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .insights-header-info h1 {
+    font-size: 1.6rem;
   }
 }
