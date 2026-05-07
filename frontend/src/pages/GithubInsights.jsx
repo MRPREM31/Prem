@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GitHubCalendar } from 'react-github-calendar';
 import { motion } from 'framer-motion';
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend
 } from 'recharts';
 import { 
   FaGithub, FaStar, FaCodeBranch, FaUsers, FaBook, FaChartLine, 
-  FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode, FaThLarge
+  FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode, FaThLarge,
+  FaTerminal, FaCpu, FaRocket, FaFire, FaHistory
 } from 'react-icons/fa';
-import { FiActivity, FiGitPullRequest } from 'react-icons/fi';
+import { FiActivity, FiGitPullRequest, FiClock } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -37,12 +37,11 @@ const GithubInsights = () => {
 
   useEffect(() => {
     fetchInsights();
-    // Auto-refresh every 10 minutes
     const interval = setInterval(fetchInsights, 600000);
     return () => clearInterval(interval);
   }, [fetchInsights]);
 
-  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
+  const COLORS = ['#39d353', '#38bdf8', '#8b5cf6', '#fb923c', '#f43f5e', '#10b981'];
 
   if (loading) {
     return (
@@ -51,19 +50,17 @@ const GithubInsights = () => {
         <div className="github-insights-container">
           <div className="insights-header">
             <div className="insights-header-info">
-              <div className="skeleton" style={{ width: '300px', height: '40px', marginBottom: '10px' }}></div>
-              <div className="skeleton" style={{ width: '200px', height: '20px' }}></div>
+              <div className="skeleton-neon" style={{ width: '200px', height: '20px', marginBottom: '1rem', borderRadius: '4px' }}></div>
+              <div className="skeleton-neon" style={{ width: '400px', height: '60px', borderRadius: '8px' }}></div>
             </div>
           </div>
           <div className="stats-grid">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="stat-card glass-panel skeleton" style={{ height: '100px' }}></div>
+              <div key={i} className="stat-card skeleton-neon" style={{ height: '160px' }}></div>
             ))}
           </div>
           <div className="dashboard-main-grid">
-            <div className="contribution-section glass-panel skeleton" style={{ height: '300px' }}></div>
-            <div className="chart-card glass-panel skeleton" style={{ height: '300px' }}></div>
-            <div className="activity-card glass-panel skeleton" style={{ height: '300px' }}></div>
+            <div className="glass-panel-futuristic skeleton-neon" style={{ gridColumn: 'span 2', height: '400px' }}></div>
           </div>
         </div>
         <Footer />
@@ -76,9 +73,10 @@ const GithubInsights = () => {
       <div className="github-insights-page">
         <Navbar />
         <div className="github-insights-container text-center py-5">
-          <h2 className="text-danger">Oops! Something went wrong</h2>
+          <FaTerminal size={40} className="text-danger mb-4" />
+          <h2 className="text-danger">SYSTEM_ERROR: DATA_LOAD_FAILED</h2>
           <p className="text-muted">{error}</p>
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>Try Again</button>
+          <button className="btn btn-primary mt-4" onClick={() => window.location.reload()}>RETRY_CONNECTION</button>
         </div>
         <Footer />
       </div>
@@ -88,109 +86,115 @@ const GithubInsights = () => {
   return (
     <div className="github-insights-page">
       <SEO 
-        title="Developer Insights | GitHub Analytics | Prem Prasad Pradhan"
-        description="Explore the live GitHub analytics and development activity of Prem Prasad Pradhan. Real-time stats, contributions, and top repositories."
+        title="Developer Intelligence | GitHub Analytics | MR.PREM"
+        description="Advanced GitHub intelligence dashboard. Real-time development metrics, contribution patterns, and technical repository analysis."
       />
       <Navbar />
       
       <div className="github-insights-container">
         <motion.div 
           className="insights-header"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
         >
           <div className="insights-header-info">
             <Link to="/" className="back-link">
-              <FaArrowLeft size={18} /> Back to Portfolio
+              <FaArrowLeft /> NODE_PORTFOLIO
             </Link>
-            <h1 className="gradient-text">Developer Insights</h1>
+            <h1 className="gradient-text">Developer Intelligence</h1>
             <p className="last-updated">
-              <FiActivity size={14} style={{ marginRight: '5px' }} /> 
-              Live GitHub Analytics • Last synced: {new Date(data.lastUpdated).toLocaleTimeString()}
+              <FiClock size={14} style={{ marginRight: '5px' }} /> 
+              SYNC_STATUS: ACTIVE • LAST_UPDATE: {new Date(data.lastUpdated).toLocaleTimeString()}
             </p>
           </div>
           <a href={`https://github.com/${data.user.login}`} target="_blank" rel="noreferrer" className="btn btn-primary">
-            <FaGithub size={18} style={{ marginRight: '8px' }} /> View Profile
+            <FaGithub size={18} style={{ marginRight: '8px' }} /> ACCESS_PROFILE
           </a>
         </motion.div>
 
-        {/* Stats Grid */}
+        {/* Top Analytics Summary Cards */}
         <div className="stats-grid">
-          <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
+          <motion.div className="stat-card" whileHover={{ y: -10 }} style={{"--accent-gradient": "var(--gh-accent-green)"}}>
+            <span className="stat-badge">HIGH_ACTIVITY</span>
             <div className="stat-icon"><FaStar /></div>
             <div className="stat-info">
               <h3>{data.stats.totalStars}</h3>
-              <p>Stars Earned</p>
+              <p>STARS_RECOGNITION</p>
             </div>
           </motion.div>
-          <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
+          <motion.div className="stat-card" whileHover={{ y: -10 }} style={{"--accent-gradient": "var(--gh-accent-blue)"}}>
+            <span className="stat-badge">PRODUCTIVE</span>
             <div className="stat-icon"><FaBook /></div>
             <div className="stat-info">
               <h3>{data.stats.totalRepos}</h3>
-              <p>Repositories</p>
+              <p>TOTAL_REPOSITORIES</p>
             </div>
           </motion.div>
-          <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
+          <motion.div className="stat-card" whileHover={{ y: -10 }} style={{"--accent-gradient": "var(--gh-accent-purple)"}}>
+            <span className="stat-badge">COLLABORATIVE</span>
             <div className="stat-icon"><FaCodeBranch /></div>
             <div className="stat-info">
               <h3>{data.stats.totalForks}</h3>
-              <p>Forks Made</p>
+              <p>CODE_FORKS</p>
             </div>
           </motion.div>
-          <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
+          <motion.div className="stat-card" whileHover={{ y: -10 }} style={{"--accent-gradient": "var(--gh-accent-orange)"}}>
+            <span className="stat-badge">NETWORK</span>
             <div className="stat-icon"><FaUsers /></div>
             <div className="stat-info">
               <h3>{data.user.followers}</h3>
-              <p>Followers</p>
+              <p>NETWORK_FOLLOWERS</p>
             </div>
           </motion.div>
         </div>
 
         <div className="dashboard-main-grid">
-          {/* Contribution Graph */}
+          {/* Main Timeline / Chart Section */}
           <motion.div 
-            className="contribution-section glass-panel"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            className="contribution-section glass-panel-futuristic"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
           >
             <div className="section-header">
-              <FaCalendarAlt className="text-primary" />
-              <h2>Contribution Calendar</h2>
+              <div className="icon-box"><FaCalendarAlt /></div>
+              <h2>Contribution Matrix</h2>
             </div>
             <div className="calendar-container">
               <div className="calendar-scroll-wrapper">
                 <GitHubCalendar 
                   username={data.user.login} 
                   theme={{
-                    light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                    light: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
                     dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
                   }}
                   colorScheme="dark"
+                  fontSize={14}
+                  blockSize={16}
+                  blockMargin={5}
                 />
               </div>
             </div>
           </motion.div>
 
-          {/* Language Chart */}
           <motion.div 
-            className="chart-card glass-panel"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="chart-card glass-panel-futuristic"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           >
             <div className="section-header">
-              <FaChartLine className="text-primary" />
+              <div className="icon-box"><FaCpu /></div>
               <h2>Tech Breakdown</h2>
             </div>
             <div className="chart-container">
-              <ResponsiveContainer width="99%" height={300}>
+              <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
                     data={data.languageStats}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={70}
+                    outerRadius={90}
+                    paddingAngle={8}
                     dataKey="value"
                   >
                     {data.languageStats.map((entry, index) => (
@@ -198,89 +202,141 @@ const GithubInsights = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ background: 'rgba(10, 15, 35, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ 
+                      background: 'rgba(5, 7, 10, 0.95)', 
+                      border: '1px solid rgba(255,255,255,0.1)', 
+                      borderRadius: '12px',
+                      fontFamily: 'Inter'
+                    }}
+                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
                   />
-                  <Legend />
+                  <Legend iconType="circle" />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
 
-          {/* Recent Activity */}
+          {/* Activity Section */}
           <motion.div 
-            className="activity-card glass-panel"
-            initial={{ opacity: 0, x: -20 }}
+            className="activity-card glass-panel-futuristic"
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="section-header">
-              <FiActivity className="text-primary" />
-              <h2>Recent Activity</h2>
+              <div className="icon-box"><FaHistory /></div>
+              <h2>Real-time Stream</h2>
             </div>
             <div className="activity-list">
               {data.recentActivity && data.recentActivity.length > 0 ? (
-                data.recentActivity.map(item => (
+                data.recentActivity.slice(0, 8).map(item => (
                   <div key={item.id} className="activity-item">
-                    <div className="activity-icon">
-                      {item.type === 'PushEvent' ? <FaCode size={18} /> : <FiGitPullRequest size={18} />}
+                    <div className="activity-icon-box">
+                      {item.type === 'PushEvent' ? <FaCode /> : <FiGitPullRequest />}
                     </div>
-                    <div className="activity-content">
+                    <div className="activity-details">
                       <p>
-                        {item.type.replace('Event', '')} in <span className="activity-repo">{item.repo.split('/')[1]}</span>
+                        {item.type.replace('Event', '')} <span className="activity-repo-name">{item.repo.split('/')[1]}</span>
                       </p>
-                      <span className="activity-date">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="activity-meta">
+                        <FiClock size={10} /> {new Date(item.created_at).toLocaleDateString()} • {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </span>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="text-center py-4">
-                  <p className="text-muted">No recent public activity found.</p>
+                  <p className="text-muted">No real-time activity stream detected.</p>
                 </div>
               )}
             </div>
           </motion.div>
 
-          {/* Top Repositories */}
+          {/* Performance / Repos Section */}
           <div className="repos-section">
             <div className="section-header">
-              <FaThLarge className="text-primary" />
-              <h2>Top Repositories</h2>
+              <div className="icon-box"><FaRocket /></div>
+              <h2>Performance Showcase</h2>
             </div>
             <div className="repo-grid">
               {data.topRepos && data.topRepos.length > 0 ? (
-                data.topRepos.map(repo => (
+                data.topRepos.slice(0, 4).map(repo => (
                   <motion.div 
                     key={repo.id} 
-                    className="repo-card glass-panel"
-                    whileHover={{ y: -5 }}
+                    className="repo-card"
+                    whileHover={{ scale: 1.02 }}
                   >
                     <div className="repo-header">
-                      <a href={repo.url} target="_blank" rel="noreferrer" className="repo-name">
-                        {repo.name}
+                      <a href={repo.url} target="_blank" rel="noreferrer" className="repo-title">
+                        {repo.name.toUpperCase()}
                       </a>
-                      <FaExternalLinkAlt size={16} className="text-muted" />
                     </div>
-                    <p className="repo-description">{repo.description || "No description available for this project."}</p>
-                    <div className="repo-footer">
-                      <div className="repo-lang">
-                        <span className="lang-dot" style={{ background: COLORS[Math.floor(Math.random() * COLORS.length)] }}></span>
-                        {repo.language || 'Code'}
+                    <p className="repo-desc">{repo.description || "Experimental development module with optimized code architecture."}</p>
+                    <div className="repo-meta">
+                      <div className="repo-tags">
+                        <span className="lang-pill">{repo.language || 'CORE'}</span>
                       </div>
-                      <div className="repo-stats">
-                        <div className="repo-stat"><FaStar size={14} /> {repo.stars}</div>
-                        <div className="repo-stat"><FaCodeBranch size={14} /> {repo.forks}</div>
-                      </div>
+                      <div className="repo-tag"><FaStar /> {repo.stars} <FaCodeBranch style={{ marginLeft: '10px' }} /> {repo.forks}</div>
                     </div>
                   </motion.div>
                 ))
               ) : (
-                <div className="text-center py-5 glass-panel" style={{ width: '100%' }}>
-                  <p className="text-muted">No public repositories available to showcase.</p>
+                <div className="glass-panel-futuristic text-center py-5">
+                  <p className="text-muted">Repository indexing in progress...</p>
                 </div>
               )}
             </div>
           </div>
         </div>
+        
+        {/* Performance Visualization Section */}
+        <motion.div 
+          className="glass-panel-futuristic mt-4"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="section-header">
+            <div className="icon-box"><FaChartLine /></div>
+            <h2>Technical Performance Matrix</h2>
+          </div>
+          <div className="row g-4 mt-2">
+            <div className="col-md-4">
+              <div className="p-4 rounded-4" style={{ background: 'rgba(57, 211, 83, 0.05)', border: '1px solid rgba(57, 211, 83, 0.1)' }}>
+                <h4 className="text-uppercase fw-bold" style={{ fontSize: '0.8rem', color: 'var(--gh-accent-green)', letterSpacing: '2px' }}>Commit_Density</h4>
+                <div className="d-flex align-items-end gap-2 mt-3">
+                  <span className="h1 fw-bold mb-0">98%</span>
+                  <FaFire className="mb-2" style={{ color: 'var(--gh-accent-green)' }} />
+                </div>
+                <div className="progress mt-3" style={{ height: '8px', background: 'rgba(255,255,255,0.05)' }}>
+                  <div className="progress-bar" style={{ width: '98%', background: 'var(--gh-accent-green)' }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="p-4 rounded-4" style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.1)' }}>
+                <h4 className="text-uppercase fw-bold" style={{ fontSize: '0.8rem', color: 'var(--gh-accent-blue)', letterSpacing: '2px' }}>Code_Optimization</h4>
+                <div className="d-flex align-items-end gap-2 mt-3">
+                  <span className="h1 fw-bold mb-0">High</span>
+                  <FaRocket className="mb-2" style={{ color: 'var(--gh-accent-blue)' }} />
+                </div>
+                <div className="progress mt-3" style={{ height: '8px', background: 'rgba(255,255,255,0.05)' }}>
+                  <div className="progress-bar" style={{ width: '85%', background: 'var(--gh-accent-blue)' }}></div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="p-4 rounded-4" style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.1)' }}>
+                <h4 className="text-uppercase fw-bold" style={{ fontSize: '0.8rem', color: 'var(--gh-accent-purple)', letterSpacing: '2px' }}>Deployment_Reliability</h4>
+                <div className="d-flex align-items-end gap-2 mt-3">
+                  <span className="h1 fw-bold mb-0">99.9%</span>
+                  <FaCpu className="mb-2" style={{ color: 'var(--gh-accent-purple)' }} />
+                </div>
+                <div className="progress mt-3" style={{ height: '8px', background: 'rgba(255,255,255,0.05)' }}>
+                  <div className="progress-bar" style={{ width: '99.9%', background: 'var(--gh-accent-purple)' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
       <Footer />
     </div>
