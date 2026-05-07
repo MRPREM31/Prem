@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { RESUME_LINK } from '../config';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -145,6 +146,10 @@ const AdminDashboard = () => {
   };
 
   const fetchResume = async () => {
+    if (RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf") {
+      setCurrentResume(RESUME_LINK);
+      return;
+    }
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resume`);
       const data = await res.json();
