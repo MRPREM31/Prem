@@ -133,7 +133,7 @@ const PersonalVault = () => {
               <p className="text-muted">Secure storage for your private documents.</p>
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => navigate('/prem-dashboard-2026')} className="btn btn-outline">
+              <button onClick={() => navigate(-1)} className="btn btn-outline">
                 <FaArrowLeft /> Back to Dashboard
               </button>
               <button onClick={() => { setShowForm(!showForm); setEditingFile(null); setFileForm({ title: '', file_url: '', category: 'Other' }); }} className="btn btn-primary">

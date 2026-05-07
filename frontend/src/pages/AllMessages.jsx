@@ -88,9 +88,9 @@ const AllMessages = () => {
               <p className="text-muted">Manage all messages from your portfolio.</p>
             </div>
             <div className="dashboard-actions">
-              <Link to="/prem-dashboard-2026" className="btn btn-outline">
+              <button onClick={() => navigate(-1)} className="btn btn-outline">
                 <FaArrowLeft /> Back to Dashboard
-              </Link>
+              </button>
             </div>
           </div>
 
