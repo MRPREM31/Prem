@@ -74,6 +74,11 @@ const AdminDashboard = () => {
   const [whitelistForm, setWhitelistForm] = useState({ email: '', password: '' });
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
+  // Change Password states
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -265,6 +270,35 @@ const AdminDashboard = () => {
         showToast(data.error || 'Failed to remove admin', 'error');
       }
     } catch (err) { console.error(err); }
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      return showToast('New passwords do not match', 'error');
+    }
+    setPasswordLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/change-password`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          email: localStorage.getItem('adminEmail'),
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('Password updated successfully');
+        setShowPasswordForm(false);
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        showToast(data.error || 'Failed to update password', 'error');
+      }
+    } catch (err) { console.error(err); }
+    setPasswordLoading(false);
   };
 
   // --- UPLOADS ---
@@ -598,8 +632,52 @@ const AdminDashboard = () => {
               <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
               <p className="text-muted">Manage your portfolio with ease.</p>
             </div>
-            <button onClick={handleLogout} className="btn btn-outline"><FaSignOutAlt /> Logout</button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setShowPasswordForm(!showPasswordForm)} className="btn btn-outline">
+                {showPasswordForm ? 'Cancel' : 'Change Password'}
+              </button>
+              <button onClick={handleLogout} className="btn btn-outline"><FaSignOutAlt /> Logout</button>
+            </div>
           </div>
+
+          {showPasswordForm && (
+            <div className="dashboard-content glass-panel mb-4">
+              <h3>Change Password</h3>
+              <form onSubmit={handleChangePassword} className="project-form">
+                <div className="form-row">
+                  <input 
+                    type="password" 
+                    placeholder="Current Password" 
+                    value={passwordData.currentPassword} 
+                    onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} 
+                    required 
+                    className="form-input" 
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="New Password" 
+                    value={passwordData.newPassword} 
+                    onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} 
+                    required 
+                    className="form-input" 
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Confirm New Password" 
+                    value={passwordData.confirmPassword} 
+                    onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})} 
+                    required 
+                    className="form-input" 
+                  />
+                </div>
+                <div className="form-actions" style={{marginTop: '1rem'}}>
+                  <button type="submit" className="btn btn-primary" disabled={passwordLoading}>
+                    {passwordLoading ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
 
           <div className="dashboard-content glass-panel mb-4">
             <div className="admin-grid">

@@ -7,7 +7,17 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const nodemailer = require('nodemailer');
 const app = express();
+
+// Nodemailer Transporter Configuration
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER || 'mr.prem2006@gmail.com',
+    pass: process.env.EMAIL_PASS // App Password
+  }
+});
 
 app.use(cors());
 app.use(express.json());
@@ -197,6 +207,109 @@ app.delete('/api/admin/whitelist/:id', verifyToken, async (req, res) => {
 
     if (error) throw error;
     res.json({ success: true, message: 'Admin removed from whitelist' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- FORGOT PASSWORD & OTP SYSTEM ---
+
+// API: Request Password Reset OTP
+app.post('/api/admin/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
+    if (error || !admin) {
+      return res.status(404).json({ error: 'Email not found in whitelist' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await supabase.from('admins').update({ reset_otp: otp, otp_expiry: expiry }).eq('email', email);
+
+    const mailOptions = {
+      from: `"Prem Portfolio Admin" <${process.env.EMAIL_USER || 'mr.prem2006@gmail.com'}>`,
+      to: email,
+      subject: 'Your Password Reset OTP',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #6366f1; text-align: center;">Password Reset Request</h2>
+          <p>Hello,</p>
+          <p>We received a request to reset your password. Use the code below to proceed. This code is valid for <strong>10 minutes</strong>.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e1b4b; background: #f3f4f6; padding: 10px 20px; border-radius: 5px;">${otp}</span>
+          </div>
+          <p>If you did not request this, please ignore this email.</p>
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="font-size: 12px; color: #666; text-align: center;">This is an automated message from your Portfolio Admin System.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ success: true, message: 'OTP sent to your email' });
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+});
+
+// API: Verify OTP
+app.post('/api/admin/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
+    if (error || !admin) return res.status(404).json({ error: 'Admin not found' });
+
+    if (admin.reset_otp !== otp || new Date() > new Date(admin.otp_expiry)) {
+      return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    res.json({ success: true, message: 'OTP verified' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Reset Password
+app.post('/api/admin/reset-password', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  try {
+    const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
+    if (error || !admin) return res.status(404).json({ error: 'Admin not found' });
+
+    if (admin.reset_otp !== otp || new Date() > new Date(admin.otp_expiry)) {
+      return res.status(400).json({ error: 'Session expired. Please request a new OTP.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await supabase.from('admins').update({ 
+      password: hashedPassword, 
+      reset_otp: null, 
+      otp_expiry: null 
+    }).eq('email', email);
+
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Change Password (Inside Dashboard - Protected)
+app.post('/api/admin/change-password', verifyToken, async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+  try {
+    const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
+    if (error || !admin) return res.status(404).json({ error: 'Admin not found' });
+
+    const match = await bcrypt.compare(currentPassword, admin.password);
+    if (!match) return res.status(401).json({ error: 'Current password incorrect' });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await supabase.from('admins').update({ password: hashedPassword }).eq('email', email);
+
+    res.json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
