@@ -11,6 +11,7 @@ import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
 import GithubInsights from './pages/GithubInsights'
 import ScrollManager from './components/ScrollManager'
+import ChatBot from './components/ChatBot'
 import './App.css'
 
 // MANDATORY: Disable browser's native scroll restoration globally to take full control.
@@ -80,6 +81,7 @@ function App() {
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ChatBot />
     </HelmetProvider>
   )
 }

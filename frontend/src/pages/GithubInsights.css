@@ -74,7 +74,7 @@
   margin-bottom: 3rem;
 }
 
-.stat-card {
+.github-insights-page .stat-card {
   background: var(--gh-card-bg);
   backdrop-filter: blur(20px);
   border: 1px solid var(--gh-glass-border);
@@ -86,13 +86,13 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.stat-card:hover {
+.github-insights-page .stat-card:hover {
   transform: translateY(-10px) scale(1.02);
   border-color: var(--gh-accent-green);
   box-shadow: 0 20px 40px rgba(57, 211, 83, 0.1);
 }
 
-.stat-card::before {
+.github-insights-page .stat-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -102,7 +102,7 @@
   background: var(--accent-gradient, var(--gh-accent-green));
 }
 
-.stat-icon {
+.github-insights-page .stat-icon {
   width: 40px;
   height: 40px;
   background: rgba(255, 255, 255, 0.05);
@@ -114,7 +114,7 @@
   color: var(--gh-accent-green);
 }
 
-.stat-info h3 {
+.github-insights-page .stat-info h3 {
   font-family: 'Outfit', sans-serif;
   font-size: 2.5rem;
   font-weight: 800;
@@ -122,7 +122,7 @@
   line-height: 1;
 }
 
-.stat-info p {
+.github-insights-page .stat-info p {
   color: var(--gh-text-secondary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -131,7 +131,7 @@
   margin-top: 0.5rem;
 }
 
-.stat-badge {
+.github-insights-page .stat-badge {
   position: absolute;
   top: 1.8rem;
   right: 1.8rem;
