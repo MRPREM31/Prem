@@ -12,7 +12,36 @@ const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const app = express();
+
+// --- VAULT ENCRYPTION CONFIG ---
+const ALGORITHM = 'aes-256-cbc';
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'prem_vault_default_secret_32_chars'; // Must be 32 chars for aes-256
+// Ensure key is 32 bytes
+const key = crypto.createHash('sha256').update(String(ENCRYPTION_KEY)).digest('base64').substr(0, 32);
+const iv = Buffer.alloc(16, 0); // Using a fixed IV for this simple implementation
+
+function encrypt(text) {
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return encrypted;
+}
+
+function decrypt(text) {
+  try {
+    // If it's already a URL (not hex), return as is (fallback for existing data)
+    if (text.startsWith('http')) return text;
+    
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+    let decrypted = decipher.update(text, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (err) {
+    return text; // Return original if decryption fails (likely old data)
+  }
+}
 
 console.log("Email user loaded:", process.env.EMAIL_USER ? "YES" : "NO");
 
@@ -290,9 +319,10 @@ app.get('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, res
 app.post('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, res) => {
   const { title, file_url, category } = req.body;
   try {
+    const encryptedUrl = encrypt(file_url);
     const { data, error } = await supabase
       .from('personal_files')
-      .insert([{ title, file_url, category: category || 'Other' }])
+      .insert([{ title, file_url: encryptedUrl, category: category || 'Other' }])
       .select();
 
     if (error) throw error;
@@ -306,9 +336,10 @@ app.post('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, re
 app.put('/api/admin/vault-files/:id', verifyToken, verifySuperAdmin, async (req, res) => {
   const { title, file_url, category } = req.body;
   try {
+    const encryptedUrl = encrypt(file_url);
     const { data, error } = await supabase
       .from('personal_files')
-      .update({ title, file_url, category })
+      .update({ title, file_url: encryptedUrl, category })
       .eq('id', req.params.id)
       .select();
 
@@ -344,7 +375,9 @@ app.get('/api/admin/open-vault-file/:id', verifyToken, verifySuperAdmin, async (
       .single();
 
     if (error || !data) throw new Error('File not found');
-    res.redirect(data.file_url);
+    
+    const decryptedUrl = decrypt(data.file_url);
+    res.redirect(decryptedUrl);
   } catch (error) {
     res.status(404).send('File not found or unauthorized.');
   }
