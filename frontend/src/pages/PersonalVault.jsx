@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaEdit, FaPlus, FaLock, FaFileAlt, FaExternalLinkAlt, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { FaTrash, FaEdit, FaPlus, FaLock, FaFileAlt, FaExternalLinkAlt, FaArrowLeft, FaSearch, FaFolder } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import './Admin.css';
