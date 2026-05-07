@@ -259,8 +259,15 @@ app.post('/api/admin/forgot-password', async (req, res) => {
       `
     };
 
-    await transporter.sendMail(mailOptions);
-    res.json({ success: true, message: 'OTP sent to your email' });
+    try {
+      await transporter.sendMail(mailOptions);
+      res.json({ success: true, message: 'OTP sent to your email' });
+    } catch (mailError) {
+      console.error('Nodemailer Error:', mailError);
+      res.status(500).json({ 
+        error: `Email Error: Failed to send OTP. Please check if EMAIL_USER and EMAIL_PASS are correct in your environment variables. Details: ${mailError.message}` 
+      });
+    }
   } catch (error) {
     console.error('Forgot Password Error:', error);
     res.status(500).json({ error: 'Failed to process request' });
