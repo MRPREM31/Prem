@@ -12,6 +12,12 @@ import AllMessages from './pages/AllMessages'
 import ScrollManager from './components/ScrollManager'
 import './App.css'
 
+// MANDATORY: Disable browser's native scroll restoration globally to take full control.
+// This prevents the browser from jumping to incorrect positions during React hydration.
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 function App() {
   useEffect(() => {
     const fetchFavicon = async () => {
