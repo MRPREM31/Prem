@@ -6,9 +6,10 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { 
-  Github, Star, GitFork, Users, BookOpen, Activity, 
-  TrendingUp, Calendar, ArrowLeft, ExternalLink, GitCommit, GitPullRequest
-} from 'lucide-react';
+  FaGithub, FaStar, FaCodeBranch, FaUsers, FaBook, FaChartLine, 
+  FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode
+} from 'react-icons/fa';
+import { FiActivity, FiGitPullRequest } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -100,44 +101,44 @@ const GithubInsights = () => {
         >
           <div className="insights-header-info">
             <Link to="/" className="back-link">
-              <ArrowLeft size={18} /> Back to Portfolio
+              <FaArrowLeft size={18} /> Back to Portfolio
             </Link>
             <h1 className="gradient-text">Developer Insights</h1>
             <p className="last-updated">
-              <Activity size={14} style={{ marginRight: '5px' }} /> 
+              <FiActivity size={14} style={{ marginRight: '5px' }} /> 
               Live GitHub Analytics • Last synced: {new Date(data.lastUpdated).toLocaleTimeString()}
             </p>
           </div>
           <a href={`https://github.com/${data.user.login}`} target="_blank" rel="noreferrer" className="btn btn-primary">
-            <Github size={18} style={{ marginRight: '8px' }} /> View Profile
+            <FaGithub size={18} style={{ marginRight: '8px' }} /> View Profile
           </a>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="stats-grid">
           <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
-            <div className="stat-icon"><Star /></div>
+            <div className="stat-icon"><FaStar /></div>
             <div className="stat-info">
               <h3>{data.stats.totalStars}</h3>
               <p>Stars Earned</p>
             </div>
           </motion.div>
           <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
-            <div className="stat-icon"><BookOpen /></div>
+            <div className="stat-icon"><FaBook /></div>
             <div className="stat-info">
               <h3>{data.stats.totalRepos}</h3>
               <p>Repositories</p>
             </div>
           </motion.div>
           <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
-            <div className="stat-icon"><GitFork /></div>
+            <div className="stat-icon"><FaCodeBranch /></div>
             <div className="stat-info">
               <h3>{data.stats.totalForks}</h3>
               <p>Forks Made</p>
             </div>
           </motion.div>
           <motion.div className="stat-card glass-panel" whileHover={{ y: -5 }}>
-            <div className="stat-icon"><Users /></div>
+            <div className="stat-icon"><FaUsers /></div>
             <div className="stat-info">
               <h3>{data.user.followers}</h3>
               <p>Followers</p>
@@ -153,7 +154,7 @@ const GithubInsights = () => {
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="section-header">
-              <Calendar className="text-primary" />
+              <FaCalendarAlt className="text-primary" />
               <h2>Contribution Calendar</h2>
             </div>
             <div className="calendar-container">
@@ -175,7 +176,7 @@ const GithubInsights = () => {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="section-header">
-              <TrendingUp className="text-primary" />
+              <FaChartLine className="text-primary" />
               <h2>Tech Breakdown</h2>
             </div>
             <div className="chart-container">
@@ -211,14 +212,14 @@ const GithubInsights = () => {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="section-header">
-              <Activity className="text-primary" />
+              <FiActivity className="text-primary" />
               <h2>Recent Activity</h2>
             </div>
             <div className="activity-list">
               {data.recentActivity.map(item => (
                 <div key={item.id} className="activity-item">
                   <div className="activity-icon">
-                    {item.type === 'PushEvent' ? <GitCommit size={18} /> : <GitPullRequest size={18} />}
+                    {item.type === 'PushEvent' ? <FaCode size={18} /> : <FiGitPullRequest size={18} />}
                   </div>
                   <div className="activity-content">
                     <p>
@@ -248,7 +249,7 @@ const GithubInsights = () => {
                     <a href={repo.url} target="_blank" rel="noreferrer" className="repo-name">
                       {repo.name}
                     </a>
-                    <ExternalLink size={16} className="text-muted" />
+                    <FaExternalLinkAlt size={16} className="text-muted" />
                   </div>
                   <p className="repo-description">{repo.description || "No description available for this project."}</p>
                   <div className="repo-footer">
@@ -257,8 +258,8 @@ const GithubInsights = () => {
                       {repo.language}
                     </div>
                     <div className="repo-stats">
-                      <div className="repo-stat"><Star size={14} /> {repo.stars}</div>
-                      <div className="repo-stat"><GitFork size={14} /> {repo.forks}</div>
+                      <div className="repo-stat"><FaStar size={14} /> {repo.stars}</div>
+                      <div className="repo-stat"><FaCodeBranch size={14} /> {repo.forks}</div>
                     </div>
                   </div>
                 </motion.div>
