@@ -226,7 +226,19 @@ app.post('/api/admin/forgot-password', async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    await supabase.from('admins').update({ reset_otp: otp, otp_expiry: expiry }).eq('email', email);
+    const { error: updateError } = await supabase
+      .from('admins')
+      .update({ reset_otp: otp, otp_expiry: expiry })
+      .eq('email', email);
+
+    if (updateError) {
+      if (updateError.code === '42703') {
+        return res.status(500).json({ 
+          error: 'Database Error: Missing "reset_otp" or "otp_expiry" columns in the admins table. Please add them in Supabase.' 
+        });
+      }
+      throw updateError;
+    }
 
     const mailOptions = {
       from: `"Prem Portfolio Admin" <${process.env.EMAIL_USER || 'mr.prem2006@gmail.com'}>`,
