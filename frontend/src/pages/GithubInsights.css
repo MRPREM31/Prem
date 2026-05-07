@@ -126,10 +126,17 @@
   overflow-y: hidden;
   padding: 1rem 0;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide for Firefox */
+  -ms-overflow-style: none; /* Hide for IE/Edge */
+}
+
+.calendar-container::-webkit-scrollbar {
+  display: none; /* Hide for Chrome/Safari */
 }
 
 .calendar-scroll-wrapper {
-  min-width: 800px;
+  min-width: 850px;
+  overflow: visible;
 }
 
 /* Charts Section */
