@@ -574,6 +574,30 @@ app.get('/api/profile-image', async (req, res) => {
   }
 });
 
+// API: Direct Profile Image Redirect (for GitHub README)
+app.get('/api/profile-image/direct', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'profileImage')
+      .single();
+
+    if (data && data.value) {
+      // If it's a Cloudinary URL, it's already full. 
+      // If it's a local path (old system), we prepend the site URL.
+      const imageUrl = data.value.startsWith('http') 
+        ? data.value 
+        : `https://mrprem.in${data.value}`;
+      res.redirect(imageUrl);
+    } else {
+      res.redirect('https://mrprem.in/assets/profile.jpg');
+    }
+  } catch (error) {
+    res.redirect('https://mrprem.in/assets/profile.jpg');
+  }
+});
+
 // API: Upload Profile Image (Protected)
 app.post('/api/admin/upload-profile', verifyToken, upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
