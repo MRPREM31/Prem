@@ -21,6 +21,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Verify SMTP Connection on Startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('SMTP Connection Error:', error);
+  } else {
+    console.log('SMTP Server is ready to take our messages');
+  }
+});
+
 app.use(cors());
 app.use(express.json());
 
