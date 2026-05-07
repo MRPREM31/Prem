@@ -1077,8 +1077,8 @@ const AdminDashboard = () => {
                         <td>{adm.email}</td>
                         <td>{adm.is_super_admin ? <span className="tag" style={{background: 'var(--primary-color)'}}>Primary</span> : <span className="tag">Secondary</span>}</td>
                         <td>{new Date(adm.created_at).toLocaleDateString()}</td>
-                        <td className="actions-cell">
-                          {!adm.is_super_admin && (
+                        <td className="actions-cell" style={{ justifyContent: adm.is_super_admin ? 'center' : 'flex-start' }}>
+                          {!adm.is_super_admin ? (
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <button 
                                 onClick={() => setResettingAdmin(adm)} 
@@ -1095,6 +1095,8 @@ const AdminDashboard = () => {
                                 <FaTrash />
                               </button>
                             </div>
+                          ) : (
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>—</span>
                           )}
                         </td>
                       </tr>
