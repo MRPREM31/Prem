@@ -192,8 +192,8 @@ const GithubInsights = () => {
                     data={data.languageStats}
                     cx="50%"
                     cy="50%"
-                    innerRadius={70}
-                    outerRadius={90}
+                    innerRadius={window.innerWidth < 480 ? 50 : 70}
+                    outerRadius={window.innerWidth < 480 ? 70 : 90}
                     paddingAngle={8}
                     dataKey="value"
                   >
