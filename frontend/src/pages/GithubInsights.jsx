@@ -7,7 +7,7 @@ import {
 import { 
   FaGithub, FaStar, FaCodeBranch, FaUsers, FaBook, FaChartLine, 
   FaCalendarAlt, FaArrowLeft, FaExternalLinkAlt, FaCode, FaThLarge,
-  FaTerminal, FaCpu, FaRocket, FaFire, FaHistory
+  FaTerminal, FaMicrochip, FaRocket, FaFire, FaHistory
 } from 'react-icons/fa';
 import { FiActivity, FiGitPullRequest, FiClock } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -182,7 +182,7 @@ const GithubInsights = () => {
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="section-header">
-              <div className="icon-box"><FaCpu /></div>
+              <div className="icon-box"><FaMicrochip /></div>
               <h2>Tech Breakdown</h2>
             </div>
             <div className="chart-container">
@@ -328,7 +328,7 @@ const GithubInsights = () => {
                 <h4 className="text-uppercase fw-bold" style={{ fontSize: '0.8rem', color: 'var(--gh-accent-purple)', letterSpacing: '2px' }}>Deployment_Reliability</h4>
                 <div className="d-flex align-items-end gap-2 mt-3">
                   <span className="h1 fw-bold mb-0">99.9%</span>
-                  <FaCpu className="mb-2" style={{ color: 'var(--gh-accent-purple)' }} />
+                  <FaMicrochip className="mb-2" style={{ color: 'var(--gh-accent-purple)' }} />
                 </div>
                 <div className="progress mt-3" style={{ height: '8px', background: 'rgba(255,255,255,0.05)' }}>
                   <div className="progress-bar" style={{ width: '99.9%', background: 'var(--gh-accent-purple)' }}></div>
