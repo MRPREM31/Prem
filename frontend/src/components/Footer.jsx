@@ -3,6 +3,7 @@ import { FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-ic
 import './Footer.css';
 
 const Footer = () => {
+  const [signature, setSignature] = useState('');
   const [visitorCount, setVisitorCount] = useState(0);
 
   useEffect(() => {
