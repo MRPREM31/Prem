@@ -72,7 +72,13 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 // Middleware to verify JWT
 const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'];
+  let token = req.headers['authorization'];
+  
+  // Also check query params for "open in new tab" scenarios
+  if (!token && req.query.token) {
+    token = `Bearer ${req.query.token}`;
+  }
+
   if (!token) return res.status(403).json({ error: 'No token provided.' });
   
   const tokenParts = token.split(' ');
