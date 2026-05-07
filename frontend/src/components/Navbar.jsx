@@ -107,12 +107,13 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen, activeSection]);
 
+  const isAdmin = window.location.pathname === '/prem-dashboard-2026';
   const isHome = window.location.pathname === '/';
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled glass-panel' : ''}`}>
       <div className="container nav-container">
-        <a href={isHome ? "#home" : "/#home"} className="logo-container">
+        <a href={isHome ? "#home" : isAdmin ? "/prem-dashboard-2026" : "/#home"} className="logo-container">
           <img src={profileImage} alt="Prem Prasad Pradhan Portfolio Logo" className="nav-profile-img" />
           <span className="logo gradient-text">MR.PREM</span>
         </a>
@@ -123,7 +124,7 @@ const Navbar = () => {
               <img src={profileImage} alt="Prem Prasad Pradhan Mobile Menu Logo" className="nav-profile-img mobile-header-img" />
               <span className="logo gradient-text">MR.PREM</span>
             </div>
-            <p className="mobile-subtitle">Software Developer</p>
+            <p className="mobile-subtitle">{isAdmin ? 'Admin Panel' : 'Software Developer'}</p>
           </div>
 
           <button className="mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
@@ -131,14 +132,28 @@ const Navbar = () => {
           </button>
 
           <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
-            <li style={{ "--i": 1 }} className={activeSection === 'about' ? 'activeSection' : ''}><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-            <li style={{ "--i": 2 }} className={activeSection === 'skills' ? 'activeSection' : ''}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-            <li style={{ "--i": 3 }} className={activeSection === 'experience' ? 'activeSection' : ''}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
-            <li style={{ "--i": 4 }} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-            <li style={{ "--i": 5 }} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
-            <li style={{ "--i": 6 }} className={activeSection === 'journey' ? 'activeSection' : ''}><a href={isHome ? "#journey" : "/#journey"} onClick={() => setIsMobileMenuOpen(false)}>My Journey</a></li>
-            <li style={{ "--i": 7 }} className={activeSection === 'memories' ? 'activeSection' : ''}><a href={isHome ? "#memories" : "/#memories"} onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
-            <li style={{ "--i": 8 }} className={activeSection === 'contact' ? 'activeSection' : ''}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+            {isAdmin ? (
+              <>
+                <li style={{ "--i": 1 }}><a href="#admin-uploads" onClick={() => setIsMobileMenuOpen(false)}>Uploads</a></li>
+                <li style={{ "--i": 2 }}><a href="#admin-stats" onClick={() => setIsMobileMenuOpen(false)}>Stats</a></li>
+                <li style={{ "--i": 3 }}><a href="#admin-projects" onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+                <li style={{ "--i": 4 }}><a href="#admin-certificates" onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+                <li style={{ "--i": 5 }}><a href="#admin-memories" onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
+                <li style={{ "--i": 6 }}><a href="#admin-skills" onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
+                <li style={{ "--i": 7 }}><a href="#admin-messages" className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Messages</a></li>
+              </>
+            ) : (
+              <>
+                <li style={{ "--i": 1 }} className={activeSection === 'about' ? 'activeSection' : ''}><a href={isHome ? "#about" : "/#about"} onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
+                <li style={{ "--i": 2 }} className={activeSection === 'skills' ? 'activeSection' : ''}><a href={isHome ? "#skills" : "/#skills"} onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
+                <li style={{ "--i": 3 }} className={activeSection === 'experience' ? 'activeSection' : ''}><a href={isHome ? "#experience" : "/#experience"} onClick={() => setIsMobileMenuOpen(false)}>Experience</a></li>
+                <li style={{ "--i": 4 }} className={activeSection === 'projects' ? 'activeSection' : ''}><a href={isHome ? "#projects" : "/#projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+                <li style={{ "--i": 5 }} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+                <li style={{ "--i": 6 }} className={activeSection === 'journey' ? 'activeSection' : ''}><a href={isHome ? "#journey" : "/#journey"} onClick={() => setIsMobileMenuOpen(false)}>My Journey</a></li>
+                <li style={{ "--i": 7 }} className={activeSection === 'memories' ? 'activeSection' : ''}><a href={isHome ? "#memories" : "/#memories"} onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
+                <li style={{ "--i": 8 }} className={activeSection === 'contact' ? 'activeSection' : ''}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+              </>
+            )}
             <div className="nav-indicator-line"></div>
 
             <li className="theme-toggle-container desktop-only">

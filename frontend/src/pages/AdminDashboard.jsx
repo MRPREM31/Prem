@@ -713,7 +713,8 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          <div className="dashboard-content glass-panel mb-4">
+          {/* IMAGE UPLOAD & FILES */}
+          <div id="admin-uploads" className="dashboard-content glass-panel mb-4">
             <div className="admin-grid">
               {/* IMAGE UPLOAD */}
               <div className="admin-section">
@@ -783,7 +784,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* PORTFOLIO STATS SECTION */}
-          <div className="dashboard-content glass-panel mb-4">
+          <div id="admin-stats" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Portfolio Statistics</h3>
             </div>
@@ -811,7 +812,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* PROJECTS SECTION */}
-          <div className="dashboard-content glass-panel mb-4">
+          <div id="admin-projects" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Projects</h3>
               <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '' }); }}>
@@ -858,7 +859,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* CERTIFICATES SECTION */}
-          <div className="dashboard-content glass-panel mb-4">
+          <div id="admin-certificates" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Certificates</h3>
               <button className="btn btn-primary btn-sm" onClick={() => { setShowCertForm(!showCertForm); setEditingCert(null); setCertForm({ title: '', description: '', date: '', image: null }); }}>
@@ -903,7 +904,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* MEMORABLE IMAGES SECTION */}
-          <div className="dashboard-content glass-panel mb-4">
+          <div id="admin-memories" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Memorable Images</h3>
               <button className="btn btn-primary btn-sm" onClick={() => { setShowMemImageForm(!showMemImageForm); setMemImageForm({ title: '', image: null }); }}>
@@ -948,7 +949,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* SKILLS SECTION */}
-          <div className="dashboard-content glass-panel mb-4">
+          <div id="admin-skills" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Manage Skills</h3>
               <button className="btn btn-primary btn-sm" onClick={handleAddCategory}>
@@ -1016,7 +1017,7 @@ const AdminDashboard = () => {
 
           {/* ADMIN WHITELIST SECTION (Super Admin Only) */}
           {isSuperAdmin && (
-            <div className="dashboard-content glass-panel mb-4" style={{ border: '1px solid var(--primary-color)' }}>
+            <div id="admin-whitelist" className="dashboard-content glass-panel mb-4" style={{ border: '1px solid var(--primary-color)' }}>
               <div className="section-header">
                 <h3>Admin Access Whitelist</h3>
                 <button className="btn btn-primary btn-sm" onClick={() => setShowWhitelistForm(!showWhitelistForm)}>
@@ -1113,7 +1114,7 @@ const AdminDashboard = () => {
           )}
 
           {/* MESSAGES SECTION */}
-          <div className="dashboard-content glass-panel">
+          <div id="admin-messages" className="dashboard-content glass-panel">
             <div className="section-header contact-header">
               <h3 className="section-title-small" style={{ margin: 0 }}>Contact Submissions</h3>
               <div style={{ display: 'flex', gap: '10px' }}>
