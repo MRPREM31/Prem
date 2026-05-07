@@ -1079,10 +1079,22 @@ const AdminDashboard = () => {
                         <td>{new Date(adm.created_at).toLocaleDateString()}</td>
                         <td className="actions-cell">
                           {!adm.is_super_admin && (
-                            <>
-                              <button onClick={() => setResettingAdmin(adm)} className="edit-btn" title="Reset Password"><FaEdit /></button>
-                              <button onClick={() => removeAdmin(adm.id)} className="delete-btn" title="Remove Admin"><FaTrash /></button>
-                            </>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button 
+                                onClick={() => setResettingAdmin(adm)} 
+                                className="btn btn-outline btn-sm" 
+                                style={{ fontSize: '12px', padding: '4px 8px' }}
+                              >
+                                Reset Password
+                              </button>
+                              <button 
+                                onClick={() => removeAdmin(adm.id)} 
+                                className="delete-btn" 
+                                title="Remove Admin"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
