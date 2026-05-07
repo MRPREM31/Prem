@@ -14,11 +14,14 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const nodemailer = require('nodemailer');
 const app = express();
 
-// Nodemailer Transporter Configuration (Using Port 587 for Render compatibility)
+console.log("Email user loaded:", process.env.EMAIL_USER ? "YES" : "NO");
+
+// Nodemailer Transporter Configuration (Forced IPv4 for Render)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
   secure: false, // TLS
+  family: 4, // Force IPv4
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
