@@ -270,6 +270,8 @@ const AdminDashboard = () => {
         showToast(data.error || 'Failed to remove admin', 'error');
       }
     } catch (err) { console.error(err); }
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
