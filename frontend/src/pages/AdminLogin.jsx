@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Admin.css';
 
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
   
@@ -25,6 +25,7 @@ const AdminLogin = () => {
       
       if (data.auth) {
         localStorage.setItem('adminToken', data.token);
+        localStorage.setItem('adminEmail', data.email); // Store email for management check
         navigate('/prem-dashboard-2026');
       } else {
         setError(data.error || 'Invalid login');
@@ -41,9 +42,9 @@ const AdminLogin = () => {
         <h2 className="gradient-text text-center">Admin Login</h2>
         <form onSubmit={handleLogin} className="admin-form">
           <input 
-            type="text" 
-            name="username" 
-            placeholder="Username" 
+            type="email" 
+            name="email" 
+            placeholder="Authorized Email" 
             onChange={handleChange} 
             required 
           />

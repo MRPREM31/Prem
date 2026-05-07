@@ -68,6 +68,12 @@ const AdminDashboard = () => {
   const [skillCategories, setSkillCategories] = useState([]);
   const [skillsLoading, setSkillsLoading] = useState(false);
 
+  // Whitelist states
+  const [whitelist, setWhitelist] = useState([]);
+  const [showWhitelistForm, setShowWhitelistForm] = useState(false);
+  const [whitelistForm, setWhitelistForm] = useState({ email: '', password: '' });
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -93,6 +99,12 @@ const AdminDashboard = () => {
     fetchNavbarImage();
     fetchSkills();
     fetchMemorableImages();
+    
+    const adminEmail = localStorage.getItem('adminEmail');
+    if (adminEmail === 'mr.prem2006@gmail.com') {
+      setIsSuperAdmin(true);
+      fetchWhitelist();
+    }
   }, [token, navigate]);
 
   const showToast = (message, type = 'success') => {
@@ -202,6 +214,56 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images?t=${Date.now()}`);
       const data = await res.json();
       setMemorableImages(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchWhitelist = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/whitelist`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setWhitelist(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleWhitelistSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/whitelist`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(whitelistForm)
+      });
+      if (res.ok) {
+        fetchWhitelist();
+        setShowWhitelistForm(false);
+        setWhitelistForm({ email: '', password: '' });
+        showToast('Admin added to whitelist');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to add admin', 'error');
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const removeAdmin = async (id) => {
+    if (!window.confirm('Remove this admin from whitelist?')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/whitelist/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        fetchWhitelist();
+        showToast('Admin removed');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to remove admin', 'error');
+      }
     } catch (err) { console.error(err); }
   };
 
@@ -839,6 +901,67 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          {/* ADMIN WHITELIST SECTION (Super Admin Only) */}
+          {isSuperAdmin && (
+            <div className="dashboard-content glass-panel mb-4" style={{ border: '1px solid var(--primary-color)' }}>
+              <div className="section-header">
+                <h3>Admin Access Whitelist</h3>
+                <button className="btn btn-primary btn-sm" onClick={() => setShowWhitelistForm(!showWhitelistForm)}>
+                  <FaPlus /> {showWhitelistForm ? 'Cancel' : 'Authorize New Admin'}
+                </button>
+              </div>
+
+              {showWhitelistForm && (
+                <form className="project-form" onSubmit={handleWhitelistSubmit}>
+                  <div className="form-row">
+                    <input 
+                      type="email" 
+                      placeholder="Email Address" 
+                      value={whitelistForm.email} 
+                      onChange={e => setWhitelistForm({...whitelistForm, email: e.target.value})} 
+                      required 
+                      className="form-input" 
+                    />
+                    <input 
+                      type="password" 
+                      placeholder="Temporary Password" 
+                      value={whitelistForm.password} 
+                      onChange={e => setWhitelistForm({...whitelistForm, password: e.target.value})} 
+                      required 
+                      className="form-input" 
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button type="submit" className="btn btn-primary">Add to Whitelist</button>
+                    <button type="button" className="btn btn-outline" onClick={() => setShowWhitelistForm(false)}>Cancel</button>
+                  </div>
+                </form>
+              )}
+
+              <div className="table-responsive">
+                <table className="admin-table">
+                  <thead>
+                    <tr><th>Email</th><th>Status</th><th>Added On</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody>
+                    {whitelist.map(adm => (
+                      <tr key={adm.id}>
+                        <td>{adm.email}</td>
+                        <td>{adm.is_super_admin ? <span className="tag" style={{background: 'var(--primary-color)'}}>Primary</span> : <span className="tag">Secondary</span>}</td>
+                        <td>{new Date(adm.created_at).toLocaleDateString()}</td>
+                        <td className="actions-cell">
+                          {!adm.is_super_admin && (
+                            <button onClick={() => removeAdmin(adm.id)} className="delete-btn"><FaTrash /></button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* MESSAGES SECTION */}
           <div className="dashboard-content glass-panel">

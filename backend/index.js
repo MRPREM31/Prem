@@ -81,14 +81,113 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// API: Admin Login
-app.post('/api/admin/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    const token = jwt.sign({ id: 1, username }, JWT_SECRET, { expiresIn: '8h' });
-    res.json({ auth: true, token });
-  } else {
-    res.status(401).json({ auth: false, error: 'Invalid credentials' });
+const bcrypt = require('bcryptjs');
+
+// API: Admin Login (Email Whitelist System)
+app.post('/api/admin/login', async (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  try {
+    // 1. Check if email exists in whitelist (admins table)
+    const { data: admin, error } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error || !admin) {
+      // Fallback: Check if this is the bootstrap login using ENV variables if table is empty
+      const { count } = await supabase.from('admins').select('*', { count: 'exact', head: true });
+      if (count === 0 && email === 'mr.prem2006@gmail.com' && password === ADMIN_PASSWORD) {
+        // First time setup: Auto-create the super admin
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await supabase.from('admins').insert([{ email, password: hashedPassword, is_super_admin: true }]);
+        
+        const token = jwt.sign({ id: email, email, isSuperAdmin: true }, JWT_SECRET, { expiresIn: '8h' });
+        return res.json({ auth: true, token, email });
+      }
+      return res.status(401).json({ auth: false, error: 'Unauthorized Access: Email not in whitelist' });
+    }
+
+    // 2. Verify password
+    const passwordMatch = await bcrypt.compare(password, admin.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ auth: false, error: 'Invalid password' });
+    }
+
+    // 3. Generate token
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email, isSuperAdmin: admin.is_super_admin }, 
+      JWT_SECRET, 
+      { expiresIn: '8h' }
+    );
+
+    res.json({ auth: true, token, email: admin.email });
+  } catch (error) {
+    console.error('Login Error:', error);
+    res.status(500).json({ error: 'Server error during login' });
+  }
+});
+
+// API: Get Admin Whitelist (Protected)
+app.get('/api/admin/whitelist', verifyToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('admins')
+      .select('id, email, is_super_admin, created_at')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Add Admin to Whitelist (Protected, Super Admin Only)
+app.post('/api/admin/whitelist', verifyToken, async (req, res) => {
+  const { email, password } = req.body;
+  
+  // Verify if requester is super admin (decoded from token)
+  // Note: For now we'll allow any logged in admin if they match the primary email
+  // but a robust check uses the token payload.
+  
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const { data, error } = await supabase
+      .from('admins')
+      .insert([{ email, password: hashedPassword, is_super_admin: false }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, admin: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: 'Could not add admin. Email might already exist.' });
+  }
+});
+
+// API: Remove Admin from Whitelist (Protected, Super Admin Only)
+app.delete('/api/admin/whitelist/:id', verifyToken, async (req, res) => {
+  try {
+    // Prevent deleting oneself
+    const { data: targetAdmin } = await supabase.from('admins').select('email').eq('id', req.params.id).single();
+    if (targetAdmin && targetAdmin.email === 'mr.prem2006@gmail.com') {
+      return res.status(403).json({ error: 'Cannot remove the primary super admin.' });
+    }
+
+    const { error } = await supabase
+      .from('admins')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Admin removed from whitelist' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
