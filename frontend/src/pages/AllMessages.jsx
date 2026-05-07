@@ -25,6 +25,15 @@ const AllMessages = () => {
     fetchMessages();
   }, [currentPage, token, navigate]);
 
+  useEffect(() => {
+    if (selectedMessage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => { document.body.style.overflow = 'auto'; };
+  }, [selectedMessage]);
+
   const fetchMessages = async () => {
     setLoading(true);
     try {
@@ -78,9 +87,11 @@ const AllMessages = () => {
               <h2 className="gradient-text">All Contact Submissions</h2>
               <p className="text-muted">Manage all messages from your portfolio.</p>
             </div>
-            <Link to="/prem-dashboard-2026" className="btn btn-outline">
-              <FaArrowLeft /> Back to Dashboard
-            </Link>
+            <div className="dashboard-actions">
+              <Link to="/prem-dashboard-2026" className="btn btn-outline">
+                <FaArrowLeft /> Back to Dashboard
+              </Link>
+            </div>
           </div>
 
           <div className="dashboard-content glass-panel">

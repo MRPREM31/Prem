@@ -123,12 +123,41 @@
   transform: scale(1.2);
 }
 
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  width: 100%;
+  gap: 20px;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
-    gap: 1.5rem;
+    align-items: center;
     text-align: center;
-    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard-actions .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 54px;
+    border-radius: 16px;
+    font-size: 1.05rem;
   }
 
   .form-row {
@@ -394,12 +423,12 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 3000; /* Higher than Navbar */
   padding: 20px;
   animation: fadeIn 0.3s ease-out;
 }
@@ -490,9 +519,9 @@
 
 .full-message-box {
   background: rgba(255, 255, 255, 0.03);
-  padding: 24px;
+  padding: 26px; /* Increased padding */
   border-radius: 20px;
-  line-height: 1.8;
+  line-height: 1.9; /* Increased line-height */
   white-space: pre-wrap;
   border: 1px solid rgba(255, 255, 255, 0.05);
   max-height: 350px;
@@ -531,18 +560,26 @@
 }
 
 @media (max-width: 600px) {
+  .modal-overlay {
+    align-items: flex-start; /* Better for long modals on mobile */
+    padding-top: 100px; /* Space for navbar */
+  }
+
   .modal-content {
     padding: 25px 30px;
     margin: 10px;
-    border-radius: 20px;
+    border-radius: 24px;
+    max-height: calc(100vh - 140px);
   }
   
   .modal-footer {
     flex-direction: column;
+    gap: 12px;
   }
   
   .modal-footer .btn {
     width: 100%;
+    justify-content: center;
   }
 }
 

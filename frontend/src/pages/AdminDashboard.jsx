@@ -119,6 +119,15 @@ const AdminDashboard = () => {
     }
   }, [token, navigate]);
 
+  useEffect(() => {
+    if (selectedMessage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => { document.body.style.overflow = 'auto'; };
+  }, [selectedMessage]);
+
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
@@ -575,26 +584,37 @@ const AdminDashboard = () => {
 
   const downloadCSV = () => {
     if (messages.length === 0) return showToast('No messages to download', 'error');
+    
+    const escapeCSV = (str) => {
+      if (!str) return "";
+      let result = str.toString();
+      if (result.includes(',') || result.includes('"') || result.includes('\n') || result.includes('\r')) {
+        result = '"' + result.replace(/"/g, '""') + '"';
+      }
+      return result;
+    };
+
     const headers = ['Date', 'Name', 'Email', 'Message'];
-    const csvRows = [];
-    csvRows.push(headers.join(','));
+    const csvRows = [headers.join(',')];
     
     messages.forEach(msg => {
-      const date = new Date(msg.date).toLocaleString().replace(/,/g, '');
-      const name = `"${msg.name.replace(/"/g, '""')}"`;
-      const email = `"${msg.email.replace(/"/g, '""')}"`;
-      const message = `"${msg.message.replace(/"/g, '""')}"`;
+      const date = escapeCSV(new Date(msg.date).toLocaleString());
+      const name = escapeCSV(msg.name);
+      const email = escapeCSV(msg.email);
+      const message = escapeCSV(msg.message);
       csvRows.push([date, name, email, message].join(','));
     });
     
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\\n");
-    const encodedUri = encodeURI(csvContent);
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.href = url;
     link.setAttribute("download", `contact_messages_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // --- SKILLS MANAGEMENT ---
@@ -672,7 +692,7 @@ const AdminDashboard = () => {
               <h2 className="gradient-text">Welcome MR.PREM, {greeting}!</h2>
               <p className="text-muted">Manage your portfolio with ease.</p>
             </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="dashboard-actions">
               {isSuperAdmin && (
                 <button onClick={() => navigate('/personal-vault')} className="btn btn-primary">
                   Access Personal Data
