@@ -34,11 +34,6 @@ const Footer = () => {
             <div className="footer-links-section">
               <h4>Quick Links</h4>
               <ul>
-                {/* Internal Section Links */}
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#certificates">Certificates</a></li>
                 
                 {/* External Professional Links */}
                 <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noopener noreferrer">QCDS</a></li>
