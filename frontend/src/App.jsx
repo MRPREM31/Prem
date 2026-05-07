@@ -9,6 +9,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import MemoriesPage from './pages/MemoriesPage'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
+import ScrollManager from './components/ScrollManager'
 import './App.css'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
     <HelmetProvider>
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
+      <ScrollManager />
       
       <Routes>
         <Route path="/" element={<Portfolio />} />
