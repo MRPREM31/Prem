@@ -31,8 +31,9 @@ const Certificates = () => {
                 <div className="cert-image-container">
                   <img 
                     src={cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image} 
-                    alt={cert.title} 
+                    alt={`Prem Prasad Pradhan Certificate: ${cert.title}`} 
                     className="cert-img" 
+                    loading="lazy"
                   />
                   <div className="cert-overlay">
                     <button className="btn btn-primary btn-sm">See full detail</button>

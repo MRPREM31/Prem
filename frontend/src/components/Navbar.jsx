@@ -113,14 +113,14 @@ const Navbar = () => {
     <nav className={`navbar ${scrolled ? 'scrolled glass-panel' : ''}`}>
       <div className="container nav-container">
         <a href={isHome ? "#home" : "/#home"} className="logo-container">
-          <img src={profileImage} alt="MR.PREM" className="nav-profile-img" />
+          <img src={profileImage} alt="Prem Prasad Pradhan Portfolio Logo" className="nav-profile-img" />
           <span className="logo gradient-text">MR.PREM</span>
         </a>
 
         <div className={`nav-links-wrapper ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
           <div className="mobile-menu-header-premium">
             <div className="logo-container">
-              <img src={profileImage} alt="MR.PREM" className="nav-profile-img mobile-header-img" />
+              <img src={profileImage} alt="Prem Prasad Pradhan Mobile Menu Logo" className="nav-profile-img mobile-header-img" />
               <span className="logo gradient-text">MR.PREM</span>
             </div>
             <p className="mobile-subtitle">Software Developer</p>

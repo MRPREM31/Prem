@@ -40,7 +40,12 @@ const MemorableImages = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="memory-image-container">
-                <img src={img.image_url} alt={img.title} className="memory-img" />
+                <img 
+                  src={img.image_url} 
+                  alt={`Prem Prasad Pradhan Memory: ${img.title}`} 
+                  className="memory-img" 
+                  loading="lazy"
+                />
                 <div className="memory-overlay">
                   <h3 className="memory-title">{img.title}</h3>
                 </div>

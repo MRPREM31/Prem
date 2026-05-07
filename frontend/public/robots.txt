@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
+
+# Block indexing of administrative areas
 Disallow: /admin
 Disallow: /dashboard
 
+# Link to the sitemap
 Sitemap: https://mrprem.in/sitemap.xml

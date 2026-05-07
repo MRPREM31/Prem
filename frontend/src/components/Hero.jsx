@@ -105,8 +105,9 @@ const Hero = () => {
           <div className="image-glow"></div>
           <motion.img 
             src={profileImage} 
-            alt="Prem Prasad Pradhan" 
+            alt="Prem Prasad Pradhan | Software Developer Portfolio Profile" 
             className="profile-img"
+            loading="eager"
             animate={{ y: [0, -15, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           />

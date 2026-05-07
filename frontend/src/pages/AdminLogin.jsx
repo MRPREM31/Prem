@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
 import './Admin.css';
 
@@ -7,9 +8,6 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  useEffect(() => {
-    document.title = "Admin Login | Prem Prasad Pradhan";
-  }, []);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -38,6 +36,7 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-page">
+      <SEO title="Admin Login" noindex={true} />
       <div className="admin-login-box glass-panel">
         <h2 className="gradient-text text-center">Admin Login</h2>
         <form onSubmit={handleLogin} className="admin-form">

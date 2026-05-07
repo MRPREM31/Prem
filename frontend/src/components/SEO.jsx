@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, keywords, image, url, type = 'website', noindex = false }) => {
+const SEO = ({ title, description, keywords, image, url, type = 'website', noindex = false, schema }) => {
   const siteTitle = "Prem Prasad Pradhan | Software Developer Portfolio";
   const defaultDescription = "Official portfolio of Prem Prasad Pradhan. A passionate Software Developer specializing in full-stack web development.";
   const siteUrl = "https://mrprem.in/";
@@ -12,8 +12,8 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
   const seoImage = image || defaultImage;
   const seoUrl = url ? `${siteUrl}${url}` : siteUrl;
 
-  // Schema.org Person Data
-  const schemaOrgJSONLD = {
+  // Default Schema.org Person Data
+  const defaultSchema = {
     "@context": "http://schema.org",
     "@type": "Person",
     "name": "Prem Prasad Pradhan",
@@ -56,7 +56,7 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
       {/* Structured Data */}
       {!noindex && (
         <script type="application/ld+json">
-          {JSON.stringify(schemaOrgJSONLD)}
+          {JSON.stringify(schema || defaultSchema)}
         </script>
       )}
     </Helmet>

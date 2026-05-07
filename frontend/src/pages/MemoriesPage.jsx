@@ -18,12 +18,22 @@ const MemoriesPage = () => {
       .catch(err => console.error('Error fetching memories:', err));
   }, []);
 
+  const gallerySchema = {
+    "@context": "http://schema.org",
+    "@type": "ImageGallery",
+    "name": "Memorable Moments of Prem Prasad Pradhan",
+    "description": "A collection of beautiful memories captured in time by Prem Prasad Pradhan.",
+    "url": "https://mrprem.in/memories",
+    "image": images.map(img => img.image_url)
+  };
+
   return (
     <div className="portfolio-page">
       <SEO 
         title="Memorable Moments"
         description="A gallery of beautiful memories and key milestones in my personal and professional journey as a software developer."
         url="memories"
+        schema={gallerySchema}
       />
       <Navbar />
       <main className="main-content">
@@ -52,7 +62,12 @@ const MemoriesPage = () => {
                   transition={{ duration: 0.5, delay: index * 0.05 }}
                 >
                   <div className="memory-image-container">
-                    <img src={img.image_url} alt={img.title} className="memory-img" />
+                    <img 
+                      src={img.image_url} 
+                      alt={`Prem Prasad Pradhan Memory: ${img.title}`} 
+                      className="memory-img" 
+                      loading="lazy"
+                    />
                     <div className="memory-overlay">
                       <h3 className="memory-title">{img.title}</h3>
                     </div>
