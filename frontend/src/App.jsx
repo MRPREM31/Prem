@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { useEffect } from 'react'
 import Portfolio from './pages/Portfolio'
 import AdminLogin from './pages/AdminLogin'
@@ -29,7 +30,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <HelmetProvider>
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
       
@@ -41,7 +42,7 @@ function App() {
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/memories" element={<MemoriesPage />} />
       </Routes>
-    </>
+    </HelmetProvider>
   )
 }
 

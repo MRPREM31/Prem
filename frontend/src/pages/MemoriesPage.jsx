@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -19,6 +20,11 @@ const MemoriesPage = () => {
 
   return (
     <div className="portfolio-page">
+      <SEO 
+        title="Memorable Moments"
+        description="A gallery of beautiful memories and key milestones in my personal and professional journey as a software developer."
+        url="memories"
+      />
       <Navbar />
       <main className="main-content">
         <section className="section memories-page-section" style={{ paddingTop: '120px' }}>

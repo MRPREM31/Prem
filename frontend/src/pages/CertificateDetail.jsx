@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -49,6 +50,13 @@ const CertificateDetail = () => {
 
   return (
     <div className="portfolio-page">
+      <SEO 
+        title={certificate.title}
+        description={certificate.description.substring(0, 160)}
+        image={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image}
+        url={`certificate/${id}`}
+        type="article"
+      />
       <Navbar />
       <main className="main-content">
         <div className="cert-detail-page section">

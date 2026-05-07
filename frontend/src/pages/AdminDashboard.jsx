@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -6,10 +7,6 @@ import Footer from '../components/Footer';
 import './Admin.css';
 
 const AdminDashboard = () => {
-  useEffect(() => {
-    document.title = "Admin Dashboard | Prem Prasad Pradhan";
-  }, []);
-  
   const [messages, setMessages] = useState([]);
   
   // Image & Resume states
@@ -525,6 +522,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="portfolio-page">
+      <SEO title="Admin Dashboard" noindex={true} />
       <Navbar />
       <main className="main-content">
         <div className="admin-page dashboard-page">
