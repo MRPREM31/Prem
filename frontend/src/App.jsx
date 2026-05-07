@@ -9,6 +9,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import MemoriesPage from './pages/MemoriesPage'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
+import GithubInsights from './pages/GithubInsights'
 import ScrollManager from './components/ScrollManager'
 import './App.css'
 
@@ -74,6 +75,7 @@ function App() {
         <Route path="/certificate/:id" element={<CertificateDetail />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/memories" element={<MemoriesPage />} />
+        <Route path="/github-insights" element={<GithubInsights />} />
         
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

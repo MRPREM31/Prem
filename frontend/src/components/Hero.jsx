@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { FaDownload, FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import './Hero.css';
+import { Link } from 'react-router-dom';
 import { RESUME_LINK } from '../config';
 
 const Hero = () => {
@@ -86,6 +87,9 @@ const Hero = () => {
             <a href="#projects" className="btn btn-primary">View Projects</a>
             <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-secondary"><FaDownload /> Download Resume</a>
             <a href="#contact" className="btn btn-outline">Contact Me</a>
+            <Link to="/github-insights" className="btn btn-outline insights-btn">
+              🚀 Developer Insights
+            </Link>
           </div>
 
           <div className="social-links">

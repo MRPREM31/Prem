@@ -1195,6 +1195,126 @@ app.use((err, req, res, next) => {
   });
 });
 
+// --- GITHUB INSIGHTS API ---
+let githubCache = {
+  data: null,
+  lastFetched: null
+};
+
+app.get('/api/github-stats', async (req, res) => {
+  const now = Date.now();
+  const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+  if (githubCache.data && githubCache.lastFetched && (now - githubCache.lastFetched < CACHE_DURATION)) {
+    return res.json(githubCache.data);
+  }
+
+  try {
+    const username = 'MRPREM31';
+    const headers = {
+      'User-Agent': 'Portfolio-Dashboard-2026'
+    };
+    
+    // Add token if exists in ENV for higher rate limits
+    if (process.env.GITHUB_TOKEN) {
+      headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+    }
+
+    // Fetch User Profile, Repos, and Events in parallel
+    const [userRes, reposRes, eventsRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${username}`, { headers }),
+      fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`, { headers }),
+      fetch(`https://api.github.com/users/${username}/events/public?per_page=50`, { headers })
+    ]);
+
+    if (!userRes.ok) throw new Error('GitHub Profile Fetch Failed');
+    
+    const userData = await userRes.json();
+    const reposData = await reposRes.json();
+    const eventsData = await eventsRes.json();
+
+    // 1. Process Repository Stats
+    let totalStars = 0;
+    let totalForks = 0;
+    const languages = {};
+    const topRepos = reposData
+      .filter(repo => !repo.fork)
+      .sort((a, b) => (b.stargazers_count + b.forks_count) - (a.stargazers_count + a.forks_count))
+      .slice(0, 6)
+      .map(repo => {
+        totalStars += repo.stargazers_count;
+        totalForks += repo.forks_count;
+        if (repo.language) {
+          languages[repo.language] = (languages[repo.language] || 0) + 1;
+        }
+        return {
+          id: repo.id,
+          name: repo.name,
+          description: repo.description,
+          stars: repo.stargazers_count,
+          forks: repo.forks_count,
+          language: repo.language,
+          url: repo.html_url,
+          updated_at: repo.updated_at
+        };
+      });
+
+    // 2. Process Language Stats
+    const totalRepos = reposData.length;
+    const languageStats = Object.entries(languages)
+      .map(([name, count]) => ({
+        name,
+        value: Math.round((count / totalRepos) * 100)
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    // 3. Process Recent Activity
+    const recentActivity = eventsData
+      .slice(0, 10)
+      .map(event => ({
+        id: event.id,
+        type: event.type,
+        repo: event.repo.name,
+        created_at: event.created_at,
+        payload: event.payload
+      }));
+
+    const result = {
+      user: {
+        login: userData.login,
+        name: userData.name,
+        avatar: userData.avatar_url,
+        bio: userData.bio,
+        location: userData.location,
+        followers: userData.followers,
+        following: userData.following,
+        public_repos: userData.public_repos,
+        public_gists: userData.public_gists,
+        created_at: userData.created_at
+      },
+      stats: {
+        totalStars,
+        totalForks,
+        totalRepos: userData.public_repos
+      },
+      topRepos,
+      languageStats,
+      recentActivity,
+      lastUpdated: new Date().toISOString()
+    };
+
+    githubCache = {
+      data: result,
+      lastFetched: now
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error('GitHub API Error:', error);
+    res.status(500).json({ error: 'Failed to fetch GitHub insights' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

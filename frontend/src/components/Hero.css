@@ -157,6 +157,19 @@
     flex-direction: column-reverse;
     text-align: center;
   }
+
+.insights-btn {
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.insights-btn:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px) scale(1.05);
+}
   
   .hero-info {
     justify-content: center;
