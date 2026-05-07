@@ -72,15 +72,17 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 
 ## 📊 GitHub Statistics
 
-<div align="center">
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=MRPREM31&show_icons=true&theme=tokyonight&border_radius=10" alt="Prem's GitHub stats" />
+</p>
 
-![Prem's GitHub stats](https://github-readme-stats.vercel.app/api?username=MRPREM31&show_icons=true&theme=vision-glow&rank_icon=github&border_radius=10)
-<br />
-![Prem's GitHub streak](https://github-readme-streak-stats.herokuapp.com/?user=MRPREM31&theme=vision-glow&border_radius=10)
-<br />
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=MRPREM31&layout=compact&theme=vision-glow&border_radius=10)
+<p align="center">
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=MRPREM31&theme=tokyonight&border_radius=10" alt="Prem's GitHub streak" />
+</p>
 
-</div>
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=MRPREM31&layout=compact&theme=tokyonight&border_radius=10" alt="Top Langs" />
+</p>
 
 ---
 
