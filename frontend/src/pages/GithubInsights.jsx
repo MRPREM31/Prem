@@ -216,19 +216,25 @@ const GithubInsights = () => {
               <h2>Recent Activity</h2>
             </div>
             <div className="activity-list">
-              {data.recentActivity.map(item => (
-                <div key={item.id} className="activity-item">
-                  <div className="activity-icon">
-                    {item.type === 'PushEvent' ? <FaCode size={18} /> : <FiGitPullRequest size={18} />}
+              {data.recentActivity && data.recentActivity.length > 0 ? (
+                data.recentActivity.map(item => (
+                  <div key={item.id} className="activity-item">
+                    <div className="activity-icon">
+                      {item.type === 'PushEvent' ? <FaCode size={18} /> : <FiGitPullRequest size={18} />}
+                    </div>
+                    <div className="activity-content">
+                      <p>
+                        {item.type.replace('Event', '')} in <span className="activity-repo">{item.repo.split('/')[1]}</span>
+                      </p>
+                      <span className="activity-date">{new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
                   </div>
-                  <div className="activity-content">
-                    <p>
-                      {item.type.replace('Event', '')} in <span className="activity-repo">{item.repo.split('/')[1]}</span>
-                    </p>
-                    <span className="activity-date">{new Date(item.created_at).toLocaleDateString()}</span>
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted">No recent public activity found.</p>
                 </div>
-              ))}
+              )}
             </div>
           </motion.div>
 
@@ -239,31 +245,37 @@ const GithubInsights = () => {
               <h2>Top Repositories</h2>
             </div>
             <div className="repo-grid">
-              {data.topRepos.map(repo => (
-                <motion.div 
-                  key={repo.id} 
-                  className="repo-card glass-panel"
-                  whileHover={{ y: -5 }}
-                >
-                  <div className="repo-header">
-                    <a href={repo.url} target="_blank" rel="noreferrer" className="repo-name">
-                      {repo.name}
-                    </a>
-                    <FaExternalLinkAlt size={16} className="text-muted" />
-                  </div>
-                  <p className="repo-description">{repo.description || "No description available for this project."}</p>
-                  <div className="repo-footer">
-                    <div className="repo-lang">
-                      <span className="lang-dot" style={{ background: COLORS[Math.floor(Math.random() * COLORS.length)] }}></span>
-                      {repo.language}
+              {data.topRepos && data.topRepos.length > 0 ? (
+                data.topRepos.map(repo => (
+                  <motion.div 
+                    key={repo.id} 
+                    className="repo-card glass-panel"
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="repo-header">
+                      <a href={repo.url} target="_blank" rel="noreferrer" className="repo-name">
+                        {repo.name}
+                      </a>
+                      <FaExternalLinkAlt size={16} className="text-muted" />
                     </div>
-                    <div className="repo-stats">
-                      <div className="repo-stat"><FaStar size={14} /> {repo.stars}</div>
-                      <div className="repo-stat"><FaCodeBranch size={14} /> {repo.forks}</div>
+                    <p className="repo-description">{repo.description || "No description available for this project."}</p>
+                    <div className="repo-footer">
+                      <div className="repo-lang">
+                        <span className="lang-dot" style={{ background: COLORS[Math.floor(Math.random() * COLORS.length)] }}></span>
+                        {repo.language || 'Code'}
+                      </div>
+                      <div className="repo-stats">
+                        <div className="repo-stat"><FaStar size={14} /> {repo.stars}</div>
+                        <div className="repo-stat"><FaCodeBranch size={14} /> {repo.forks}</div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-5 glass-panel" style={{ width: '100%' }}>
+                  <p className="text-muted">No public repositories available to showcase.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
