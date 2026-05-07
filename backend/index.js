@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const dns = require('dns');
+
+// Force IPv4 for email connections (Fixes Render ENETUNREACH IPv6 issue)
+dns.setDefaultResultOrder('ipv4first');
 const supabase = require('./supabase');
 const multer = require('multer');
 const path = require('path');
