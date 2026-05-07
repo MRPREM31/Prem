@@ -127,16 +127,29 @@ const AdminLogin = () => {
         )}
 
         {mode === 'forgot' && (
-          <form onSubmit={handleForgot} className="admin-form">
-            <p className="text-muted text-center mb-3">Enter your email to receive a 6-digit OTP.</p>
-            <input type="email" name="email" placeholder="Email Address" value={credentials.email} onChange={handleChange} required />
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? 'Sending OTP...' : 'Send OTP'}
-            </button>
-            <p className="text-center mt-3">
+          <div className="admin-form">
+            <p className="text-muted text-center mb-4">
+              For security, please contact the <strong>Primary Super Admin</strong> to manually reset your password.
+            </p>
+            <div className="contact-admin-info glass-panel mb-4" style={{ padding: '15px', textAlign: 'center', border: '1px dashed var(--primary-color)' }}>
+              <p style={{ margin: 0 }}>Super Admin Email:</p>
+              <p><strong>mr.prem2006@gmail.com</strong></p>
+            </div>
+            
+            <hr style={{ border: '0', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '20px 0' }} />
+            
+            <p className="text-muted text-center mb-3">Alternatively, try resetting via Email OTP:</p>
+            <form onSubmit={handleForgot}>
+              <input type="email" name="email" placeholder="Email Address" value={credentials.email} onChange={handleChange} required />
+              <button type="submit" className="btn btn-outline w-full" disabled={loading}>
+                {loading ? 'Sending OTP...' : 'Send OTP'}
+              </button>
+            </form>
+
+            <p className="text-center mt-4">
               <span className="link-text" onClick={() => setMode('login')}>Back to Login</span>
             </p>
-          </form>
+          </div>
         )}
 
         {mode === 'otp' && (

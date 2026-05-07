@@ -79,6 +79,10 @@ const AdminDashboard = () => {
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  // Admin Reset states
+  const [resettingAdmin, setResettingAdmin] = useState(null); // stores admin object
+  const [adminResetPass, setAdminResetPass] = useState('');
+
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -251,6 +255,29 @@ const AdminDashboard = () => {
       } else {
         const data = await res.json();
         showToast(data.error || 'Failed to add admin', 'error');
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const handleAdminPasswordReset = async (e) => {
+    e.preventDefault();
+    if (!adminResetPass) return showToast('Please enter a new password', 'error');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reset-admin-password`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ adminId: resettingAdmin.id, newPassword: adminResetPass })
+      });
+      if (res.ok) {
+        showToast(`Password for ${resettingAdmin.email} has been reset.`);
+        setResettingAdmin(null);
+        setAdminResetPass('');
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to reset password', 'error');
       }
     } catch (err) { console.error(err); }
   };
@@ -1019,6 +1046,26 @@ const AdminDashboard = () => {
                 </form>
               )}
 
+              {resettingAdmin && (
+                <form className="project-form mb-4" onSubmit={handleAdminPasswordReset} style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '15px', borderRadius: '8px' }}>
+                  <p>Resetting password for: <strong>{resettingAdmin.email}</strong></p>
+                  <div className="form-row">
+                    <input 
+                      type="password" 
+                      placeholder="New Password" 
+                      value={adminResetPass} 
+                      onChange={e => setAdminResetPass(e.target.value)} 
+                      required 
+                      className="form-input" 
+                    />
+                  </div>
+                  <div className="form-actions">
+                    <button type="submit" className="btn btn-primary">Update Password</button>
+                    <button type="button" className="btn btn-outline" onClick={() => { setResettingAdmin(null); setAdminResetPass(''); }}>Cancel</button>
+                  </div>
+                </form>
+              )}
+
               <div className="table-responsive">
                 <table className="admin-table">
                   <thead>
@@ -1032,7 +1079,10 @@ const AdminDashboard = () => {
                         <td>{new Date(adm.created_at).toLocaleDateString()}</td>
                         <td className="actions-cell">
                           {!adm.is_super_admin && (
-                            <button onClick={() => removeAdmin(adm.id)} className="delete-btn"><FaTrash /></button>
+                            <>
+                              <button onClick={() => setResettingAdmin(adm)} className="edit-btn" title="Reset Password"><FaEdit /></button>
+                              <button onClick={() => removeAdmin(adm.id)} className="delete-btn" title="Remove Admin"><FaTrash /></button>
+                            </>
                           )}
                         </td>
                       </tr>

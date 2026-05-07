@@ -230,6 +230,30 @@ app.delete('/api/admin/whitelist/:id', verifyToken, async (req, res) => {
   }
 });
 
+// API: Reset Another Admin's Password (Protected, Super Admin Only)
+app.post('/api/admin/reset-admin-password', verifyToken, async (req, res) => {
+  const { adminId, newPassword } = req.body;
+  
+  // Security Check: Only allow primary super admin to reset others' passwords
+  // 'email' is in req.user from verifyToken
+  if (req.user.email !== 'mr.prem2006@gmail.com') {
+    return res.status(403).json({ error: 'Unauthorized: Only the primary Super Admin can reset passwords.' });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const { error } = await supabase
+      .from('admins')
+      .update({ password: hashedPassword })
+      .eq('id', adminId);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- FORGOT PASSWORD & OTP SYSTEM ---
 
 // API: Request Password Reset OTP
