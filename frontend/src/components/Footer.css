@@ -161,38 +161,38 @@
   }
 }
 
-/* VISITOR ANALYTICS CARD */
+/* VISITOR ANALYTICS BADGE - REFINED & COMPACT */
 .visitor-analytics-card {
-  margin-top: 2.5rem;
-  padding: 1.2rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  max-width: 210px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 160px;
+  backdrop-filter: blur(8px);
 }
 
 .visitor-analytics-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.15);
+  transform: translateY(-3px);
+  border-color: rgba(99, 102, 241, 0.2);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .visitor-status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 0.8rem;
+  gap: 6px;
+  margin-bottom: 0.4rem;
 }
 
 .live-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background-color: #22c55e;
   border-radius: 50%;
-  box-shadow: 0 0 10px #22c55e;
+  box-shadow: 0 0 8px #22c55e;
   animation: footer-pulse 2s infinite;
 }
 
@@ -203,21 +203,22 @@
 }
 
 .status-text {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: #22c55e;
+  text-transform: uppercase;
 }
 
 .visitor-label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.1rem;
   font-weight: 500;
 }
 
 .visitor-count {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 800;
   margin: 0;
   background: var(--gradient-text);
@@ -225,13 +226,14 @@
   background-clip: text;
   color: transparent;
   font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.2px;
 }
 
 @media (max-width: 576px) {
   .visitor-analytics-card {
     margin-left: auto;
     margin-right: auto;
-    max-width: 180px;
+    max-width: 150px;
+    padding: 0.6rem 0.8rem;
   }
 }

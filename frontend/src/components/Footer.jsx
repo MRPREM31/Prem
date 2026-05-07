@@ -115,7 +115,7 @@ const Footer = () => {
                   <span className="status-text">LIVE ANALYTICS</span>
                 </div>
                 <div className="visitor-info">
-                  <p className="visitor-label">👁 Portfolio Visitors</p>
+                  <p className="visitor-label">👁 Visitors</p>
                   <h3 className="visitor-count">
                     <AnimatedCounter end={visitorCount || 0} />
                   </h3>
