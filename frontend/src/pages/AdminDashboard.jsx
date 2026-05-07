@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply } from 'react-icons/fa';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { RESUME_LINK } from '../config';
@@ -1169,7 +1169,7 @@ const AdminDashboard = () => {
               <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                   <h3>Message Details</h3>
-                  <button className="close-btn" onClick={() => setSelectedMessage(null)}>&times;</button>
+                  <button className="close-btn" onClick={() => setSelectedMessage(null)}><FaTimes /></button>
                 </div>
                 <div className="modal-body">
                   <div className="detail-item">
