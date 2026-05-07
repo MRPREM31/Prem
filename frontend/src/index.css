@@ -230,14 +230,13 @@ ul {
   will-change: transform;
 }
 
-/* Hide scrollbar while keeping functionality */
-html, body {
+/* Hide scrollbar globally while keeping functionality */
+* {
   scrollbar-width: none !important; /* Firefox */
   -ms-overflow-style: none !important; /* IE/Edge */
 }
 
-html::-webkit-scrollbar, 
-body::-webkit-scrollbar {
+*::-webkit-scrollbar {
   display: none !important; /* Chrome, Safari, Opera */
   width: 0 !important;
   height: 0 !important;
