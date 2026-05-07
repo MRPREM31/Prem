@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-ic
 import './Footer.css';
 
 const Footer = () => {
-  const [signature, setSignature] = useState('');
+  const [visitorCount, setVisitorCount] = useState(0);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/signature`)
@@ -14,7 +14,36 @@ const Footer = () => {
         }
       })
       .catch(err => console.error('Error fetching signature:', err));
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/visitor-stats`)
+      .then(res => res.json())
+      .then(data => setVisitorCount(data.totalVisitors))
+      .catch(err => console.error('Error fetching visitor stats:', err));
   }, []);
+
+  const AnimatedCounter = ({ end }) => {
+    const [count, setCount] = useState(1);
+    
+    useEffect(() => {
+      let start = 1;
+      const duration = 2000;
+      const increment = Math.max(1, Math.floor(end / (duration / 16)));
+      
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setCount(end);
+          clearInterval(timer);
+        } else {
+          setCount(start);
+        }
+      }, 16);
+      
+      return () => clearInterval(timer);
+    }, [end]);
+
+    return <span>{count.toLocaleString()}</span>;
+  };
 
   return (
     <footer className="footer-premium">
@@ -56,6 +85,20 @@ const Footer = () => {
                 <a href="https://www.linkedin.com/in/prem-prasad-pradhan-18472b295/" target="_blank" rel="noreferrer"><FaLinkedin /></a>
                 <a href="https://youtube.com/@B.techPrem" target="_blank" rel="noreferrer"><FaYoutube /></a>
                 <a href="https://medium.com/@mr.prem" target="_blank" rel="noreferrer"><FaMediumM /></a>
+              </div>
+
+              {/* VISITOR ANALYTICS CARD */}
+              <div className="visitor-analytics-card glass-panel">
+                <div className="visitor-status">
+                  <span className="live-dot"></span>
+                  <span className="status-text">LIVE ANALYTICS</span>
+                </div>
+                <div className="visitor-info">
+                  <p className="visitor-label">👁 Portfolio Visitors</p>
+                  <h3 className="visitor-count">
+                    <AnimatedCounter end={visitorCount || 12845} />
+                  </h3>
+                </div>
               </div>
             </div>
           </div>

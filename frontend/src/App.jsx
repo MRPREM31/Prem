@@ -36,6 +36,10 @@ function App() {
       }
     };
     fetchFavicon();
+    
+    // Track Visitor
+    fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { method: 'POST' })
+      .catch(err => console.error('Visitor tracking failed:', err));
   }, []);
 
   return (

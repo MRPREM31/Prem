@@ -1131,6 +1131,58 @@ app.delete('/api/admin/memorable-images/:id', verifyToken, async (req, res) => {
   }
 });
 
+// --- VISITOR ANALYTICS ---
+
+// API: Track Visitor
+app.post('/api/track-visitor', async (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const userAgent = req.headers['user-agent'];
+  
+  try {
+    // Unique ID per IP + User Agent per Day to prevent spam/inflation
+    const today = new Date().toISOString().split('T')[0];
+    const uniqueId = crypto.createHash('md5').update(`${ip}-${userAgent}-${today}`).digest('hex');
+
+    // Attempt to insert/update. If table doesn't exist, this will error safely.
+    const { error } = await supabase
+      .from('visitors')
+      .upsert(
+        { unique_id: uniqueId, ip, user_agent: userAgent, visited_at: new Date().toISOString() },
+        { onConflict: 'unique_id' }
+      );
+
+    if (error) {
+      if (error.code === '42P01') {
+        console.warn('Visitors table missing in Supabase. Analytics disabled.');
+        return res.status(200).json({ success: false, message: 'Table missing' });
+      }
+      throw error;
+    }
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Visitor Tracking Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Get Visitor Stats
+app.get('/api/visitor-stats', async (req, res) => {
+  try {
+    const { count, error } = await supabase
+      .from('visitors')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) throw error;
+    
+    // We add a professional base offset (12,500) to match the user's requirement for a mature site look
+    const baseCount = 12500;
+    res.json({ totalVisitors: (count || 0) + baseCount });
+  } catch (error) {
+    // If table doesn't exist, return fallback base count
+    res.json({ totalVisitors: 12500 });
+  }
+});
+
 // Global Error Handler (Prevents HTML error pages)
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
