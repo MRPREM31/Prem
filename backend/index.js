@@ -1179,12 +1179,11 @@ app.get('/api/visitor-stats', async (req, res) => {
 
     if (error) throw error;
     
-    // We add a professional base offset (12,500) to match the user's requirement for a mature site look
-    const baseCount = 12500;
-    res.json({ totalVisitors: (count || 0) + baseCount });
+    // Return real count starting from 0
+    res.json({ totalVisitors: count || 0 });
   } catch (error) {
-    // If table doesn't exist, return fallback base count
-    res.json({ totalVisitors: 12500 });
+    // If table doesn't exist, return 0
+    res.json({ totalVisitors: 0 });
   }
 });
 

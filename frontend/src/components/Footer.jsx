@@ -117,7 +117,7 @@ const Footer = () => {
                 <div className="visitor-info">
                   <p className="visitor-label">👁 Portfolio Visitors</p>
                   <h3 className="visitor-count">
-                    <AnimatedCounter end={visitorCount || 12845} />
+                    <AnimatedCounter end={visitorCount || 0} />
                   </h3>
                 </div>
               </div>
