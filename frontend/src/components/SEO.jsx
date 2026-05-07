@@ -17,8 +17,10 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
     "@context": "http://schema.org",
     "@type": "Person",
     "name": "Prem Prasad Pradhan",
+    "alternateName": ["MR.PREM", "mrprem31"],
     "url": "https://mrprem.in/",
     "image": "https://mrprem.in/og-image.png",
+    "description": "Software Developer specializing in Full Stack Web Development.",
     "sameAs": [
       "https://github.com/MRPREM31",
       "https://linkedin.com/in/mrprem31",
@@ -30,6 +32,59 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
       "name": "NIST University"
     }
   };
+
+  // Sitelinks Searchbox & Navigation Schema for Homepage
+  const sitelinkSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://mrprem.in/",
+    "name": "MR.PREM Portfolio",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://mrprem.in/?s={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  // Navigation Menu Schema
+  const navSchema = {
+    "@context": "https://schema.org",
+    "@type": "SiteNavigationElement",
+    "name": [
+      "Home",
+      "GitHub Insights",
+      "Memories",
+      "Projects",
+      "Contact"
+    ],
+    "url": [
+      "https://mrprem.in/",
+      "https://mrprem.in/github-insights",
+      "https://mrprem.in/memories",
+      "https://mrprem.in/#projects",
+      "https://mrprem.in/#contact"
+    ]
+  };
+
+  // Breadcrumb Schema for Sub-pages
+  const breadcrumbSchema = url ? {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://mrprem.in/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": title || "Page",
+        "item": `${siteUrl}${url}`
+      }
+    ]
+  } : null;
 
   return (
     <Helmet>
@@ -55,9 +110,20 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
 
       {/* Structured Data */}
       {!noindex && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema || defaultSchema)}
-        </script>
+        <>
+          <script type="application/ld+json">
+            {JSON.stringify(schema || defaultSchema)}
+          </script>
+          {!url && (
+            <>
+              <script type="application/ld+json">{JSON.stringify(sitelinkSchema)}</script>
+              <script type="application/ld+json">{JSON.stringify(navSchema)}</script>
+            </>
+          )}
+          {breadcrumbSchema && (
+            <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+          )}
+        </>
       )}
     </Helmet>
   );
