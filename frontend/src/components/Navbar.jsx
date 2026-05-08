@@ -167,9 +167,9 @@ const Navbar = () => {
           <div className="mobile-menu-footer-premium" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-socials">
               <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer"><FaGithub /></a>
-              <a href="https://linkedin.com/in/mrprem31" target="_blank" rel="noreferrer"><FaLinkedin /></a>
-              <a href="https://instagram.com/mr.prem_31" target="_blank" rel="noreferrer"><FaInstagram /></a>
-              <a href="https://wa.me/917846835010" target="_blank" rel="noreferrer"><FaWhatsapp /></a>
+              <a href="https://www.linkedin.com/in/prem-prasad-pradhan-18472b295/" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+              <a href="https://youtube.com/@B.techPrem" target="_blank" rel="noreferrer"><FaInstagram /></a>
+              <a href="https://wa.me/919827775230?text=Hello%2C%20this%20is%20%5BYour%20Name%5D.%20I%20am%20contacting%20you%20from%20the%20portfolio%20website." target="_blank" rel="noreferrer"><FaWhatsapp /></a>
             </div>
             <button className="theme-toggle-btn-mobile" onClick={toggleTheme}>
               {theme === 'dark' ? <><FaSun /> Light Mode</> : <><FaMoon /> Dark Mode</>}
