@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FaExternalLinkAlt, FaGithub, FaFilePowerpoint } from 'react-icons/fa';
+import SEO from '../components/SEO';
 import './ProjectDetail.css';
 
 const ProjectDetail = () => {
@@ -48,6 +49,8 @@ const ProjectDetail = () => {
 
   if (!project) return null;
 
+  return (
+    <div className="portfolio-page">
       <SEO 
         title={`${project.title} | Projects`}
         description={project.description.substring(0, 160)}
