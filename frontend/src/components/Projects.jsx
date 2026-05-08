@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+
 import './Projects.css';
 
 const Projects = () => {
@@ -46,14 +46,7 @@ const Projects = () => {
             >
               <div className="project-content">
                 <h3>{project.title}</h3>
-                <div className="project-image-preview">
-                  <img 
-                    src={optimizeCloudinaryUrl(project.link ? `https://image.thum.io/get/width/600/crop/800/${project.link}` : '/assets/hero.png', 600)} 
-                    alt={project.image_alt || `${project.title} - ${project.description.substring(0, 50)} by Prem Prasad Pradhan`}
-                    loading="lazy"
-                    className="proj-thumb"
-                  />
-                </div>
+
                 <p>
                   {project.image_description || (project.description.length > 100 
                     ? `${project.description.substring(0, 100)}...` 
