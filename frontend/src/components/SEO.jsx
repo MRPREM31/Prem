@@ -10,7 +10,20 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
   const seoTitle = title ? `${title} | Prem Prasad Pradhan` : siteTitle;
   const seoDescription = description || defaultDescription;
   const seoImage = image || defaultImage;
-  const seoUrl = url ? `${siteUrl}${url}` : siteUrl;
+  const seoUrl = url ? `${siteUrl}${url.startsWith('/') ? url.slice(1) : url}` : siteUrl;
+
+  // Image Object Schema for Google Images
+  const imageObjectSchema = {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": seoImage,
+    "creator": {
+      "@type": "Person",
+      "name": "Prem Prasad Pradhan"
+    },
+    "description": seoDescription,
+    "representativeOfPage": "True"
+  };
 
   // Default Schema.org Person Data
   const defaultSchema = {
@@ -113,6 +126,9 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
         <>
           <script type="application/ld+json">
             {JSON.stringify(schema || defaultSchema)}
+          </script>
+          <script type="application/ld+json">
+            {JSON.stringify(imageObjectSchema)}
           </script>
           {!url && (
             <>

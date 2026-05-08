@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -37,9 +38,9 @@ const Navbar = () => {
       .then(data => {
         if (data.imageUrl) {
           if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(`${import.meta.env.VITE_API_URL}${data.imageUrl}`);
+            setProfileImage(optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${data.imageUrl}`, 100));
           } else {
-            setProfileImage(data.imageUrl);
+            setProfileImage(optimizeCloudinaryUrl(data.imageUrl, 100));
           }
         }
       })

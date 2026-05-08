@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import './MemorableImages.css';
 
 const MemorableImages = () => {
@@ -41,8 +42,8 @@ const MemorableImages = () => {
             >
               <div className="memory-image-container">
                 <img 
-                  src={img.image_url} 
-                  alt={`Prem Prasad Pradhan Memory: ${img.title}`} 
+                  src={optimizeCloudinaryUrl(img.image_url, 800)} 
+                  alt={img.image_alt || `Prem Prasad Pradhan Memory: ${img.title} - ${img.image_description || ''}`} 
                   className="memory-img" 
                   loading="lazy"
                 />

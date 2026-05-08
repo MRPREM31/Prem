@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [projectForm, setProjectForm] = useState({
-    title: '', description: '', tags: '', link: '', github: '', pptLink: ''
+    title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: ''
   });
 
   // Favicon states
@@ -59,12 +59,12 @@ const AdminDashboard = () => {
   const [certificates, setCertificates] = useState([]);
   const [showCertForm, setShowCertForm] = useState(false);
   const [editingCert, setEditingCert] = useState(null);
-  const [certForm, setCertForm] = useState({ title: '', description: '', date: '', image: null });
+  const [certForm, setCertForm] = useState({ title: '', description: '', date: '', image: null, image_alt: '' });
 
   // Memorable Images states
   const [memorableImages, setMemorableImages] = useState([]);
   const [showMemImageForm, setShowMemImageForm] = useState(false);
-  const [memImageForm, setMemImageForm] = useState({ title: '', image: null });
+  const [memImageForm, setMemImageForm] = useState({ title: '', image: null, image_alt: '', image_description: '' });
   const [memImageLoading, setMemImageLoading] = useState(false);
 
   // Skills states
@@ -402,7 +402,7 @@ const AdminDashboard = () => {
         fetchProjects();
         setShowProjectForm(false);
         setEditingProject(null);
-        setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '' });
+        setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' });
         showToast(editingProject ? 'Project updated' : 'Project created');
       } else {
         const data = await res.json();
@@ -440,6 +440,7 @@ const AdminDashboard = () => {
       formData.append('title', certForm.title);
       formData.append('description', certForm.description);
       formData.append('date', certForm.date);
+      if (certForm.image_alt) formData.append('image_alt', certForm.image_alt);
       if (certForm.image) {
         formData.append('certificate_image', certForm.image);
       } else if (!editingCert) {
@@ -460,7 +461,7 @@ const AdminDashboard = () => {
         fetchCertificates();
         setShowCertForm(false);
         setEditingCert(null);
-        setCertForm({ title: '', description: '', date: '', image: null });
+        setCertForm({ title: '', description: '', date: '', image: null, image_alt: '' });
         showToast(editingCert ? 'Certificate updated' : 'Certificate created');
       } else {
         const data = await res.json();
@@ -498,6 +499,8 @@ const AdminDashboard = () => {
     try {
       const formData = new FormData();
       formData.append('title', memImageForm.title);
+      formData.append('image_alt', memImageForm.image_alt);
+      formData.append('image_description', memImageForm.image_description);
       formData.append('image', memImageForm.image);
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/memorable-images`, {
@@ -508,7 +511,7 @@ const AdminDashboard = () => {
       if (res.ok) {
         fetchMemorableImages();
         setShowMemImageForm(false);
-        setMemImageForm({ title: '', image: null });
+        setMemImageForm({ title: '', image: null, image_alt: '', image_description: '' });
         showToast('Memorable image uploaded');
       } else {
         const data = await res.json();
@@ -846,7 +849,7 @@ const AdminDashboard = () => {
           <div id="admin-projects" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Projects</h3>
-              <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '' }); }}>
+              <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' }); }}>
                 <FaPlus /> Add Project
               </button>
             </div>
@@ -860,6 +863,10 @@ const AdminDashboard = () => {
                   <input type="text" placeholder="Live Link URL" value={projectForm.link} onChange={e => setProjectForm({...projectForm, link: e.target.value})} className="form-input" />
                   <input type="text" placeholder="GitHub URL" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} className="form-input" />
                   <input type="text" placeholder="PPT Link URL" value={projectForm.pptLink || ''} onChange={e => setProjectForm({...projectForm, pptLink: e.target.value})} className="form-input" />
+                </div>
+                <div className="form-row">
+                  <input type="text" placeholder="Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
+                  <input type="text" placeholder="Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary">{editingProject ? 'Update' : 'Save'} Project</button>
@@ -879,7 +886,7 @@ const AdminDashboard = () => {
                       <td>{p.title}</td>
                       <td>{p.tags}</td>
                       <td className="actions-cell">
-                        <button onClick={() => { setEditingProject(p); setProjectForm(p); setShowProjectForm(true); }} className="edit-btn"><FaEdit /></button>
+                        <button onClick={() => { setEditingProject(p); setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' }); setShowProjectForm(true); }} className="edit-btn"><FaEdit /></button>
                         <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
                       </td>
                     </tr>
@@ -893,7 +900,7 @@ const AdminDashboard = () => {
           <div id="admin-certificates" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Certificates</h3>
-              <button className="btn btn-primary btn-sm" onClick={() => { setShowCertForm(!showCertForm); setEditingCert(null); setCertForm({ title: '', description: '', date: '', image: null }); }}>
+              <button className="btn btn-primary btn-sm" onClick={() => { setShowCertForm(!showCertForm); setEditingCert(null); setCertForm({ title: '', description: '', date: '', image: null, image_alt: '' }); }}>
                 <FaPlus /> Add Certificate
               </button>
             </div>
@@ -904,6 +911,7 @@ const AdminDashboard = () => {
                 <textarea placeholder="Description" value={certForm.description} onChange={e => setCertForm({...certForm, description: e.target.value})} required className="form-input" rows="3" />
                 <div className="form-row">
                   <input type="date" value={certForm.date} onChange={e => setCertForm({...certForm, date: e.target.value})} required className="form-input" />
+                  <input type="text" placeholder="Image Alt Text (SEO)" value={certForm.image_alt || ''} onChange={e => setCertForm({...certForm, image_alt: e.target.value})} className="form-input" />
                   <input type="file" accept="image/*" onChange={e => setCertForm({...certForm, image: e.target.files[0]})} className="form-input" />
                 </div>
                 <div className="form-actions">
@@ -924,7 +932,7 @@ const AdminDashboard = () => {
                       <td>{c.title}</td>
                       <td>{c.date}</td>
                       <td className="actions-cell">
-                        <button onClick={() => { setEditingCert(c); setCertForm({ title: c.title, description: c.description, date: c.date, image: null }); setShowCertForm(true); }} className="edit-btn"><FaEdit /></button>
+                        <button onClick={() => { setEditingCert(c); setCertForm({ title: c.title, description: c.description, date: c.date, image: null, image_alt: c.image_alt || '' }); setShowCertForm(true); }} className="edit-btn"><FaEdit /></button>
                         <button onClick={() => deleteCertificate(c.id)} className="delete-btn"><FaTrash /></button>
                       </td>
                     </tr>
@@ -938,7 +946,7 @@ const AdminDashboard = () => {
           <div id="admin-memories" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Memorable Images</h3>
-              <button className="btn btn-primary btn-sm" onClick={() => { setShowMemImageForm(!showMemImageForm); setMemImageForm({ title: '', image: null }); }}>
+              <button className="btn btn-primary btn-sm" onClick={() => { setShowMemImageForm(!showMemImageForm); setMemImageForm({ title: '', image: null, image_alt: '', image_description: '' }); }}>
                 <FaPlus /> Add Memory
               </button>
             </div>
@@ -947,6 +955,8 @@ const AdminDashboard = () => {
               <form className="project-form" onSubmit={handleMemImageSubmit}>
                 <input type="text" placeholder="Image Title" value={memImageForm.title} onChange={e => setMemImageForm({...memImageForm, title: e.target.value})} required className="form-input" />
                 <div className="form-row">
+                  <input type="text" placeholder="Image Alt Text (SEO)" value={memImageForm.image_alt || ''} onChange={e => setMemImageForm({...memImageForm, image_alt: e.target.value})} className="form-input" />
+                  <input type="text" placeholder="Image SEO Description" value={memImageForm.image_description || ''} onChange={e => setMemImageForm({...memImageForm, image_description: e.target.value})} className="form-input" />
                   <input type="file" accept="image/*" onChange={e => setMemImageForm({...memImageForm, image: e.target.files[0]})} required className="form-input" />
                 </div>
                 <div className="form-actions">

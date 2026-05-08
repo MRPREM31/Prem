@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { FaDownload, FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import './Hero.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { RESUME_LINK } from '../config';
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 
 const Hero = () => {
   const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
@@ -18,9 +19,9 @@ const Hero = () => {
         if (data.imageUrl) {
           const timestamp = Date.now();
           if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(`${import.meta.env.VITE_API_URL}${data.imageUrl}?t=${timestamp}`);
+            setProfileImage(optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${data.imageUrl}`, 600) + `&t=${timestamp}`);
           } else {
-            setProfileImage(`${data.imageUrl}?t=${timestamp}`);
+            setProfileImage(optimizeCloudinaryUrl(data.imageUrl, 600) + `?t=${timestamp}`);
           }
         }
       })

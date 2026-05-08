@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import './Certificates.css';
 
 const Certificates = () => {
@@ -34,8 +35,8 @@ const Certificates = () => {
               }}>
                 <div className="cert-image-container">
                   <img 
-                    src={cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image} 
-                    alt={`Prem Prasad Pradhan Certificate: ${cert.title}`} 
+                    src={optimizeCloudinaryUrl(cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image, 600)} 
+                    alt={cert.image_alt || `Certificate of Achievement: ${cert.title} awarded to Prem Prasad Pradhan`} 
                     className="cert-img" 
                     loading="lazy"
                   />

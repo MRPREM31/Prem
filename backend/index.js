@@ -115,6 +115,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Helper for Cloudinary optimization
+const optimizeCloudinaryUrl = (url) => {
+  if (!url || !url.includes('cloudinary.com')) return url;
+  // If it already has transformations, skip or append
+  if (url.includes('/upload/')) {
+    return url.replace('/upload/', '/upload/f_auto,q_auto,w_auto/');
+  }
+  return url;
+};
+
 // Configure Multer Storage for Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -816,11 +826,11 @@ app.get('/api/projects/:id', async (req, res) => {
 
 // API: Create Project (Protected)
 app.post('/api/admin/projects', verifyToken, async (req, res) => {
-  const { title, description, tags, link, github, pptLink } = req.body;
+  const { title, description, tags, link, github, pptLink, image_alt, image_description } = req.body;
   try {
     const { data, error } = await supabase
       .from('projects')
-      .insert([{ title, description, tags, link, github, pptLink }])
+      .insert([{ title, description, tags, link, github, pptLink, image_alt, image_description }])
       .select();
 
     if (error) throw error;
@@ -833,11 +843,11 @@ app.post('/api/admin/projects', verifyToken, async (req, res) => {
 
 // API: Update Project (Protected)
 app.put('/api/admin/projects/:id', verifyToken, async (req, res) => {
-  const { title, description, tags, link, github, pptLink } = req.body;
+  const { title, description, tags, link, github, pptLink, image_alt, image_description } = req.body;
   try {
     const { error } = await supabase
       .from('projects')
-      .update({ title, description, tags, link, github, pptLink })
+      .update({ title, description, tags, link, github, pptLink, image_alt, image_description })
       .eq('id', req.params.id);
 
     if (error) throw error;
@@ -962,7 +972,7 @@ app.get('/api/certificates/:id', async (req, res) => {
 
 // API: Create Certificate (Protected)
 app.post('/api/admin/certificates', verifyToken, upload.single('certificate_image'), async (req, res) => {
-  const { title, description, date } = req.body;
+  const { title, description, date, image_alt } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
   const imageUrl = req.file.path; // Cloudinary URL
@@ -970,7 +980,7 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
   try {
     const { data, error } = await supabase
       .from('certificates')
-      .insert([{ title, description, date, image: imageUrl }])
+      .insert([{ title, description, date, image: imageUrl, image_alt }])
       .select();
 
     if (error) throw error;
@@ -983,8 +993,8 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
 
 // API: Update Certificate (Protected)
 app.put('/api/admin/certificates/:id', verifyToken, upload.single('certificate_image'), async (req, res) => {
-  const { title, description, date } = req.body;
-  const updateData = { title, description, date };
+  const { title, description, date, image_alt } = req.body;
+  const updateData = { title, description, date, image_alt };
   
   if (req.file) {
     updateData.image = req.file.path;
@@ -1123,13 +1133,11 @@ app.get('/api/memorable-images', async (req, res) => {
 
 // API: Create Memorable Image (Protected)
 app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), async (req, res) => {
-  const { title } = req.body;
+  const { title, image_alt, image_description } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
   const imageUrl = req.file.path; // Cloudinary URL
   
-  // Note: width and height are available on req.file in some multer-storage-cloudinary versions
-  // We handle it safely here.
   let aspectRatio = 'landscape';
   if (req.file.width && req.file.height) {
     aspectRatio = req.file.width >= req.file.height ? 'landscape' : 'portrait';
@@ -1142,7 +1150,9 @@ app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), asy
         title: title || 'Untitled Memory', 
         image_url: imageUrl, 
         aspect_ratio: aspectRatio,
-        upload_date: new Date().toISOString() 
+        upload_date: new Date().toISOString(),
+        image_alt,
+        image_description
       }])
       .select();
 
@@ -1396,6 +1406,58 @@ app.post('/api/chat', async (req, res) => {
   } catch (error) {
     console.error('Groq AI Error:', error);
     res.status(500).json({ error: 'AI Neural Link Timeout. Please try again.' });
+  }
+});
+
+// --- DYNAMIC IMAGE SITEMAP ---
+app.get('/image-sitemap.xml', async (req, res) => {
+  try {
+    const [projectsRes, certificatesRes, memoriesRes] = await Promise.all([
+      supabase.from('projects').select('title, image_alt, image_description'),
+      supabase.from('certificates').select('title, image, image_alt'),
+      supabase.from('memorable_images').select('title, image_url, image_alt, image_description')
+    ]);
+
+    const siteUrl = 'https://mrprem.in';
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+    // 1. Projects
+    projectsRes.data?.forEach(p => {
+      // Note: Projects might not have a direct image column if they use ID-based thumbnails, 
+      // but let's assume they have project detail pages.
+      // If projects have images, we add them here.
+    });
+
+    // 2. Certificates
+    certificatesRes.data?.forEach(c => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${siteUrl}/#certificates</loc>\n`;
+      xml += `    <image:image>\n`;
+      xml += `      <image:loc>${c.image}</image:loc>\n`;
+      xml += `      <image:title>${c.title}</image:title>\n`;
+      xml += `      <image:caption>${c.image_alt || c.title}</image:caption>\n`;
+      xml += `    </image:image>\n`;
+      xml += `  </url>\n`;
+    });
+
+    // 3. Memories
+    memoriesRes.data?.forEach(m => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${siteUrl}/memories</loc>\n`;
+      xml += `    <image:image>\n`;
+      xml += `      <image:loc>${m.image_url}</image:loc>\n`;
+      xml += `      <image:title>${m.title}</image:title>\n`;
+      xml += `      <image:caption>${m.image_alt || m.image_description || m.title}</image:caption>\n`;
+      xml += `    </image:image>\n`;
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (error) {
+    res.status(500).send('Error generating sitemap');
   }
 });
 

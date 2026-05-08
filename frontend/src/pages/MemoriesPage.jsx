@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import '../components/MemorableImages.css'; // Reuse CSS
 
 const MemoriesPage = () => {
@@ -62,8 +63,8 @@ const MemoriesPage = () => {
                 >
                   <div className="memory-image-container">
                     <img 
-                      src={img.image_url} 
-                      alt={`Prem Prasad Pradhan Memory: ${img.title}`} 
+                      src={optimizeCloudinaryUrl(img.image_url, 1200)} 
+                      alt={img.image_alt || `Prem Prasad Pradhan Memory: ${img.title} - ${img.image_description || ''}`} 
                       className="memory-img" 
                       loading="lazy"
                     />
