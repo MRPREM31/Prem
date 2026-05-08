@@ -589,6 +589,8 @@
     height: 600px;
     right: 0;
     bottom: 80px;
+    background: var(--bg-color); /* More solid background for mobile */
+    backdrop-filter: blur(10px); /* Reduced blur for better performance/visibility */
   }
   
   .header-nav .nav-btn-wrap:nth-child(2) {
@@ -599,6 +601,14 @@
   .toggle-flip-wrap {
     transform: none !important;
     transition: none !important;
+  }
+
+  .message-group.bot .msg-bubble {
+    background: var(--surface-hover);
+  }
+
+  .input-container {
+    background: var(--surface-hover);
   }
   
   .toggle-back {

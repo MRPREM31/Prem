@@ -100,9 +100,9 @@ const GithubInsights = () => {
           animate={{ opacity: 1, x: 0 }}
         >
           <div className="insights-header-info">
-            <Link to="/" className="back-link">
+            <button onClick={() => navigate(-1)} className="back-link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <FaArrowLeft /> NODE_PORTFOLIO
-            </Link>
+            </button>
             <h1 className="gradient-text">Developer Intelligence</h1>
             <p className="last-updated">
               <FiClock size={14} style={{ marginRight: '5px' }} /> 

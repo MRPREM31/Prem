@@ -16,7 +16,10 @@ const crypto = require('crypto');
 const Groq = require('groq-sdk');
 const app = express();
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || 'placeholder_key' });
+if (!process.env.GROQ_API_KEY) {
+  console.warn('WARNING: GROQ_API_KEY is missing. Chatbot features will not work.');
+}
 
 const PREM_KNOWLEDGE = `
 Core Identity:

@@ -7,21 +7,18 @@ import { useLocation, useNavigationType } from "react-router-dom";
  * and React rendering lifecycle for perfect scroll restoration.
  */
 const ScrollManager = () => {
-  const { pathname, hash, key } = useLocation();
+  const { pathname, hash, key, state } = useLocation();
   const navigationType = useNavigationType();
   const isRestoring = useRef(false);
 
-  // 1. Efficiently track scroll position
+  // 1. Precise Scroll Tracking
   useEffect(() => {
     const handleScroll = () => {
       if (isRestoring.current) return;
       
       const currentY = window.scrollY;
-      // We only save if we are on a valid page state
       if (currentY >= 0) {
-        // Precise history-key based storage
         sessionStorage.setItem(`scroll_pos_${pathname}_${key}`, currentY.toString());
-        // Path-based fallback
         sessionStorage.setItem(`scroll_pos_${pathname}`, currentY.toString());
       }
     };
@@ -30,66 +27,78 @@ const ScrollManager = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, key]);
 
-  // 2. Advanced Restoration Logic
+  // 2. Intelligent Restoration Logic
   useLayoutEffect(() => {
-    // Reset: New navigations (PUSH) should start at the top
-    if (navigationType !== "POP" && !hash) {
+    const isReturning = state?.fromPortfolio === true || navigationType === "POP";
+    const savedY = state?.scrollY || 
+                  sessionStorage.getItem(`scroll_pos_${pathname}_${key}`) || 
+                  sessionStorage.getItem(`scroll_pos_${pathname}`);
+    const lastSection = state?.section || sessionStorage.getItem("lastSection");
+
+    // A: RESET TO TOP (Only for fresh visits)
+    if (!isReturning && !hash && navigationType === "PUSH") {
+      isRestoring.current = true;
       window.scrollTo(0, 0);
+      setTimeout(() => { isRestoring.current = false; }, 100);
       return;
     }
 
-    // A: Handle Hash Navigation (#id) with precise offset
+    // B: RESTORE POSITION
+    if (isReturning && (savedY || lastSection)) {
+      isRestoring.current = true;
+
+      const performScroll = () => {
+        if (savedY) {
+          window.scrollTo(0, parseInt(savedY, 10));
+        } else if (lastSection && pathname === "/") {
+          const element = document.getElementById(lastSection);
+          if (element) {
+            const offset = 85;
+            const position = element.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top: position, behavior: "instant" });
+          }
+        }
+      };
+
+      // 1. Instant attempt
+      performScroll();
+
+      // 2. Watch for content expansion (images, etc)
+      const observer = new ResizeObserver(() => {
+        performScroll();
+      });
+      observer.observe(document.body);
+
+      // 3. Multi-stage retry loop (Final safety)
+      const safetyNet = [10, 50, 150, 300, 600, 1200, 2500].map(ms => 
+        setTimeout(() => {
+          performScroll();
+          if (ms === 2500) {
+            isRestoring.current = false;
+            // Clean up session storage markers
+            sessionStorage.removeItem("lastSection");
+          }
+        }, ms)
+      );
+
+      return () => {
+        observer.disconnect();
+        safetyNet.forEach(clearTimeout);
+        isRestoring.current = false;
+      };
+    }
+
+    // C: HASH NAVIGATION
     if (hash) {
       const id = hash.replace("#", "");
       const element = document.getElementById(id);
       if (element) {
-        const offset = 85; // Fixed navbar height
+        const offset = 85;
         const position = element.getBoundingClientRect().top + window.pageYOffset - offset;
         window.scrollTo({ top: position, behavior: "smooth" });
-        return;
       }
     }
-
-    // B: Handle BACK/FORWARD (POP) Navigation
-    if (navigationType === "POP") {
-      const savedY = sessionStorage.getItem(`scroll_pos_${pathname}_${key}`) || 
-                    sessionStorage.getItem(`scroll_pos_${pathname}`);
-      
-      if (savedY) {
-        const targetY = parseInt(savedY, 10);
-        isRestoring.current = true;
-
-        // B.1: Instant restoration attempt
-        window.scrollTo(0, targetY);
-
-        // B.2: THE SECRET SAUCE - ResizeObserver
-        // This watches the body height and re-applies scroll whenever the page grows.
-        // This solves the problem of "restoring before images/data are loaded".
-        const observer = new ResizeObserver(() => {
-          if (document.body.scrollHeight >= targetY) {
-            window.scrollTo(0, targetY);
-          }
-        });
-
-        observer.observe(document.body);
-
-        // B.3: Multi-stage timeout fallbacks (Ultimate safety net)
-        const safetyTimeouts = [10, 50, 150, 300, 600, 1200, 2500].map(ms => 
-          setTimeout(() => {
-            window.scrollTo(0, targetY);
-            // After 2.5s, we assume the page is fully stable
-            if (ms === 2500) isRestoring.current = false;
-          }, ms)
-        );
-
-        return () => {
-          observer.disconnect();
-          safetyTimeouts.forEach(clearTimeout);
-          isRestoring.current = false;
-        };
-      }
-    }
-  }, [pathname, hash, key, navigationType]);
+  }, [pathname, hash, key, navigationType, state]);
 
   return null;
 };

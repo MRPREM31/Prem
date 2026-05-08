@@ -87,9 +87,13 @@ const Hero = () => {
             <a href="#projects" className="btn btn-primary">View Projects</a>
             <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-secondary"><FaDownload /> Download Resume</a>
             <a href="#contact" className="btn btn-outline">Contact Me</a>
-            <Link to="/github-insights" className="btn btn-outline insights-btn">
+            <button onClick={() => { 
+              navigate('/github-insights', { 
+                state: { fromPortfolio: true, scrollY: window.scrollY, section: 'home' } 
+              }); 
+            }} className="btn btn-outline insights-btn">
               🚀 Developer Insights
-            </Link>
+            </button>
           </div>
 
           <div className="social-links">

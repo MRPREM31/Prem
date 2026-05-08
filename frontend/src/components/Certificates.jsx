@@ -27,7 +27,11 @@ const Certificates = () => {
         <div className="certificates-grid">
           {certificates.length > 0 ? (
             certificates.map(cert => (
-              <div className="certificate-card glass-panel" key={cert.id} onClick={() => navigate(`/certificate/${cert.id}`)}>
+              <div className="certificate-card glass-panel" key={cert.id} onClick={() => { 
+                navigate(`/certificate/${cert.id}`, { 
+                  state: { fromPortfolio: true, scrollY: window.scrollY, section: 'certificates' } 
+                }); 
+              }}>
                 <div className="cert-image-container">
                   <img 
                     src={cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image} 

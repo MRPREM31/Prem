@@ -61,7 +61,11 @@ const MemorableImages = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <button className="btn btn-primary see-all-btn" onClick={() => navigate('/memories')}>
+          <button className="btn btn-primary see-all-btn" onClick={() => { 
+            navigate('/memories', { 
+              state: { fromPortfolio: true, scrollY: window.scrollY, section: 'memories' } 
+            }); 
+          }}>
             See All Memories
           </button>
         </motion.div>

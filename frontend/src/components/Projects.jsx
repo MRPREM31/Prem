@@ -36,7 +36,11 @@ const Projects = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              onClick={() => navigate(`/project/${project.id}`)}
+              onClick={() => { 
+                navigate(`/project/${project.id}`, { 
+                  state: { fromPortfolio: true, scrollY: window.scrollY, section: 'projects' } 
+                }); 
+              }}
               style={{ cursor: 'pointer' }}
             >
               <div className="project-content">
@@ -53,7 +57,12 @@ const Projects = () => {
                 </div>
               </div>
               <div className="project-links">
-                <button className="btn btn-outline btn-sm" onClick={(e) => { e.stopPropagation(); navigate(`/project/${project.id}`); }}>
+                <button className="btn btn-outline btn-sm" onClick={(e) => { 
+                  e.stopPropagation(); 
+                  navigate(`/project/${project.id}`, { 
+                    state: { fromPortfolio: true, scrollY: window.scrollY, section: 'projects' } 
+                  }); 
+                }}>
                   See full detail
                 </button>
               </div>
