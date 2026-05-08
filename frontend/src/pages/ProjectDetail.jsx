@@ -48,8 +48,12 @@ const ProjectDetail = () => {
 
   if (!project) return null;
 
-  return (
-    <div className="portfolio-page">
+      <SEO 
+        title={`${project.title} | Projects`}
+        description={project.description.substring(0, 160)}
+        keywords={`${project.tags}, AI projects, full stack projects, React portfolio projects`}
+        url={`project/${id}`}
+      />
       <Navbar />
       <main className="main-content">
         <div className="proj-detail-page section">

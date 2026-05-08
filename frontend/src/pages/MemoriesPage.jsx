@@ -29,8 +29,8 @@ const MemoriesPage = () => {
   return (
     <div className="portfolio-page">
       <SEO 
-        title="Memorable Moments"
-        description="A gallery of beautiful memories and key milestones in my personal and professional journey as a software developer."
+        title="Memories | Prem Prasad Pradhan Portfolio"
+        description="Explore memorable moments, achievements, experiences, and personal highlights from the journey of Prem Prasad Pradhan (MR.PREM)."
         url="memories"
         schema={gallerySchema}
       />

@@ -86,9 +86,9 @@ const GithubInsights = () => {
   return (
     <div className="github-insights-page">
       <SEO 
-        title="MR.PREM GitHub Insights | Developer Dashboard"
-        description="Explore the live GitHub analytics and developer activity of Prem Prasad Pradhan (MR.PREM). Real-time contribution matrix, tech breakdown, and performance metrics."
-        keywords="MR.PREM GitHub, Prem GitHub, Prem Prasad Pradhan GitHub, MRPREM31 GitHub, Prem developer dashboard, software engineer insights, Prem portfolio analytics"
+        title="MR.PREM GitHub Insights | Developer Analytics Dashboard"
+        description="Explore the live GitHub contribution graph, coding activity, repositories, commits, developer analytics, and technical journey of Prem Prasad Pradhan (MR.PREM)."
+        keywords="GitHub analytics, contribution graph, coding dashboard, developer activity, MR.PREM GitHub, Prem developer dashboard, Prem portfolio analytics"
         url="github-insights"
       />
       <Navbar />

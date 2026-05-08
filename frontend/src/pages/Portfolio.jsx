@@ -16,8 +16,9 @@ const Portfolio = () => {
   return (
     <div className="portfolio-page">
       <SEO 
-        description="Official portfolio of Prem Prasad Pradhan. A passionate Software Developer specializing in full-stack web development, building scalable and user-centric digital solutions."
-        keywords="Prem Prasad Pradhan, Software Developer, Portfolio, React Developer, Full Stack Developer, NIST University"
+        title="Prem Prasad Pradhan (MR.PREM) | Software Developer Portfolio"
+        description="Official portfolio of Prem Prasad Pradhan (MR.PREM), showcasing AI-powered projects, full-stack development, GitHub analytics, and modern SaaS-style web applications."
+        keywords="software developer portfolio, MR.PREM portfolio, Prem developer, Prem Prasad Pradhan, React Developer, Full Stack Developer, NIST University"
       />
       <Navbar />
       <main className="main-content">

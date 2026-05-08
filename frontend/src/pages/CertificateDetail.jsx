@@ -51,7 +51,7 @@ const CertificateDetail = () => {
   return (
     <div className="portfolio-page">
       <SEO 
-        title={certificate.title}
+        title={`${certificate.title} | Certificates`}
         description={certificate.description.substring(0, 160)}
         image={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image}
         url={`certificate/${id}`}
