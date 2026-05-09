@@ -90,7 +90,7 @@ const ReviewPage = () => {
       </Helmet>
 
       <Navbar />
-      <div className="container" style={{ paddingTop: '100px' }}>
+      <div className="container" style={{ paddingTop: '60px' }}>
         <Link to={`/project/${slug}`} className="btn btn-outline btn-sm back-btn">
           <FaChevronLeft /> Back to Project
         </Link>

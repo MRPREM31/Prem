@@ -105,6 +105,34 @@ const ProjectDetail = () => {
 
   return (
     <div className="portfolio-page">
+      <Helmet>
+        <title>{project.title} | Prem Prasad Pradhan</title>
+        <meta name="description" content={project.image_description || project.description.substring(0, 160)} />
+        <meta property="og:title" content={project.title} />
+        <meta property="og:description" content={project.image_description || project.description.substring(0, 160)} />
+        <meta property="og:image" content={project.images?.[0]?.image_url || '/og-image.jpg'} />
+        <meta property="og:url" content={window.location.href} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": project.title,
+            "description": project.image_description || project.description.substring(0, 160),
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web",
+            "author": {
+              "@type": "Person",
+              "name": "Prem Prasad Pradhan"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": project.avgRating || "0.0",
+              "reviewCount": project.reviews?.length || "1"
+            }
+          })}
+        </script>
+      </Helmet>
       <SEO 
         title={`${project.title} | Projects`}
         description={project.description.substring(0, 160)}
@@ -125,55 +153,6 @@ const ProjectDetail = () => {
                   <h1 className="proj-detail-title gradient-text">{project.title}</h1>
                 </div>
 
-                <div className="proj-share-bar mb-4">
-                  <span className="share-label"><FaShareAlt /> Share Project:</span>
-                  <div className="share-buttons" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <WhatsappShareButton url={shareUrl} title={projectTitle}>
-                      <WhatsappIcon size={32} round />
-                    </WhatsappShareButton>
-                    <LinkedinShareButton url={window.location.href} title={project.title}>
-                      <LinkedinIcon size={32} round />
-                    </LinkedinShareButton>
-                    <TwitterShareButton url={window.location.href} title={project.title}>
-                      <TwitterIcon size={32} round />
-                    </TwitterShareButton>
-                    <Helmet>
-                      <meta property="og:url" content={window.location.href} />
-                      <meta name="twitter:card" content="summary_large_image" />
-                      <script type="application/ld+json">
-                        {JSON.stringify({
-                          "@context": "https://schema.org",
-                          "@type": "SoftwareApplication",
-                          "name": project.title,
-                          "description": project.image_description || project.description.substring(0, 160),
-                          "applicationCategory": "DeveloperApplication",
-                          "operatingSystem": "Web",
-                          "author": {
-                            "@type": "Person",
-                            "name": "Prem Prasad Pradhan"
-                          },
-                          "aggregateRating": {
-                            "@type": "AggregateRating",
-                            "ratingValue": project.avgRating || "0.0",
-                            "reviewCount": project.reviews?.length || "1"
-                          }
-                        })}
-                      </script>
-                    </Helmet>
-                  </div>
-                </div>
-
-                <div className="proj-actions-row mb-4">
-                  <button className="btn btn-primary glass-btn" onClick={() => navigate(`/review/${idOrSlug}`)}>
-                    <FaCommentDots /> Give a Review
-                  </button>
-                  {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">
-                      <FaExternalLinkAlt /> Live Demo
-                    </a>
-                  )}
-                </div>
-                
                 <div className="proj-detail-tags">
                   {project.tags.split(',').map((tag, i) => (
                     <span key={i} className="tag">{tag.trim()}</span>
@@ -202,7 +181,7 @@ const ProjectDetail = () => {
                       <FaFilePowerpoint /> View PPT
                     </a>
                   )}
-                  <button className="btn btn-outline btn-sm review-trigger-btn" onClick={() => setShowReviewModal(true)}>
+                  <button className="btn btn-outline btn-sm review-trigger-btn" onClick={() => navigate(`/review/${idOrSlug}`)}>
                     <FaCommentDots /> Give Review
                   </button>
                 </div>
@@ -227,6 +206,22 @@ const ProjectDetail = () => {
                     </div>
                   </div>
                 )}
+
+                {/* SHARE BAR */}
+                <div className="proj-share-bar mb-4">
+                  <span className="share-label"><FaShareAlt /> Share Project:</span>
+                  <div className="share-buttons">
+                    <WhatsappShareButton url={window.location.href} title={project.title}>
+                      <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                    <LinkedinShareButton url={window.location.href} title={project.title}>
+                      <LinkedinIcon size={32} round />
+                    </LinkedinShareButton>
+                    <TwitterShareButton url={window.location.href} title={project.title}>
+                      <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                  </div>
+                </div>
 
                 {/* REVIEW SECTION */}
                 <div className="proj-detail-reviews">
