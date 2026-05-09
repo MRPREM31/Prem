@@ -18,7 +18,7 @@ const ManageReviews = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate('/prem-login-2006');
+      navigate('/prem-login-2026');
       return;
     }
     fetchData();

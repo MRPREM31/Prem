@@ -22,7 +22,7 @@ const PersonalVault = () => {
   // Security check: Only super admin
   useEffect(() => {
     if (!token || adminEmail !== 'mr.prem2006@gmail.com') {
-      navigate('/prem-login-2006');
+      navigate('/prem-login-2026');
     } else {
       fetchFiles();
     }
