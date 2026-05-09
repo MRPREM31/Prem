@@ -10,6 +10,7 @@ import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 const Hero = () => {
   const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
   const [resumeUrl, setResumeUrl] = useState('/resume.pdf');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch profile image
