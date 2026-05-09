@@ -6,6 +6,7 @@
 # 🚀 Prem Prasad Pradhan
 ### Full-Stack Developer | AI Enthusiast | Tech Innovator
 
+[![Last Updated](https://img.shields.io/github/last-commit/MRPREM31/Prem?style=for-the-badge&color=6366f1&label=Last%20Update)](https://github.com/MRPREM31/Prem)
 <a href="https://mrprem.in/">
   <img src="https://img.shields.io/badge/Portfolio-Visit%20Website-6366f1?style=for-the-badge&logo=react&logoColor=white" alt="Portfolio" />
 </a>
@@ -52,6 +53,17 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 - 📱 **Mobile Responsive**: Perfectly optimized for Desktop, Tablet, and Mobile devices.
 - 🚀 **Performance**: Ultra-fast loading with Vite, smooth scroll restoration, and SEO optimization.
 - 🎨 **Premium UI**: Modern glassmorphism design with professional micro-animations.
+
+---
+
+## 🛠️ Recent Updates (May 9, 2026)
+
+- 📊 **Scalable Review Moderation**: Migrated from dashboard-only reviews to a dedicated, searchable moderation system (`/admin/reviews`).
+- 🔍 **Advanced Filtering**: Added capability to search reviews by **Project Name**, **Project ID**, and **Reviewer Name**.
+- 🛠️ **Project Reference Modal**: Integrated a quick-lookup tool for Project IDs to streamline administration.
+- 🔗 **SEO-Ready Slugs**: Fully transitioned to slug-based URLs (`/project/project-name`) for better indexing and shareability.
+- 📱 **UI Refinement**: Optimized button layouts, relocated sharing tools, and improved mobile card views for moderation.
+- 🔔 **Toast Notification System**: Implemented a premium, animated notification system for all admin actions.
 
 ---
 

@@ -92,9 +92,14 @@
 }
 
 .admin-table th, .admin-table td {
-  padding: 1rem;
+  padding: 1.2rem 1rem;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .admin-table th {
@@ -881,8 +886,9 @@
   font-size: 0.9rem;
   color: var(--text-main);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
 }
 

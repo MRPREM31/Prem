@@ -1,16 +1,43 @@
-# React + Vite
+# 🎨 Prem Prasad Pradhan - Frontend (Portfolio)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend for the professional portfolio of **Prem Prasad Pradhan**. Built with a focus on premium aesthetics, ultra-fast performance, and deep SEO optimization.
 
-Currently, two official plugins are available:
+## 🚀 Key Technologies
+- **Framework**: React 18 with Vite
+- **Styling**: Vanilla CSS (Custom Glassmorphism Design)
+- **State Management**: React Hooks (useState, useEffect)
+- **Routing**: React Router v6
+- **Metadata/SEO**: React Helmet Async
+- **Icons**: React Icons (Fa, Io, Md)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 💎 Premium Features
+- **Dynamic Projects Showcase**: Automated image galleries and technical stack displays.
+- **Slug-Based URLs**: Clean, indexed links like `/project/my-cool-app` instead of IDs.
+- **QR Ecosystem**: Dynamic QR code generation for every project and review link.
+- **Micro-animations**: Smooth transitions, hover effects, and animated toast notifications.
+- **Scalable Moderation**: Dedicated admin interfaces for reviews and project management.
 
-## React Compiler
+## 🛠️ Recent Frontend Updates (May 9, 2026)
+- **Review Moderation System**: Migrated to a scalable, dedicated page with real-time search.
+- **Project Detail Overhaul**: Fixed duplicate buttons and improved the information hierarchy.
+- **Admin Toast System**: Added a premium, animated notification system.
+- **Responsive Tables**: Redesigned all admin tables to be mobile-friendly card-views.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📦 Installation & Development
 
-## Expanding the ESLint configuration
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Set up environment variables:
+   Create a `.env` file and add:
+   ```env
+   VITE_API_URL=your_backend_url
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+Built with ❤️ by [Prem Prasad Pradhan](https://mrprem.in/)
