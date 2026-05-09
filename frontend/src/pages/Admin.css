@@ -245,6 +245,32 @@
   border-right: 1px solid var(--border-color);
 }
 
+/* Toast Styles */
+.custom-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: rgba(var(--accent-primary-rgb), 0.9);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+.custom-toast.error {
+  background: rgba(239, 68, 68, 0.9);
+}
+
+@keyframes toastSlideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 /* Image Upload Section Styles */
 .admin-section {
   margin-bottom: 2rem;

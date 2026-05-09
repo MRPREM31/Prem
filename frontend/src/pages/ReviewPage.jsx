@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaStar, FaRegStar, FaChevronLeft, FaCheckCircle } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import './ProjectDetail.css'; // Reuse glass styles
 
 const ReviewPage = () => {
@@ -87,17 +89,18 @@ const ReviewPage = () => {
         </script>
       </Helmet>
 
-      <div className="container">
+      <Navbar />
+      <div className="container" style={{ paddingTop: '100px' }}>
         <Link to={`/project/${slug}`} className="btn btn-outline btn-sm back-btn">
           <FaChevronLeft /> Back to Project
         </Link>
 
         <div className="liquid-glass-modal" style={{ margin: '2rem auto', animation: 'none', position: 'static' }}>
           {submitted ? (
-            <div className="review-success-msg">
-              <div className="success-icon"><FaCheckCircle style={{color: '#10b981'}} /></div>
-              <h2>Thank You!</h2>
-              <p>Your rating for <strong>{project.title}</strong> has been posted successfully.</p>
+            <div className="review-success-msg text-center p-5">
+              <div className="success-icon mb-4"><FaCheckCircle style={{color: '#10b981', fontSize: '4rem'}} /></div>
+              <h2 className="gradient-text mb-3">Thank You!</h2>
+              <p className="mb-4">Your rating for <strong>{project.title}</strong> has been posted successfully.</p>
               <div className="mt-4">
                 <Link to="/" className="btn btn-primary">Go to Home</Link>
               </div>
@@ -177,6 +180,7 @@ const ReviewPage = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
