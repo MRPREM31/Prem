@@ -71,6 +71,20 @@ const ReviewPage = () => {
         <meta property="og:title" content={`Give a Review for ${project.title}`} />
         <meta property="og:description" content={`Rate your experience with ${project.title} on Prem's Portfolio.`} />
         <meta property="og:image" content={project.images?.[0]?.image_url || '/og-image.jpg'} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Review",
+            "itemReviewed": {
+              "@type": "SoftwareApplication",
+              "name": project.title
+            },
+            "author": {
+              "@type": "Person",
+              "name": "User"
+            }
+          })}
+        </script>
       </Helmet>
 
       <div className="container">
@@ -90,10 +104,23 @@ const ReviewPage = () => {
             </div>
           ) : (
             <>
+              <div className="review-project-hero">
+                <div className="rev-proj-img">
+                  <img src={project.images?.[0]?.image_url || '/placeholder-project.jpg'} alt={project.title} />
+                </div>
+                <div className="rev-proj-info">
+                  <h3 className="gradient-text">{project.title}</h3>
+                  <div className="rev-stats">
+                    <span className="rev-avg"><FaStar /> {project.avgRating}</span>
+                    <span className="rev-count">{project.reviews?.length || 0} Reviews</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="modal-header">
                 <div>
-                  <h3 className="gradient-text">Submit Review</h3>
-                  <p style={{fontSize: '0.9rem', opacity: 0.7}}>{project.title}</p>
+                  <h3 className="gradient-text">Submit Your Review</h3>
+                  <p style={{fontSize: '0.9rem', opacity: 0.7}}>Your feedback helps me improve this project.</p>
                 </div>
               </div>
 

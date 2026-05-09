@@ -128,13 +128,47 @@ const ProjectDetail = () => {
                     <WhatsappShareButton url={shareUrl} title={projectTitle}>
                       <WhatsappIcon size={32} round />
                     </WhatsappShareButton>
-                    <LinkedinShareButton url={shareUrl} title={projectTitle}>
+                    <LinkedinShareButton url={window.location.href} title={project.title}>
                       <LinkedinIcon size={32} round />
                     </LinkedinShareButton>
-                    <TwitterShareButton url={shareUrl} title={projectTitle}>
+                    <TwitterShareButton url={window.location.href} title={project.title}>
                       <TwitterIcon size={32} round />
                     </TwitterShareButton>
+                    <Helmet>
+                      <meta property="og:url" content={window.location.href} />
+                      <meta name="twitter:card" content="summary_large_image" />
+                      <script type="application/ld+json">
+                        {JSON.stringify({
+                          "@context": "https://schema.org",
+                          "@type": "SoftwareApplication",
+                          "name": project.title,
+                          "description": project.image_description || project.description.substring(0, 160),
+                          "applicationCategory": "DeveloperApplication",
+                          "operatingSystem": "Web",
+                          "author": {
+                            "@type": "Person",
+                            "name": "Prem Prasad Pradhan"
+                          },
+                          "aggregateRating": {
+                            "@type": "AggregateRating",
+                            "ratingValue": project.avgRating || "0.0",
+                            "reviewCount": project.reviews?.length || "1"
+                          }
+                        })}
+                      </script>
+                    </Helmet>
                   </div>
+                </div>
+
+                <div className="proj-actions-row mb-4">
+                  <button className="btn btn-primary glass-btn" onClick={() => navigate(`/review/${idOrSlug}`)}>
+                    <FaCommentDots /> Give a Review
+                  </button>
+                  {project.link && (
+                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm">
+                      <FaExternalLinkAlt /> Live Demo
+                    </a>
+                  )}
                 </div>
                 
                 <div className="proj-detail-tags">
