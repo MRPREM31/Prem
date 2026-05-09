@@ -14,11 +14,11 @@ const ManageReviews = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const navigate = useNavigate();
-  const token = localStorage.getItem('prem_portfolio_token');
+  const token = localStorage.getItem('adminToken');
 
   useEffect(() => {
     if (!token) {
-      navigate('/login');
+      navigate('/prem-login-2026');
       return;
     }
     fetchData();
@@ -106,7 +106,7 @@ const ManageReviews = () => {
           <div className="container">
             <div className="section-header-flex mb-4">
               <div>
-                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/admin')}>
+                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/prem-dashboard-2026')}>
                   <FaArrowLeft /> Back to Dashboard
                 </button>
                 <h1 className="gradient-text">Reviews Moderation</h1>
