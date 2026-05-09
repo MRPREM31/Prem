@@ -23,7 +23,8 @@ if (!process.env.GROQ_API_KEY) {
 
 const PREM_KNOWLEDGE = `
 Core Identity:
-Full Name: Prem Prasad Pradhan (Known as MR.PREM / MRPREM31).
+Full Name: Prem Prasad Pradhan (Known as LIKU PRADHAN / MR.PREM).
+Birthday: 31st March 2006 (31/03/2006).
 Role: Software Developer, Founder of QuantumCoders Tech Lab & Data Solutions, and Startup-minded Creator.
 Education Journey:
 - Early Education: Saraswati Sishu Mandir.
@@ -787,7 +788,7 @@ app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async
 
 // --- PROJECTS APIs ---
 
-// API: Get All Projects (Updated to fetch first image for each)
+// API: Get All Projects (Updated to fetch first image and average rating for each)
 app.get('/api/projects', async (req, res) => {
   try {
     const { data: projects, error: projectsError } = await supabase
@@ -797,24 +798,33 @@ app.get('/api/projects', async (req, res) => {
 
     if (projectsError) throw projectsError;
 
-    // Fetch images for these projects
-    const { data: images, error: imagesError } = await supabase
-      .from('project_images')
-      .select('*');
+    // Fetch images and reviews for these projects
+    const { data: images } = await supabase.from('project_images').select('*');
+    const { data: reviews } = await supabase.from('project_reviews').select('project_id, rating');
 
-    const projectsWithImages = projects.map(p => ({
-      ...p,
-      images: images ? images.filter(img => img.project_id === p.id) : []
-    }));
+    const projectsWithDetails = projects.map(p => {
+      const pImages = images ? images.filter(img => img.project_id === p.id) : [];
+      const pReviews = reviews ? reviews.filter(rev => rev.project_id === p.id) : [];
+      const avgRating = pReviews.length > 0 
+        ? pReviews.reduce((acc, curr) => acc + curr.rating, 0) / pReviews.length 
+        : 0;
 
-    res.json(projectsWithImages);
+      return {
+        ...p,
+        images: pImages,
+        avgRating: avgRating.toFixed(1),
+        reviewCount: pReviews.length
+      };
+    });
+
+    res.json(projectsWithDetails);
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// API: Get Single Project (Updated to include all images)
+// API: Get Single Project (Updated to include all images and filtered reviews)
 app.get('/api/projects/:id', async (req, res) => {
   try {
     const { data: project, error: projectError } = await supabase
@@ -826,15 +836,82 @@ app.get('/api/projects/:id', async (req, res) => {
     if (projectError) throw projectError;
     if (!project) return res.status(404).json({ error: 'Project not found' });
 
-    const { data: images, error: imagesError } = await supabase
+    const { data: images } = await supabase
       .from('project_images')
       .select('*')
       .eq('project_id', req.params.id)
       .order('id', { ascending: true });
 
-    res.json({ ...project, images: images || [] });
+    const { data: reviews } = await supabase
+      .from('project_reviews')
+      .select('*')
+      .eq('project_id', req.params.id)
+      .order('created_at', { ascending: false });
+
+    const avgRating = (reviews && reviews.length > 0)
+      ? reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length 
+      : 0;
+
+    res.json({ 
+      ...project, 
+      images: images || [], 
+      reviews: reviews || [],
+      avgRating: avgRating.toFixed(1)
+    });
   } catch (error) {
     console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- PROJECT REVIEWS APIs ---
+
+// API: Submit a Review
+app.post('/api/projects/:id/reviews', async (req, res) => {
+  const { name, email, message, rating, device_id } = req.body;
+  const project_id = req.params.id;
+
+  if (!rating) return res.status(400).json({ error: 'Rating is mandatory' });
+
+  try {
+    const { data, error } = await supabase
+      .from('project_reviews')
+      .insert([{ project_id, name, email, message, rating, device_id }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, review: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Get All Reviews for Admin (Protected)
+app.get('/api/admin/reviews', verifyToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('project_reviews')
+      .select('*, projects(title)')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Delete a Review (Protected)
+app.delete('/api/admin/reviews/:id', verifyToken, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('project_reviews')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -1468,7 +1545,7 @@ app.post('/api/chat', async (req, res) => {
       messages: [
         { 
           role: 'system', 
-          content: `You are PremBot, the elite digital assistant for Prem Prasad Pradhan (MR.PREM). 
+          content: `You are PremBot, the elite digital assistant for Prem Prasad Pradhan (LIKU PRADHAN). 
           Your mission is to represent Prem professionally to recruiters, clients, and visitors.
           
           Guidelines:

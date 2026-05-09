@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaGithub, FaStar } from 'react-icons/fa';
 
 import './Projects.css';
 
@@ -45,7 +45,15 @@ const Projects = () => {
               style={{ cursor: 'pointer' }}
             >
               <div className="project-content">
-                <h3>{project.title}</h3>
+                <div className="project-header-flex">
+                  <h3>{project.title}</h3>
+                  {project.avgRating > 0 && (
+                    <div className="project-rating-badge">
+                      <FaStar className="star-icon" />
+                      <span>{project.avgRating}</span>
+                    </div>
+                  )}
+                </div>
 
                 <p>
                   {project.image_description || (project.description.length > 100 

@@ -33,6 +33,10 @@ const AdminDashboard = () => {
     title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: ''
   });
 
+  // Project Reviews states
+  const [allReviews, setAllReviews] = useState([]);
+  const [showReviewManager, setShowReviewManager] = useState(false);
+
   // Favicon states
   const [selectedFavicon, setSelectedFavicon] = useState(null);
   const [uploadFavStatus, setUploadFavStatus] = useState('');
@@ -108,6 +112,7 @@ const AdminDashboard = () => {
     fetchProfileImage();
     fetchResume();
     fetchProjects();
+    fetchAdminReviews();
     fetchFavicon();
     fetchCertificates();
     fetchSignature();
@@ -930,81 +935,135 @@ const AdminDashboard = () => {
           <div id="admin-projects" className="dashboard-content glass-panel mb-4">
             <div className="section-header">
               <h3>Projects</h3>
-              <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' }); }}>
-                <FaPlus /> Add Project
-              </button>
+              <div className="header-actions">
+                <button className="btn btn-outline btn-sm mr-2" onClick={() => setShowReviewManager(!showReviewManager)}>
+                  <FaStar /> {showReviewManager ? 'Back to Projects' : 'Manage Reviews'}
+                </button>
+                <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' }); }}>
+                  <FaPlus /> Add Project
+                </button>
+              </div>
             </div>
 
-            {showProjectForm && (
-              <form className="project-form" onSubmit={handleProjectSubmit}>
-                <input type="text" placeholder="Title" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} required className="form-input" />
-                <textarea placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} required className="form-input" rows="3" />
-                <input type="text" placeholder="Tags (comma separated)" value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} required className="form-input" />
-                <div className="form-row">
-                  <input type="text" placeholder="Live Link URL" value={projectForm.link} onChange={e => setProjectForm({...projectForm, link: e.target.value})} className="form-input" />
-                  <input type="text" placeholder="GitHub URL" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} className="form-input" />
-                  <input type="text" placeholder="PPT Link URL" value={projectForm.pptLink || ''} onChange={e => setProjectForm({...projectForm, pptLink: e.target.value})} className="form-input" />
+            {showReviewManager ? (
+              <div className="review-manager-admin">
+                <h4 className="mb-3">Project Reviews Moderation</h4>
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Project</th>
+                        <th>Reviewer</th>
+                        <th>Rating</th>
+                        <th>Message</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allReviews.length > 0 ? allReviews.map(rev => (
+                        <tr key={rev.id}>
+                          <td style={{fontWeight: '600'}}>{rev.projects?.title || 'Unknown Project'}</td>
+                          <td>
+                            <div className="admin-reviewer-info">
+                              <span>{rev.name || 'Anonymous'}</span>
+                              <span className="tiny-text">{rev.email || 'No Email'}</span>
+                              <span className="tiny-text" style={{opacity: 0.5}}>{rev.device_id || 'No Device ID'}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="admin-review-stars">
+                              {[...Array(5)].map((_, i) => (
+                                <FaStar key={i} style={{color: i < rev.rating ? '#ffc107' : 'rgba(255,255,255,0.1)', fontSize: '0.8rem'}} />
+                              ))}
+                            </div>
+                          </td>
+                          <td>
+                            <p className="admin-review-msg">{rev.message || <em style={{opacity:0.5}}>No message</em>}</p>
+                          </td>
+                          <td className="actions-cell">
+                            <button onClick={() => deleteReview(rev.id)} className="delete-icon-btn"><FaTrash /></button>
+                          </td>
+                        </tr>
+                      )) : (
+                        <tr><td colSpan="5" className="text-center py-4">No reviews found in the system.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="form-row">
-                  <input type="text" placeholder="Base Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
-                  <input type="text" placeholder="Base Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
-                </div>
-
-                {editingProject && (
-                  <div className="project-image-manager glass-panel mb-3 p-3">
-                    <h4 className="small-title mb-2">Project Image Gallery</h4>
-                    <div className="form-group mb-3">
-                      <label className="btn btn-outline btn-sm w-100" style={{cursor: 'pointer'}}>
-                        <FaUpload /> {uploadingProjectImages ? 'Uploading...' : 'Upload Project Images (Multiple)'}
-                        <input type="file" multiple accept="image/*" onChange={handleProjectImagesUpload} style={{display: 'none'}} />
-                      </label>
+              </div>
+            ) : (
+              <>
+                {showProjectForm && (
+                  <form className="project-form" onSubmit={handleProjectSubmit}>
+                    <input type="text" placeholder="Title" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} required className="form-input" />
+                    <textarea placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} required className="form-input" rows="3" />
+                    <input type="text" placeholder="Tags (comma separated)" value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} required className="form-input" />
+                    <div className="form-row">
+                      <input type="text" placeholder="Live Link URL" value={projectForm.link} onChange={e => setProjectForm({...projectForm, link: e.target.value})} className="form-input" />
+                      <input type="text" placeholder="GitHub URL" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} className="form-input" />
+                      <input type="text" placeholder="PPT Link URL" value={projectForm.pptLink || ''} onChange={e => setProjectForm({...projectForm, pptLink: e.target.value})} className="form-input" />
+                    </div>
+                    <div className="form-row">
+                      <input type="text" placeholder="Base Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
+                      <input type="text" placeholder="Base Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
                     </div>
 
-                    <div className="project-images-grid">
-                      {projectImages.length > 0 ? projectImages.map((img, idx) => (
-                        <div key={img.id} className="project-image-item">
-                          <img src={img.image_url} alt={img.alt_text} />
-                          <div className="image-overlay">
-                            <span className="image-num">#{idx + 1}</span>
-                            <button type="button" onClick={() => deleteProjectImage(img.id)} className="delete-icon-btn"><FaTrash /></button>
-                          </div>
+                    {editingProject && (
+                      <div className="project-image-manager glass-panel mb-3 p-3">
+                        <h4 className="small-title mb-2">Project Image Gallery</h4>
+                        <div className="form-group mb-3">
+                          <label className="btn btn-outline btn-sm w-100" style={{cursor: 'pointer'}}>
+                            <FaUpload /> {uploadingProjectImages ? 'Uploading...' : 'Upload Project Images (Multiple)'}
+                            <input type="file" multiple accept="image/*" onChange={handleProjectImagesUpload} style={{display: 'none'}} />
+                          </label>
                         </div>
-                      )) : <p className="text-muted small">No images added to this project yet.</p>}
+
+                        <div className="project-images-grid">
+                          {projectImages.length > 0 ? projectImages.map((img, idx) => (
+                            <div key={img.id} className="project-image-item">
+                              <img src={img.image_url} alt={img.alt_text} />
+                              <div className="image-overlay">
+                                <span className="image-num">#{idx + 1}</span>
+                                <button type="button" onClick={() => deleteProjectImage(img.id)} className="delete-icon-btn"><FaTrash /></button>
+                              </div>
+                            </div>
+                          )) : <p className="text-muted small">No images added to this project yet.</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="form-actions">
+                      <button type="submit" className="btn btn-primary">{editingProject ? 'Update Info' : 'Save & Add Images'}</button>
+                      <button type="button" className="btn btn-outline" onClick={() => { setShowProjectForm(false); setEditingProject(null); setProjectImages([]); }}>Cancel</button>
                     </div>
-                  </div>
+                  </form>
                 )}
-
-                <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">{editingProject ? 'Update Info' : 'Save & Add Images'}</button>
-                  <button type="button" className="btn btn-outline" onClick={() => { setShowProjectForm(false); setEditingProject(null); setProjectImages([]); }}>Cancel</button>
+                <div className="table-responsive">
+                  <table className="admin-table">
+                    <thead>
+                      <tr><th>Title</th><th>Tags</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                      {projects.length > 0 ? projects.map(p => (
+                        <tr key={p.id}>
+                          <td>{p.title}</td>
+                          <td>{p.tags}</td>
+                          <td className="actions-cell">
+                            <button onClick={() => { 
+                              setEditingProject(p);
+                              setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' });
+                              setShowProjectForm(true);
+                              fetchProjectImages(p.id);
+                            }} className="edit-btn"><FaEdit /></button>
+                            <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
+                          </td>
+                        </tr>
+                      )) : <tr><td colSpan="3" className="text-center">No projects found.</td></tr>}
+                    </tbody>
+                  </table>
                 </div>
-              </form>
+              </>
             )}
-
-            <div className="table-responsive">
-              <table className="admin-table">
-                <thead>
-                  <tr><th>Title</th><th>Tags</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                  {projects.length > 0 ? projects.map(p => (
-                    <tr key={p.id}>
-                      <td>{p.title}</td>
-                      <td>{p.tags}</td>
-                      <td className="actions-cell">
-                        <button onClick={() => { 
-                          setEditingProject(p); 
-                          setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' }); 
-                          setShowProjectForm(true); 
-                          fetchProjectImages(p.id);
-                        }} className="edit-btn"><FaEdit /></button>
-                        <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
-                      </td>
-                    </tr>
-                  )) : <tr><td colSpan="3" className="text-center">No projects found.</td></tr>}
-                </tbody>
-              </table>
-            </div>
           </div>
 
           {/* CERTIFICATES SECTION */}
