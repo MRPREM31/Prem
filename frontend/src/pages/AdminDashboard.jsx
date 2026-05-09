@@ -1097,76 +1097,11 @@ const AdminDashboard = () => {
                           <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
                         </td>
                       </tr>
-                      <input type="text" placeholder="Live Link URL" value={projectForm.link} onChange={e => setProjectForm({...projectForm, link: e.target.value})} className="form-input" />
-                      <input type="text" placeholder="GitHub URL" value={projectForm.github} onChange={e => setProjectForm({...projectForm, github: e.target.value})} className="form-input" />
-                      <input type="text" placeholder="PPT Link URL" value={projectForm.pptLink || ''} onChange={e => setProjectForm({...projectForm, pptLink: e.target.value})} className="form-input" />
-                    </div>
-                    <div className="form-row">
-                      <input type="text" placeholder="Base Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
-                      <input type="text" placeholder="Base Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
-                    </div>
-
-                    {editingProject && (
-                      <div className="project-image-manager glass-panel mb-3 p-3">
-                        <h4 className="small-title mb-2">Project Image Gallery</h4>
-                        <div className="form-group mb-3">
-                          <label className="btn btn-outline btn-sm w-100" style={{cursor: 'pointer'}}>
-                            <FaUpload /> {uploadingProjectImages ? 'Uploading...' : 'Upload Project Images (Multiple)'}
-                            <input type="file" multiple accept="image/*" onChange={handleProjectImagesUpload} style={{display: 'none'}} />
-                          </label>
-                        </div>
-
-                        <div className="project-images-grid">
-                          {projectImages.length > 0 ? projectImages.map((img, idx) => (
-                            <div key={img.id} className="project-image-item">
-                              <img src={img.image_url} alt={img.alt_text} />
-                              <div className="image-overlay">
-                                <span className="image-num">#{idx + 1}</span>
-                                <button type="button" onClick={() => deleteProjectImage(img.id)} className="delete-icon-btn"><FaTrash /></button>
-                              </div>
-                            </div>
-                          )) : <p className="text-muted small">No images added to this project yet.</p>}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="form-actions">
-                      <button type="submit" className="btn btn-primary">{editingProject ? 'Update Info' : 'Save & Add Images'}</button>
-                      <button type="button" className="btn btn-outline" onClick={() => { setShowProjectForm(false); setEditingProject(null); setProjectImages([]); }}>Cancel</button>
-                    </div>
-                  </form>
-                )}
-                <div className="table-responsive">
-                  <table className="admin-table">
-                    <thead>
-                      <tr><th>Title</th><th>Tags</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
-                      {projects.length > 0 ? projects.map(p => (
-                        <tr key={p.id}>
-                          <td data-label="Title">{p.title}</td>
-                          <td data-label="Tags">{p.tags}</td>
-                          <td className="actions-cell" data-label="Actions">
-                            <div className="share-tools-mini">
-                              <button onClick={() => copyToClipboard(`${window.location.origin}/project/${p.slug || p.id}`)} title="Copy Project Link" className="edit-btn"><FaLink /></button>
-                              <button onClick={() => copyToClipboard(`${window.location.origin}/review/${p.slug || p.id}`)} title="Copy Review Link" className="edit-btn"><FaStar /></button>
-                              <button onClick={() => setSelectedProjectForQR(p)} title="Generate QR" className="edit-btn"><FaQrcode /></button>
-                            </div>
-                            <button onClick={() => { 
-                              setEditingProject(p);
-                              setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' });
-                              setShowProjectForm(true);
-                              fetchProjectImages(p.id);
-                            }} className="edit-btn"><FaEdit /></button>
-                            <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
-                          </td>
-                        </tr>
-                      )) : <tr><td colSpan="3" className="text-center">No projects found.</td></tr>}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
+                    )) : <tr><td colSpan="3" className="text-center py-4">No projects found.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </>
           </div>
 
           {/* CERTIFICATES SECTION */}
@@ -1521,7 +1456,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="modal-footer">
                   <a 
-                    href={`mailto:${selectedMessage.email}?subject=Reply from Prem Prasad Pradhan&body=Hello ${selectedMessage.name}, regarding your message: "${selectedMessage.message.substring(0, 50)}..."\\n\\n`}
+                    href={`mailto:${selectedMessage.email}?subject=Reply from Prem Prasad Pradhan&body=Hello ${selectedMessage.name}, regarding your message: "${selectedMessage.message.substring(0, 50)}..."\n\n`}
                     className="btn btn-primary"
                     target="_blank"
                     rel="noopener noreferrer"
