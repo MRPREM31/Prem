@@ -3,26 +3,30 @@ import { Helmet } from 'react-helmet-async';
 
 const SEO = ({ title, description, keywords, image, url, type = 'website', noindex = false, schema }) => {
   const siteTitle = "Prem Prasad Pradhan | Software Developer Portfolio";
-  const defaultDescription = "Official portfolio of Prem Prasad Pradhan. A passionate Software Developer specializing in full-stack web development.";
+  const defaultDescription = "Official portfolio of Prem Prasad Pradhan. A passionate Software Developer specializing in full-stack web development, AI automation, and professional UI/UX design.";
   const siteUrl = "https://mrprem.in/";
-  const defaultImage = "https://mrprem.in/og-image.png";
+  const defaultImage = "https://res.cloudinary.com/dmy2piasa/image/upload/v1777986860/portfolio/xbb3bxhruzwwg69ezwbj.jpg";
 
   const seoTitle = title ? `${title} | Prem Prasad Pradhan` : siteTitle;
   const seoDescription = description || defaultDescription;
   const seoImage = image || defaultImage;
   const seoUrl = url ? `${siteUrl}${url.startsWith('/') ? url.slice(1) : url}` : siteUrl;
 
-  // Image Object Schema for Google Images
+  // Image Object Schema for Google Images (Professional Profile Image SEO)
   const imageObjectSchema = {
     "@context": "https://schema.org",
     "@type": "ImageObject",
     "contentUrl": seoImage,
+    "url": seoImage,
     "creator": {
       "@type": "Person",
       "name": "Prem Prasad Pradhan"
     },
-    "description": seoDescription,
-    "representativeOfPage": "True"
+    "description": "Official Professional Profile Photo of Prem Prasad Pradhan, Software Developer and Founder of QuantumCoders Tech Lab.",
+    "caption": "Prem Prasad Pradhan - Professional Software Developer Profile",
+    "representativeOfPage": "True",
+    "license": "https://mrprem.in/",
+    "acquireLicensePage": "https://mrprem.in/#contact"
   };
 
   // Default Schema.org Person Data
@@ -30,20 +34,30 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
     "@context": "http://schema.org",
     "@type": "Person",
     "name": "Prem Prasad Pradhan",
-    "alternateName": ["MR.PREM", "mrprem31"],
+    "alternateName": ["MR.PREM", "mrprem31", "Prem Prasad"],
     "url": "https://mrprem.in/",
-    "image": "https://mrprem.in/og-image.png",
-    "description": "Software Developer specializing in Full Stack Web Development.",
+    "image": defaultImage,
+    "description": "Professional Software Developer specializing in Full Stack Web Development and AI Solutions.",
+    "jobTitle": "Software Developer",
+    "gender": "male",
+    "nationality": "Indian",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Berhampur",
+      "addressRegion": "Odisha",
+      "addressCountry": "India"
+    },
     "sameAs": [
       "https://github.com/MRPREM31",
-      "https://linkedin.com/in/mrprem31",
-      "https://instagram.com/mr.prem_31"
+      "https://linkedin.com/in/prem-prasad-pradhan-18472b295/",
+      "https://youtube.com/@B.techPrem",
+      "https://medium.com/@mr.prem"
     ],
-    "jobTitle": "Software Developer",
     "worksFor": {
       "@type": "Organization",
-      "name": "NIST University"
-    }
+      "name": "QuantumCoders Tech Lab & Data Solutions"
+    },
+    "knowsAbout": ["Web Development", "React.js", "Node.js", "AI Automation", "Software Engineering"]
   };
 
   // Sitelinks Searchbox & Navigation Schema for Homepage

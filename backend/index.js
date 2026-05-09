@@ -1236,6 +1236,26 @@ app.get('/api/visitor-stats', async (req, res) => {
   }
 });
 
+// API: Get All Visitors (Protected, Paginated)
+app.get('/api/admin/visitors', verifyToken, async (req, res) => {
+  const { page = 1, limit = 5 } = req.query;
+  const offset = (page - 1) * limit;
+
+  try {
+    const { data, error, count } = await supabase
+      .from('visitors')
+      .select('*', { count: 'exact' })
+      .order('visited_at', { ascending: false })
+      .range(offset, offset + parseInt(limit) - 1);
+
+    if (error) throw error;
+    res.json({ visitors: data, totalCount: count });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Global Error Handler (Prevents HTML error pages)
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
@@ -1421,6 +1441,19 @@ app.get('/image-sitemap.xml', async (req, res) => {
     const siteUrl = 'https://mrprem.in';
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+    // 0. Primary Profile Image
+    const { data: profileImgSetting } = await supabase.from('settings').select('value').eq('key', 'profileImage').single();
+    const profileImageUrl = profileImgSetting ? profileImgSetting.value : 'https://mrprem.in/og-image.png';
+    
+    xml += `  <url>\n`;
+    xml += `    <loc>${siteUrl}/</loc>\n`;
+    xml += `    <image:image>\n`;
+    xml += `      <image:loc>${profileImageUrl}</image:loc>\n`;
+    xml += `      <image:title>Prem Prasad Pradhan - Professional Software Developer</image:title>\n`;
+    xml += `      <image:caption>Official profile photo of Prem Prasad Pradhan, a specialist in Full Stack Web Development and AI solutions.</image:caption>\n`;
+    xml += `    </image:image>\n`;
+    xml += `  </url>\n`;
 
     // 1. Projects
     projectsRes.data?.forEach(p => {

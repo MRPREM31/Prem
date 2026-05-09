@@ -9,6 +9,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import MemoriesPage from './pages/MemoriesPage'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
+import AllVisitors from './pages/AllVisitors'
 import GithubInsights from './pages/GithubInsights'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
@@ -68,6 +69,7 @@ function App() {
         <Route path="/prem-dashboard-2026" element={<AdminDashboard />} />
         <Route path="/personal-vault" element={<PersonalVault />} />
         <Route path="/all-messages" element={<AllMessages />} />
+        <Route path="/all-visitors" element={<AllVisitors />} />
         
         {/* Redirect old admin routes to home */}
         <Route path="/admin" element={<Navigate to="/" replace />} />

@@ -10,6 +10,8 @@ import './Admin.css';
 const AdminDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [totalMessages, setTotalMessages] = useState(0);
+  const [recentVisitors, setRecentVisitors] = useState([]);
+  const [totalVisitors, setTotalVisitors] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState(null);
   
   // Image & Resume states
@@ -111,6 +113,7 @@ const AdminDashboard = () => {
     fetchNavbarImage();
     fetchSkills();
     fetchMemorableImages();
+    fetchVisitors();
     
     const adminEmail = localStorage.getItem('adminEmail');
     if (adminEmail === 'mr.prem2006@gmail.com') {
@@ -243,6 +246,19 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images?t=${Date.now()}`);
       const data = await res.json();
       setMemorableImages(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const fetchVisitors = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/visitors?limit=5`, { 
+        headers: { 'Authorization': `Bearer ${token}` } 
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRecentVisitors(data.visitors || []);
+        setTotalVisitors(data.totalCount || 0);
+      }
     } catch (err) { console.error(err); }
   };
 
@@ -1153,6 +1169,35 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
+
+          {/* VISITOR ANALYTICS SECTION */}
+          <div id="admin-analytics" className="dashboard-content glass-panel mb-4">
+            <div className="section-header contact-header">
+              <div>
+                <h3 className="section-title-small" style={{ margin: 0 }}>Recent Visitor Traffic</h3>
+                <p className="text-muted small">Showing latest 5 of {totalVisitors} tracked sessions</p>
+              </div>
+              <div>
+                <Link to="/all-visitors" className="btn btn-outline btn-sm">Full View</Link>
+              </div>
+            </div>
+            <div className="table-responsive">
+              <table className="admin-table">
+                <thead>
+                  <tr><th>Time</th><th>IP Address</th><th>Device Info</th></tr>
+                </thead>
+                <tbody>
+                  {recentVisitors.length > 0 ? recentVisitors.map((v, idx) => (
+                    <tr key={idx}>
+                      <td>{new Date(v.visited_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                      <td><code>{v.ip}</code></td>
+                      <td className="msg-cell">{v.user_agent ? (v.user_agent.length > 40 ? v.user_agent.substring(0, 40) + '...' : v.user_agent) : 'Unknown'}</td>
+                    </tr>
+                  )) : <tr><td colSpan="3" className="text-center">No recent visits recorded.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {/* MESSAGES SECTION */}
           <div id="admin-messages" className="dashboard-content glass-panel">
