@@ -207,20 +207,25 @@
 
   .admin-table td {
     display: block;
-    text-align: right;
-    padding: 0.5rem 0;
+    text-align: left;
+    padding: 0.8rem 0;
     border: none;
   }
 
   .admin-table td::before {
     content: attr(data-label);
-    float: left;
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--accent-primary);
+    opacity: 0.8;
   }
 
   .actions-cell {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 
