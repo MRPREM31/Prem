@@ -10,7 +10,7 @@ import {
   FaTerminal, FaMicrochip, FaRocket, FaFire, FaHistory
 } from 'react-icons/fa';
 import { FiActivity, FiGitPullRequest, FiClock } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
@@ -20,6 +20,7 @@ const GithubInsights = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchInsights = useCallback(async () => {
     try {
