@@ -986,25 +986,25 @@ const AdminDashboard = () => {
                     <tbody>
                       {allReviews.length > 0 ? allReviews.map(rev => (
                         <tr key={rev.id}>
-                          <td style={{fontWeight: '600'}}>{rev.projects?.title || 'Unknown Project'}</td>
-                          <td>
+                          <td data-label="Project" style={{fontWeight: '600'}}>{rev.projects?.title || 'Unknown Project'}</td>
+                          <td data-label="Reviewer">
                             <div className="admin-reviewer-info">
                               <span>{rev.name || 'Anonymous'}</span>
                               <span className="tiny-text">{rev.email || 'No Email'}</span>
                               <span className="tiny-text" style={{opacity: 0.5}}>{rev.device_id || 'No Device ID'}</span>
                             </div>
                           </td>
-                          <td>
+                          <td data-label="Rating">
                             <div className="admin-review-stars">
                               {[...Array(5)].map((_, i) => (
                                 <FaStar key={i} style={{color: i < rev.rating ? '#ffc107' : 'rgba(255,255,255,0.1)', fontSize: '0.8rem'}} />
                               ))}
                             </div>
                           </td>
-                          <td>
+                          <td data-label="Message">
                             <p className="admin-review-msg">{rev.message || <em style={{opacity:0.5}}>No message</em>}</p>
                           </td>
-                          <td className="actions-cell">
+                          <td className="actions-cell" data-label="Actions">
                             <button onClick={() => deleteReview(rev.id)} className="delete-icon-btn"><FaTrash /></button>
                           </td>
                         </tr>
@@ -1070,9 +1070,9 @@ const AdminDashboard = () => {
                     <tbody>
                       {projects.length > 0 ? projects.map(p => (
                         <tr key={p.id}>
-                          <td>{p.title}</td>
-                          <td>{p.tags}</td>
-                          <td className="actions-cell">
+                          <td data-label="Title">{p.title}</td>
+                          <td data-label="Tags">{p.tags}</td>
+                          <td className="actions-cell" data-label="Actions">
                             <button onClick={() => { 
                               setEditingProject(p);
                               setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' });

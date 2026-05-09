@@ -211,6 +211,20 @@
   gap: 1.5rem;
 }
 
+@media (max-width: 480px) {
+  .reviews-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .review-card {
+    padding: 1rem;
+  }
+  
+  .reviewer-name {
+    font-size: 0.9rem;
+  }
+}
+
 .review-card {
   padding: 1.5rem;
   border-radius: 16px;
