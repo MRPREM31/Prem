@@ -227,6 +227,22 @@
   .actions-cell {
     justify-content: flex-start;
   }
+
+  .share-tools-mini {
+    display: flex;
+    gap: 8px;
+    margin-right: 12px;
+    padding-right: 12px;
+    border-right: 1px solid var(--border-color);
+  }
+}
+
+.share-tools-mini {
+  display: flex;
+  gap: 8px;
+  margin-right: 12px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border-color);
 }
 
 /* Image Upload Section Styles */

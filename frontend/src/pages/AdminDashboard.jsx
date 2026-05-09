@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar } from 'react-icons/fa';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar, FaLink, FaQrcode, FaEyeSlash } from 'react-icons/fa';
+import { QRCodeCanvas } from 'qrcode.react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { RESUME_LINK } from '../config';
@@ -36,6 +37,7 @@ const AdminDashboard = () => {
   // Project Reviews states
   const [allReviews, setAllReviews] = useState([]);
   const [showReviewManager, setShowReviewManager] = useState(false);
+  const [selectedProjectForQR, setSelectedProjectForQR] = useState(null);
 
   // Favicon states
   const [selectedFavicon, setSelectedFavicon] = useState(null);
@@ -543,6 +545,28 @@ const AdminDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
+  const toggleReviewVisibility = async (reviewId, currentHidden) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reviews/${reviewId}/toggle-visibility`, {
+        method: 'PATCH',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ is_hidden: !currentHidden })
+      });
+      if (res.ok) {
+        showToast(`Review ${currentHidden ? 'visible' : 'hidden'}`);
+        fetchAdminReviews();
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    showToast('Link copied to clipboard');
+  };
+
   const handleCertSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -792,6 +816,38 @@ const AdminDashboard = () => {
   return (
     <div className="portfolio-page">
       <SEO title="Admin Dashboard" noindex={true} />
+      {/* QR MODAL */}
+      {selectedProjectForQR && (
+        <div className="modal-overlay" onClick={() => setSelectedProjectForQR(null)}>
+          <div className="modal-content text-center" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="gradient-text">Project QR Ecosystem</h3>
+              <button className="close-btn" onClick={() => setSelectedProjectForQR(null)}><FaTimes /></button>
+            </div>
+            <div className="modal-body p-4">
+              <p className="mb-4 text-muted">Scan to open <strong>{selectedProjectForQR.title}</strong> on any device.</p>
+              <div className="qr-container bg-white p-4 rounded-3xl inline-block shadow-2xl mb-4">
+                <QRCodeCanvas 
+                  value={`${window.location.origin}/project/${selectedProjectForQR.slug || selectedProjectForQR.id}`} 
+                  size={200}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+              <div className="form-actions mt-4">
+                <button className="btn btn-outline btn-sm w-100" onClick={() => copyToClipboard(`${window.location.origin}/project/${selectedProjectForQR.slug || selectedProjectForQR.id}`)}>
+                  Copy Project Link
+                </button>
+                <button className="btn btn-outline btn-sm w-100" onClick={() => copyToClipboard(`${window.location.origin}/review/${selectedProjectForQR.slug || selectedProjectForQR.id}`)}>
+                  Copy Review Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ChatBot />
       <Navbar />
       <main className="main-content">
         <div className="admin-page dashboard-page">
@@ -1005,6 +1061,13 @@ const AdminDashboard = () => {
                             <p className="admin-review-msg">{rev.message || <em style={{opacity:0.5}}>No message</em>}</p>
                           </td>
                           <td className="actions-cell" data-label="Actions">
+                            <button 
+                              onClick={() => toggleReviewVisibility(rev.id, rev.is_hidden)} 
+                              className={`edit-btn ${rev.is_hidden ? 'text-muted' : 'text-success'}`}
+                              title={rev.is_hidden ? 'Show Review' : 'Hide Review'}
+                            >
+                              {rev.is_hidden ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                             <button onClick={() => deleteReview(rev.id)} className="delete-icon-btn"><FaTrash /></button>
                           </td>
                         </tr>
@@ -1073,6 +1136,11 @@ const AdminDashboard = () => {
                           <td data-label="Title">{p.title}</td>
                           <td data-label="Tags">{p.tags}</td>
                           <td className="actions-cell" data-label="Actions">
+                            <div className="share-tools-mini">
+                              <button onClick={() => copyToClipboard(`${window.location.origin}/project/${p.slug || p.id}`)} title="Copy Project Link" className="edit-btn"><FaLink /></button>
+                              <button onClick={() => copyToClipboard(`${window.location.origin}/review/${p.slug || p.id}`)} title="Copy Review Link" className="edit-btn"><FaStar /></button>
+                              <button onClick={() => setSelectedProjectForQR(p)} title="Generate QR" className="edit-btn"><FaQrcode /></button>
+                            </div>
                             <button onClick={() => { 
                               setEditingProject(p);
                               setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' });

@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { FaGithub, FaExternalLinkAlt, FaFilePdf, FaChevronLeft, FaStar, FaRegStar, FaShareAlt, FaWhatsapp, FaLinkedin, FaTwitter, FaFilePowerpoint, FaTimes, FaCommentDots } from 'react-icons/fa';
+import { Helmet } from 'react-helmet-async';
+import {
+  WhatsappShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappIcon,
+  LinkedinIcon,
+  TwitterIcon
+} from 'react-share';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { FaExternalLinkAlt, FaGithub, FaFilePowerpoint, FaStar, FaRegStar, FaTimes, FaCommentDots } from 'react-icons/fa';
 import SEO from '../components/SEO';
 import './ProjectDetail.css';
 
@@ -111,6 +120,21 @@ const ProjectDetail = () => {
               <div className="proj-detail-info">
                 <div className="proj-header-row">
                   <h1 className="proj-detail-title gradient-text">{project.title}</h1>
+                </div>
+
+                <div className="proj-share-bar mb-4">
+                  <span className="share-label"><FaShareAlt /> Share Project:</span>
+                  <div className="share-buttons" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <WhatsappShareButton url={shareUrl} title={projectTitle}>
+                      <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                    <LinkedinShareButton url={shareUrl} title={projectTitle}>
+                      <LinkedinIcon size={32} round />
+                    </LinkedinShareButton>
+                    <TwitterShareButton url={shareUrl} title={projectTitle}>
+                      <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                  </div>
                 </div>
                 
                 <div className="proj-detail-tags">

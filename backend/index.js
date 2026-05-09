@@ -14,6 +14,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const Groq = require('groq-sdk');
+const slugify = require('slugify');
 const app = express();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || 'placeholder_key' });
@@ -824,28 +825,34 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
-// API: Get Single Project (Updated to include all images and filtered reviews)
+// API: Get Project Details (with images and reviews)
 app.get('/api/projects/:id', async (req, res) => {
-  try {
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', req.params.id)
-      .single();
+  const { id } = req.params;
+  const isId = /^\d+$/.test(id);
 
+  try {
+    let query = supabase.from('projects').select('*');
+    if (isId) {
+      query = query.eq('id', id);
+    } else {
+      query = query.eq('slug', id);
+    }
+
+    const { data: projectData, error: projectError } = await query.single();
     if (projectError) throw projectError;
-    if (!project) return res.status(404).json({ error: 'Project not found' });
+    const project = projectData;
 
     const { data: images } = await supabase
       .from('project_images')
       .select('*')
-      .eq('project_id', req.params.id)
+      .eq('project_id', project.id)
       .order('id', { ascending: true });
 
     const { data: reviews } = await supabase
       .from('project_reviews')
       .select('*')
-      .eq('project_id', req.params.id)
+      .eq('project_id', project.id)
+      .eq('is_hidden', false)
       .order('created_at', { ascending: false });
 
     const avgRating = (reviews && reviews.length > 0)
@@ -856,11 +863,11 @@ app.get('/api/projects/:id', async (req, res) => {
       ...project, 
       images: images || [], 
       reviews: reviews || [],
-      avgRating: avgRating.toFixed(1)
+      avgRating: Number(avgRating).toFixed(1)
     });
   } catch (error) {
     console.error('Supabase Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(404).json({ error: 'Project not found' });
   }
 });
 
@@ -916,13 +923,30 @@ app.delete('/api/admin/reviews/:id', verifyToken, async (req, res) => {
   }
 });
 
+// API: Toggle Review Visibility (Protected)
+app.patch('/api/admin/reviews/:id/toggle-visibility', verifyToken, async (req, res) => {
+  const { is_hidden } = req.body;
+  try {
+    const { error } = await supabase
+      .from('project_reviews')
+      .update({ is_hidden })
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // API: Create Project (Protected)
 app.post('/api/admin/projects', verifyToken, async (req, res) => {
   const { title, description, tags, link, github, pptLink, image_alt, image_description } = req.body;
+  const slug = slugify(title, { lower: true, strict: true });
   try {
     const { data, error } = await supabase
       .from('projects')
-      .insert([{ title, description, tags, link, github, pptLink, image_alt, image_description }])
+      .insert([{ title, description, tags, link, github, pptLink, image_alt, image_description, slug }])
       .select();
 
     if (error) throw error;
@@ -936,10 +960,11 @@ app.post('/api/admin/projects', verifyToken, async (req, res) => {
 // API: Update Project (Protected)
 app.put('/api/admin/projects/:id', verifyToken, async (req, res) => {
   const { title, description, tags, link, github, pptLink, image_alt, image_description } = req.body;
+  const slug = slugify(title, { lower: true, strict: true });
   try {
     const { error } = await supabase
       .from('projects')
-      .update({ title, description, tags, link, github, pptLink, image_alt, image_description })
+      .update({ title, description, tags, link, github, pptLink, image_alt, image_description, slug })
       .eq('id', req.params.id);
 
     if (error) throw error;

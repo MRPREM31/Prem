@@ -6,6 +6,7 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import CertificateDetail from './pages/CertificateDetail'
 import ProjectDetail from './pages/ProjectDetail'
+import ReviewPage from './pages/ReviewPage'
 import MemoriesPage from './pages/MemoriesPage'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
@@ -80,7 +81,8 @@ function App() {
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         
         <Route path="/certificate/:id" element={<CertificateDetail />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/project/:idOrSlug" element={<ProjectDetail />} />
+        <Route path="/review/:slug" element={<ReviewPage />} />
         <Route path="/memories" element={<MemoriesPage />} />
         <Route path="/github-insights" element={<GithubInsights />} />
         

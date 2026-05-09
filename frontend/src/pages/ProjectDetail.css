@@ -84,6 +84,44 @@
 }
 
 /* PROJECT GALLERY STYLES */
+.proj-detail-page {
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+.proj-share-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 1rem;
+}
+
+.share-label {
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.share-tools-mini {
+  display: flex;
+  gap: 8px;
+  margin-right: 12px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border-color);
+}
+
 .proj-detail-gallery {
   margin-top: 4rem;
   padding-top: 3rem;
