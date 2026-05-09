@@ -89,7 +89,7 @@ const Footer = () => {
                 <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noopener noreferrer">QCDS</a></li>
                 <li><a href="https://www.quantumcoderstechlab.codes/qcds_items/profile.html?uid=9827775230" target="_blank" rel="noopener noreferrer">QCDS ID Card</a></li>
                 <li><a href="https://www.quantumcoderstechlab.codes/" target="_blank" rel="noopener noreferrer">QCTL</a></li>
-                <li><a href="/prem-login-2026" target="_blank" rel="noopener noreferrer">Admin Login</a></li>
+                <li><a href="/prem-login-2006" target="_blank" rel="noopener noreferrer">Admin Login</a></li>
               </ul>
             </div>
 

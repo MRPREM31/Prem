@@ -69,7 +69,7 @@ function App() {
         <Route path="/" element={<Portfolio />} />
         
         {/* Secure Admin Routes */}
-        <Route path="/prem-login-2026" element={<AdminLogin />} />
+        <Route path="/prem-login-2006" element={<AdminLogin />} />
         <Route path="/prem-dashboard-2026" element={<AdminDashboard />} />
         <Route path="/personal-vault" element={<PersonalVault />} />
         <Route path="/all-messages" element={<AllMessages />} />

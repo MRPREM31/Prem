@@ -18,7 +18,7 @@ const AllVisitors = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate('/prem-login-2026');
+      navigate('/prem-login-2006');
       return;
     }
     fetchVisitors();
