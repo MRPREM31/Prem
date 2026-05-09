@@ -55,10 +55,8 @@ const Projects = () => {
                   )}
                 </div>
 
-                <p>
-                  {project.image_description || (project.description.length > 100 
-                    ? `${project.description.substring(0, 100)}...` 
-                    : project.description)}
+                <p className="project-description">
+                  {project.image_description || project.description}
                 </p>
                 <div className="project-tags">
                   {project.tags.split(',').map((tag, i) => (
