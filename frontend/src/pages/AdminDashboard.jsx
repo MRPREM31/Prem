@@ -27,6 +27,8 @@ const AdminDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [projectImages, setProjectImages] = useState([]);
+  const [uploadingProjectImages, setUploadingProjectImages] = useState(false);
   const [projectForm, setProjectForm] = useState({
     title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: ''
   });
@@ -415,11 +417,20 @@ const AdminDashboard = () => {
         body: JSON.stringify(projectForm)
       });
       if (res.ok) {
+        const data = await res.json();
         fetchProjects();
-        setShowProjectForm(false);
-        setEditingProject(null);
-        setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' });
-        showToast(editingProject ? 'Project updated' : 'Project created');
+        if (!editingProject && data.id) {
+          // If new project, keep form open to allow image uploads
+          const newProject = { id: data.id, ...projectForm };
+          setEditingProject(newProject);
+          fetchProjectImages(data.id);
+          showToast('Project created! You can now add images below.');
+        } else {
+          setShowProjectForm(false);
+          setEditingProject(null);
+          setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' });
+          showToast(editingProject ? 'Project updated' : 'Project created');
+        }
       } else {
         const data = await res.json();
         showToast(data.error || 'Failed to save project', 'error');
@@ -428,6 +439,60 @@ const AdminDashboard = () => {
       console.error(err);
       showToast('Network error: Could not connect to the backend.', 'error');
     }
+  };
+
+  const fetchProjectImages = async (projectId) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${projectId}`);
+      const data = await res.json();
+      setProjectImages(data.images || []);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleProjectImagesUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editingProject) return;
+
+    setUploadingProjectImages(true);
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]);
+    }
+    formData.append('alt_text', projectForm.image_alt || editingProject.title);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${editingProject.id}/images`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      if (res.ok) {
+        showToast('Images uploaded successfully');
+        fetchProjectImages(editingProject.id);
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Upload failed', 'error');
+      }
+    } catch (err) {
+      showToast('Network error during upload', 'error');
+    } finally {
+      setUploadingProjectImages(false);
+      e.target.value = ''; // Reset file input
+    }
+  };
+
+  const deleteProjectImage = async (imageId) => {
+    if (!window.confirm('Delete this image?')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/project-images/${imageId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Image deleted');
+        fetchProjectImages(editingProject.id);
+      }
+    } catch (err) { console.error(err); }
   };
 
   const deleteProject = async (id) => {
@@ -881,12 +946,37 @@ const AdminDashboard = () => {
                   <input type="text" placeholder="PPT Link URL" value={projectForm.pptLink || ''} onChange={e => setProjectForm({...projectForm, pptLink: e.target.value})} className="form-input" />
                 </div>
                 <div className="form-row">
-                  <input type="text" placeholder="Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
-                  <input type="text" placeholder="Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
+                  <input type="text" placeholder="Base Image Alt Text (SEO)" value={projectForm.image_alt || ''} onChange={e => setProjectForm({...projectForm, image_alt: e.target.value})} className="form-input" />
+                  <input type="text" placeholder="Base Image SEO Description" value={projectForm.image_description || ''} onChange={e => setProjectForm({...projectForm, image_description: e.target.value})} className="form-input" />
                 </div>
+
+                {editingProject && (
+                  <div className="project-image-manager glass-panel mb-3 p-3">
+                    <h4 className="small-title mb-2">Project Image Gallery</h4>
+                    <div className="form-group mb-3">
+                      <label className="btn btn-outline btn-sm w-100" style={{cursor: 'pointer'}}>
+                        <FaUpload /> {uploadingProjectImages ? 'Uploading...' : 'Upload Project Images (Multiple)'}
+                        <input type="file" multiple accept="image/*" onChange={handleProjectImagesUpload} style={{display: 'none'}} />
+                      </label>
+                    </div>
+
+                    <div className="project-images-grid">
+                      {projectImages.length > 0 ? projectImages.map((img, idx) => (
+                        <div key={img.id} className="project-image-item">
+                          <img src={img.image_url} alt={img.alt_text} />
+                          <div className="image-overlay">
+                            <span className="image-num">#{idx + 1}</span>
+                            <button type="button" onClick={() => deleteProjectImage(img.id)} className="delete-icon-btn"><FaTrash /></button>
+                          </div>
+                        </div>
+                      )) : <p className="text-muted small">No images added to this project yet.</p>}
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-actions">
-                  <button type="submit" className="btn btn-primary">{editingProject ? 'Update' : 'Save'} Project</button>
-                  <button type="button" className="btn btn-outline" onClick={() => setShowProjectForm(false)}>Cancel</button>
+                  <button type="submit" className="btn btn-primary">{editingProject ? 'Update Info' : 'Save & Add Images'}</button>
+                  <button type="button" className="btn btn-outline" onClick={() => { setShowProjectForm(false); setEditingProject(null); setProjectImages([]); }}>Cancel</button>
                 </div>
               </form>
             )}
@@ -902,7 +992,12 @@ const AdminDashboard = () => {
                       <td>{p.title}</td>
                       <td>{p.tags}</td>
                       <td className="actions-cell">
-                        <button onClick={() => { setEditingProject(p); setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' }); setShowProjectForm(true); }} className="edit-btn"><FaEdit /></button>
+                        <button onClick={() => { 
+                          setEditingProject(p); 
+                          setProjectForm({ ...p, image_alt: p.image_alt || '', image_description: p.image_description || '' }); 
+                          setShowProjectForm(true); 
+                          fetchProjectImages(p.id);
+                        }} className="edit-btn"><FaEdit /></button>
                         <button onClick={() => deleteProject(p.id)} className="delete-btn"><FaTrash /></button>
                       </td>
                     </tr>

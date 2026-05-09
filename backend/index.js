@@ -787,37 +787,52 @@ app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async
 
 // --- PROJECTS APIs ---
 
-// API: Get All Projects
+// API: Get All Projects (Updated to fetch first image for each)
 app.get('/api/projects', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select('*')
       .order('id', { ascending: false });
 
-    if (error) throw error;
-    res.json(data);
+    if (projectsError) throw projectsError;
+
+    // Fetch images for these projects
+    const { data: images, error: imagesError } = await supabase
+      .from('project_images')
+      .select('*');
+
+    const projectsWithImages = projects.map(p => ({
+      ...p,
+      images: images ? images.filter(img => img.project_id === p.id) : []
+    }));
+
+    res.json(projectsWithImages);
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// API: Get Single Project
+// API: Get Single Project (Updated to include all images)
 app.get('/api/projects/:id', async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { data: project, error: projectError } = await supabase
       .from('projects')
       .select('*')
       .eq('id', req.params.id)
       .single();
 
-    if (error) throw error;
-    if (data) {
-      res.json(data);
-    } else {
-      res.status(404).json({ error: 'Project not found' });
-    }
+    if (projectError) throw projectError;
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+
+    const { data: images, error: imagesError } = await supabase
+      .from('project_images')
+      .select('*')
+      .eq('project_id', req.params.id)
+      .order('id', { ascending: true });
+
+    res.json({ ...project, images: images || [] });
   } catch (error) {
     console.error('Supabase Error:', error);
     res.status(500).json({ error: error.message });
@@ -870,6 +885,64 @@ app.delete('/api/admin/projects/:id', verifyToken, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- PROJECT IMAGES APIs ---
+
+// API: Upload Multiple Images for a Project
+app.post('/api/admin/projects/:id/images', verifyToken, upload.array('images', 10), async (req, res) => {
+  if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No images uploaded' });
+  
+  const projectId = req.params.id;
+  const imageData = req.files.map(file => ({
+    project_id: projectId,
+    image_url: file.path,
+    alt_text: req.body.alt_text || 'Project Screenshot'
+  }));
+  
+  try {
+    const { data, error } = await supabase
+      .from('project_images')
+      .insert(imageData)
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, images: data });
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Update Project Image Alt Text
+app.put('/api/admin/project-images/:id', verifyToken, async (req, res) => {
+  const { alt_text } = req.body;
+  try {
+    const { error } = await supabase
+      .from('project_images')
+      .update({ alt_text })
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Delete Project Image
+app.delete('/api/admin/project-images/:id', verifyToken, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('project_images')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
@@ -1456,10 +1529,21 @@ app.get('/image-sitemap.xml', async (req, res) => {
     xml += `  </url>\n`;
 
     // 1. Projects
+    const { data: projectImages } = await supabase.from('project_images').select('*');
     projectsRes.data?.forEach(p => {
-      // Note: Projects might not have a direct image column if they use ID-based thumbnails, 
-      // but let's assume they have project detail pages.
-      // If projects have images, we add them here.
+      const pImages = projectImages ? projectImages.filter(img => img.project_id === p.id) : [];
+      if (pImages.length > 0) {
+        xml += `  <url>\n`;
+        xml += `    <loc>${siteUrl}/project/${p.id}</loc>\n`;
+        pImages.forEach(img => {
+          xml += `    <image:image>\n`;
+          xml += `      <image:loc>${img.image_url}</image:loc>\n`;
+          xml += `      <image:title>${p.title}</image:title>\n`;
+          xml += `      <image:caption>${img.alt_text || p.image_alt || p.title}</image:caption>\n`;
+          xml += `    </image:image>\n`;
+        });
+        xml += `  </url>\n`;
+      }
     });
 
     // 2. Certificates

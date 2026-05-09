@@ -98,6 +98,21 @@ const ProjectDetail = () => {
                     <p key={index}>{paragraph}</p>
                   ))}
                 </div>
+
+                {project.images && project.images.length > 0 && (
+                  <div className="proj-detail-gallery">
+                    <h3 className="gallery-title">Project Gallery</h3>
+                    <div className="proj-gallery-grid">
+                      {project.images.map((img, idx) => (
+                        <div key={img.id} className="proj-gallery-item" title={img.alt_text}>
+                          <img src={img.image_url} alt={img.alt_text} loading="lazy" />
+                          <div className="img-badge">Image {idx + 1}</div>
+                          <div className="img-hover-info">{img.alt_text}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
