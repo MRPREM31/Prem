@@ -29,7 +29,7 @@ const Projects = () => {
         </motion.h2>
 
         <div className="projects-grid">
-          {projects.length > 0 ? projects.map((project, index) => (
+          {projects.length > 0 ? projects.slice(0, 6).map((project, index) => (
             <motion.div 
               key={project.id} 
               className="project-card glass-panel"
@@ -59,12 +59,7 @@ const Projects = () => {
                 </div>
               </div>
               <div className="project-links">
-                <button className="btn btn-outline btn-sm" onClick={(e) => { 
-                  e.stopPropagation(); 
-                  navigate(`/project/${project.id}`, { 
-                    state: { fromPortfolio: true, scrollY: window.scrollY, section: 'projects' } 
-                  }); 
-                }}>
+                <button className="btn btn-outline btn-sm">
                   See full detail
                 </button>
               </div>
@@ -73,6 +68,22 @@ const Projects = () => {
             <p className="text-center w-full" style={{ gridColumn: '1 / -1' }}>No projects found. Add some from the Admin Dashboard!</p>
           )}
         </div>
+
+        {projects.length > 6 && (
+          <div className="view-all-container">
+            <motion.button 
+              className="btn btn-primary view-all-btn"
+              onClick={() => navigate('/all-projects')}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              See All Projects ({projects.length})
+            </motion.button>
+          </div>
+        )}
       </div>
     </section>
   );

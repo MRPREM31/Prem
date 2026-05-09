@@ -7,6 +7,17 @@ const Certificates = () => {
   const [certificates, setCertificates] = useState([]);
   const navigate = useNavigate();
 
+  const [displayLimit, setDisplayLimit] = useState(6);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDisplayLimit(window.innerWidth < 768 ? 3 : 6);
+    };
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
@@ -27,7 +38,7 @@ const Certificates = () => {
         
         <div className="certificates-grid">
           {certificates.length > 0 ? (
-            certificates.map(cert => (
+            certificates.slice(0, displayLimit).map(cert => (
               <div className="certificate-card glass-panel" key={cert.id} onClick={() => { 
                 navigate(`/certificate/${cert.id}`, { 
                   state: { fromPortfolio: true, scrollY: window.scrollY, section: 'certificates' } 
@@ -57,6 +68,17 @@ const Certificates = () => {
             <p className="text-center w-100 text-muted">No certificates to show right now.</p>
           )}
         </div>
+
+        {certificates.length > displayLimit && (
+          <div className="view-all-container">
+            <button 
+              className="btn btn-primary view-all-btn"
+              onClick={() => navigate('/all-certificates')}
+            >
+              See All Certificates ({certificates.length})
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -10,6 +10,8 @@ import MemoriesPage from './pages/MemoriesPage'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
 import AllVisitors from './pages/AllVisitors'
+import AllProjects from './pages/AllProjects'
+import AllCertificates from './pages/AllCertificates'
 import GithubInsights from './pages/GithubInsights'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
@@ -70,6 +72,8 @@ function App() {
         <Route path="/personal-vault" element={<PersonalVault />} />
         <Route path="/all-messages" element={<AllMessages />} />
         <Route path="/all-visitors" element={<AllVisitors />} />
+        <Route path="/all-projects" element={<AllProjects />} />
+        <Route path="/all-certificates" element={<AllCertificates />} />
         
         {/* Redirect old admin routes to home */}
         <Route path="/admin" element={<Navigate to="/" replace />} />
