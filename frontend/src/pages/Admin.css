@@ -271,6 +271,47 @@
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Search Bar Styles */
+.search-bar-container {
+  width: 100%;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+}
+
+.search-icon {
+  color: var(--accent-primary);
+  font-size: 1.2rem;
+}
+
+.search-input-wrapper input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 100%;
+  font-size: 1rem;
+  outline: none;
+}
+
+.mini-table {
+  font-size: 0.9rem;
+}
+
+.mini-table th, .mini-table td {
+  padding: 8px 12px;
+}
+
+.tiny-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 /* Image Upload Section Styles */
 .admin-section {
   margin-bottom: 2rem;
