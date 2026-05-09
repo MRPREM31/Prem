@@ -248,18 +248,18 @@
 /* Toast Styles */
 .custom-toast {
   position: fixed;
-  top: 20px;
+  top: 100px;
   right: 20px;
   padding: 12px 24px;
   border-radius: 12px;
-  background: rgba(var(--accent-primary-rgb), 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(var(--accent-primary-rgb), 0.95);
+  backdrop-filter: blur(15px);
   color: white;
   font-weight: 600;
-  z-index: 9999;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.1);
-  animation: toastSlideIn 0.3s ease-out;
+  z-index: 10001;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: toastSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .custom-toast.error {
