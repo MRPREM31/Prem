@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes } from 'react-icons/fa';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { RESUME_LINK } from '../config';
@@ -517,6 +517,30 @@ const AdminDashboard = () => {
       console.error(err);
       showToast('Network error', 'error');
     }
+  };
+
+  const fetchAdminReviews = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reviews`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setAllReviews(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const deleteReview = async (id) => {
+    if (!window.confirm('Delete this review?')) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reviews/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast('Review deleted');
+        fetchAdminReviews();
+      }
+    } catch (err) { console.error(err); }
   };
 
   const handleCertSubmit = async (e) => {
