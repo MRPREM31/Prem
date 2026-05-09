@@ -60,7 +60,7 @@ const AllProjects = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: (index % 6) * 0.1 }}
-                    onClick={() => navigate(`/project/${project.id}`)}
+                    onClick={() => navigate(`/project/${project.slug || project.id}`)}
                     style={{ cursor: 'pointer' }}
                   >
                     <div className="project-content">

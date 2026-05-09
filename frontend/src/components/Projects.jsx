@@ -38,7 +38,7 @@ const Projects = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               onClick={() => { 
-                navigate(`/project/${project.id}`, { 
+                navigate(`/project/${project.slug || project.id}`, { 
                   state: { fromPortfolio: true, scrollY: window.scrollY, section: 'projects' } 
                 }); 
               }}

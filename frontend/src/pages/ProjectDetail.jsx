@@ -16,7 +16,7 @@ import SEO from '../components/SEO';
 import './ProjectDetail.css';
 
 const ProjectDetail = () => {
-  const { id } = useParams();
+  const { idOrSlug } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const ProjectDetail = () => {
 
   const fetchProject = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${id}?t=${Date.now()}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${idOrSlug}?t=${Date.now()}`);
       if (!res.ok) {
         navigate('/');
         return;
@@ -47,7 +47,7 @@ const ProjectDetail = () => {
 
   useEffect(() => {
     fetchProject();
-  }, [id, navigate]);
+  }, [idOrSlug, navigate]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();

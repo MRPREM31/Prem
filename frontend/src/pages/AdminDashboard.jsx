@@ -5,6 +5,7 @@ import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaC
 import { QRCodeCanvas } from 'qrcode.react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ChatBot from '../components/ChatBot';
 import { RESUME_LINK } from '../config';
 import './Admin.css';
 
