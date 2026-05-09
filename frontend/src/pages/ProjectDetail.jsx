@@ -111,12 +111,6 @@ const ProjectDetail = () => {
               <div className="proj-detail-info">
                 <div className="proj-header-row">
                   <h1 className="proj-detail-title gradient-text">{project.title}</h1>
-                  {project.avgRating > 0 && (
-                    <div className="proj-avg-rating">
-                      <FaStar className="star-filled" />
-                      <span>{project.avgRating} / 5.0</span>
-                    </div>
-                  )}
                 </div>
                 
                 <div className="proj-detail-tags">
@@ -126,6 +120,12 @@ const ProjectDetail = () => {
                 </div>
 
                 <div className="proj-detail-links">
+                  {project.avgRating > 0 && (
+                    <div className="proj-avg-rating-inline">
+                      <FaStar className="star-filled" />
+                      <span>{project.avgRating} / 5.0</span>
+                    </div>
+                  )}
                   {project.github && (
                     <a href={project.github} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
                       <FaGithub /> GitHub Repository
