@@ -61,7 +61,7 @@ const ProjectDetail = () => {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${id}/reviews`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${project.id}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...reviewForm, device_id: deviceId })
@@ -100,13 +100,16 @@ const ProjectDetail = () => {
 
   if (!project) return null;
 
+  const shareUrl = window.location.href;
+  const projectTitle = project.title;
+
   return (
     <div className="portfolio-page">
       <SEO 
         title={`${project.title} | Projects`}
         description={project.description.substring(0, 160)}
         keywords={`${project.tags}, AI projects, full stack projects, React portfolio projects`}
-        url={`project/${id}`}
+        url={`project/${project.slug || project.id}`}
       />
       <Navbar />
       <main className="main-content">
