@@ -161,7 +161,12 @@ const ProjectDetail = () => {
 
                 <div className="proj-detail-links">
                   {project.avgRating > 0 && (
-                    <div className="proj-avg-rating-inline">
+                    <div 
+                      className="proj-avg-rating-inline" 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setShowReviewModal(true)}
+                      title="Click to rate this project"
+                    >
                       <FaStar className="star-filled" />
                       <span>{project.avgRating} / 5.0</span>
                     </div>
@@ -181,9 +186,16 @@ const ProjectDetail = () => {
                       <FaFilePowerpoint /> View PPT
                     </a>
                   )}
-                  <button className="btn btn-outline btn-sm review-trigger-btn" onClick={() => navigate(`/review/${idOrSlug}`)}>
+                  <Link 
+                    to={`/review/${idOrSlug}`} 
+                    className="btn btn-outline btn-sm review-trigger-btn" 
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      setShowReviewModal(true); 
+                    }}
+                  >
                     <FaCommentDots /> Give Review
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="proj-detail-desc">
@@ -266,7 +278,10 @@ const ProjectDetail = () => {
             ) : (
               <>
                 <div className="modal-header">
-                  <h3>Rate this Project</h3>
+                  <div>
+                    <h3 className="gradient-text">Rate & Review</h3>
+                    <p style={{fontSize: '0.85rem', opacity: 0.8, color: 'var(--text-muted)'}}>How was your experience with <strong>{project.title}</strong>?</p>
+                  </div>
                   <button className="close-btn" onClick={() => setShowReviewModal(false)}><FaTimes /></button>
                 </div>
                 <form className="liquid-form" onSubmit={handleReviewSubmit}>

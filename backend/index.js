@@ -838,9 +838,16 @@ app.get('/api/projects/:id', async (req, res) => {
       query = query.eq('slug', id);
     }
 
-    const { data: projectData, error: projectError } = await query.single();
-    if (projectError) throw projectError;
-    const project = projectData;
+    const { data: project, error: projectError } = await query.single();
+    
+    if (projectError) {
+      console.error('Project Fetch Error:', projectError);
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
 
     const { data: images } = await supabase
       .from('project_images')
@@ -866,8 +873,8 @@ app.get('/api/projects/:id', async (req, res) => {
       avgRating: Number(avgRating).toFixed(1)
     });
   } catch (error) {
-    console.error('Supabase Error:', error);
-    res.status(404).json({ error: 'Project not found' });
+    console.error('Project Detail System Error:', error);
+    res.status(500).json({ error: 'Internal server error while fetching project details' });
   }
 });
 
