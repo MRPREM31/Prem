@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FaGithub, FaExternalLinkAlt, FaFilePdf, FaChevronLeft, FaStar, FaRegStar, FaShareAlt, FaWhatsapp, FaLinkedin, FaTwitter, FaFilePowerpoint, FaTimes, FaCommentDots } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt, FaFilePdf, FaChevronLeft, FaStar, FaRegStar, FaShareAlt, FaWhatsapp, FaLinkedin, FaTwitter, FaFilePowerpoint, FaTimes, FaCommentDots, FaInfoCircle } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
 import {
   WhatsappShareButton,
@@ -52,6 +52,7 @@ const ProjectDetail = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (reviewForm.rating === 0) return alert('Please select a star rating');
+    if (!reviewForm.name.trim()) return alert('Please enter your name');
     
     setSubmitting(true);
     let deviceId = localStorage.getItem('prem_portfolio_device_id');
@@ -304,7 +305,8 @@ const ProjectDetail = () => {
                   <div className="form-group mb-3">
                     <input 
                       type="text" 
-                      placeholder="Your Name (Optional)" 
+                      placeholder="Your Name *" 
+                      required
                       value={reviewForm.name} 
                       onChange={e => setReviewForm({...reviewForm, name: e.target.value})} 
                       className="liquid-input" 
@@ -327,6 +329,11 @@ const ProjectDetail = () => {
                       className="liquid-input" 
                       rows="3"
                     ></textarea>
+                  </div>
+
+                  <div className="review-privacy-notice mb-4">
+                    <FaInfoCircle className="info-icon" />
+                    <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
                   </div>
                   <button type="submit" className="btn btn-primary w-100" disabled={submitting || reviewForm.rating === 0}>
                     {submitting ? 'Posting...' : 'Post Review'}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FaStar, FaRegStar, FaChevronLeft, FaCheckCircle } from 'react-icons/fa';
+import { FaStar, FaRegStar, FaChevronLeft, FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -38,6 +38,7 @@ const ReviewPage = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (reviewForm.rating === 0) return alert('Please select a star rating');
+    if (!reviewForm.name.trim()) return alert('Please enter your name');
     
     setSubmitting(true);
     let deviceId = localStorage.getItem('prem_portfolio_device_id');
@@ -147,7 +148,8 @@ const ReviewPage = () => {
                 <div className="mb-3">
                   <input 
                     type="text" 
-                    placeholder="Your Name (Optional)" 
+                    placeholder="Your Name *" 
+                    required
                     className="liquid-input"
                     value={reviewForm.name}
                     onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
@@ -170,6 +172,11 @@ const ReviewPage = () => {
                     value={reviewForm.message}
                     onChange={(e) => setReviewForm({ ...reviewForm, message: e.target.value })}
                   ></textarea>
+                </div>
+
+                <div className="review-privacy-notice mb-4">
+                  <FaInfoCircle className="info-icon" />
+                  <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100" disabled={submitting}>
