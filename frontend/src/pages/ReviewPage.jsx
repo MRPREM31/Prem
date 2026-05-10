@@ -18,6 +18,7 @@ const ReviewPage = () => {
     message: '',
     rating: 0
   });
+  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
 
   useEffect(() => {
     fetchProject();
@@ -123,10 +124,26 @@ const ReviewPage = () => {
 
               <div className="modal-header">
                 <div>
-                  <h3 className="gradient-text">Submit Your Review</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 className="gradient-text">Submit Your Review</h3>
+                    <button 
+                      type="button" 
+                      className="info-toggle-btn" 
+                      onClick={() => setShowPrivacyInfo(!showPrivacyInfo)}
+                      title="Privacy Information"
+                    >
+                      <FaInfoCircle />
+                    </button>
+                  </div>
                   <p style={{fontSize: '0.9rem', opacity: 0.7}}>Your feedback helps me improve this project.</p>
                 </div>
               </div>
+
+              {showPrivacyInfo && (
+                <div className="review-privacy-notice mb-4">
+                  <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
+                </div>
+              )}
 
               <form onSubmit={handleReviewSubmit}>
                 <div className="mb-4 text-center">
@@ -174,10 +191,7 @@ const ReviewPage = () => {
                   ></textarea>
                 </div>
 
-                <div className="review-privacy-notice mb-4">
-                  <FaInfoCircle className="info-icon" />
-                  <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
-                </div>
+
 
                 <button type="submit" className="btn btn-primary w-100" disabled={submitting}>
                   {submitting ? 'Posting...' : 'Post Review'}

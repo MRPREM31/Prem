@@ -27,6 +27,7 @@ const ProjectDetail = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [showPrivacyInfo, setShowPrivacyInfo] = useState(false);
 
   const fetchProject = async () => {
     try {
@@ -280,11 +281,27 @@ const ProjectDetail = () => {
               <>
                 <div className="modal-header">
                   <div>
-                    <h3 className="gradient-text">Rate & Review</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h3 className="gradient-text">Rate & Review</h3>
+                      <button 
+                        type="button" 
+                        className="info-toggle-btn" 
+                        onClick={() => setShowPrivacyInfo(!showPrivacyInfo)}
+                        title="Privacy Information"
+                      >
+                        <FaInfoCircle />
+                      </button>
+                    </div>
                     <p style={{fontSize: '0.85rem', opacity: 0.8, color: 'var(--text-muted)'}}>How was your experience with <strong>{project.title}</strong>?</p>
                   </div>
                   <button className="close-btn" onClick={() => setShowReviewModal(false)}><FaTimes /></button>
                 </div>
+
+                {showPrivacyInfo && (
+                  <div className="review-privacy-notice mb-4">
+                    <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
+                  </div>
+                )}
                 <form className="liquid-form" onSubmit={handleReviewSubmit}>
                   <div className="star-selector mb-4">
                     <label>Your Rating *</label>
@@ -331,10 +348,7 @@ const ProjectDetail = () => {
                     ></textarea>
                   </div>
 
-                  <div className="review-privacy-notice mb-4">
-                    <FaInfoCircle className="info-icon" />
-                    <p>By posting, you agree that your name and review will be publicly visible on <strong>mrprem.in</strong> to showcase project feedback.</p>
-                  </div>
+
                   <button type="submit" className="btn btn-primary w-100" disabled={submitting || reviewForm.rating === 0}>
                     {submitting ? 'Posting...' : 'Post Review'}
                   </button>
