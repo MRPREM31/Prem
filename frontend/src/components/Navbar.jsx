@@ -108,8 +108,10 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen, activeSection]);
 
-  const isAdmin = window.location.pathname === '/prem-dashboard-2026';
-  const isHome = window.location.pathname === '/';
+  const currentPath = window.location.pathname;
+  const isAdmin = currentPath === '/prem-dashboard-2026' || currentPath === '/prem-media-library';
+  const isHome = currentPath === '/';
+  const isMediaLibrary = currentPath === '/prem-media-library';
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled glass-panel' : ''}`}>
@@ -135,13 +137,13 @@ const Navbar = () => {
           <ul className="nav-links" onClick={(e) => e.stopPropagation()}>
             {isAdmin ? (
               <>
-                <li style={{ "--i": 1 }}><a href="#admin-uploads" onClick={() => setIsMobileMenuOpen(false)}>Uploads</a></li>
-                <li style={{ "--i": 2 }}><a href="#admin-stats" onClick={() => setIsMobileMenuOpen(false)}>Stats</a></li>
-                <li style={{ "--i": 3 }}><a href="#admin-projects" onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
-                <li style={{ "--i": 4 }}><a href="#admin-certificates" onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
-                <li style={{ "--i": 5 }}><a href="#admin-memories" onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
-                <li style={{ "--i": 6 }}><a href="#admin-skills" onClick={() => setIsMobileMenuOpen(false)}>Skills</a></li>
-                <li style={{ "--i": 7 }}><a href="#admin-messages" className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Messages</a></li>
+                <li style={{ "--i": 1 }}><a href={isMediaLibrary ? "/prem-dashboard-2026" : "/prem-dashboard-2026"} onClick={() => setIsMobileMenuOpen(false)}>Dashboard</a></li>
+                <li style={{ "--i": 2 }} className={isMediaLibrary ? 'activeSection' : ''}><a href="/prem-media-library" onClick={() => setIsMobileMenuOpen(false)}>Media Library</a></li>
+                <li style={{ "--i": 3 }}><a href={isMediaLibrary ? "/prem-dashboard-2026#admin-stats" : "#admin-stats"} onClick={() => setIsMobileMenuOpen(false)}>Stats</a></li>
+                <li style={{ "--i": 4 }}><a href={isMediaLibrary ? "/prem-dashboard-2026#admin-projects" : "#admin-projects"} onClick={() => setIsMobileMenuOpen(false)}>Projects</a></li>
+                <li style={{ "--i": 5 }}><a href={isMediaLibrary ? "/prem-dashboard-2026#admin-certificates" : "#admin-certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
+                <li style={{ "--i": 6 }}><a href={isMediaLibrary ? "/prem-dashboard-2026#admin-memories" : "#admin-memories"} onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
+                <li style={{ "--i": 7 }}><a href={isMediaLibrary ? "/prem-dashboard-2026#admin-messages" : "/prem-dashboard-2026#admin-messages"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Messages</a></li>
               </>
             ) : (
               <>

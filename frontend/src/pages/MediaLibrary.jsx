@@ -14,8 +14,22 @@ const MediaLibrary = () => {
   const [pendingUploads, setPendingUploads] = useState([]); // [{file, name, preview, status}]
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [modal, setModal] = useState({ show: false, title: '', message: '', onConfirm: null, type: 'danger' });
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
+
+  const showToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3000);
+  };
+
+  const confirmAction = (title, message, onConfirm, type = 'danger') => {
+    setModal({ show: true, title, message, onConfirm, type });
+  };
 
   const fetchMedia = useCallback(async () => {
     try {
@@ -98,6 +112,7 @@ const MediaLibrary = () => {
 
     setUploading(false);
     fetchMedia();
+    showToast('Upload process complete', 'info');
     
     // Clear successful uploads after a delay
     setTimeout(() => {
@@ -105,33 +120,46 @@ const MediaLibrary = () => {
     }, 3000);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Permanently delete this image from CDN and storage?')) return;
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) fetchMedia();
-    } catch (err) {
-      console.error('Delete error:', err);
-    }
+  const handleDelete = (id) => {
+    confirmAction(
+      'Confirm Deletion',
+      'This will permanently remove this asset from ImageKit CDN and your library. This action cannot be undone.',
+      async () => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            fetchMedia();
+            showToast('Asset deleted successfully');
+          } else {
+            showToast('Failed to delete asset', 'error');
+          }
+        } catch (err) {
+          showToast('Network error during deletion', 'error');
+        }
+        setModal({ ...modal, show: false });
+      }
+    );
   };
 
   const copyLink = (id, slug) => {
     const link = `${window.location.origin}/cdn/${slug}`;
     navigator.clipboard.writeText(link);
     setCopiedId(`branded-${id}`);
+    showToast('Branded link copied!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   const copyDirectLink = (id, url) => {
     if (!url) {
-      alert('Direct URL not available for this image. Please re-upload or run migration.');
+      showToast('Direct URL not available. Run migration.', 'error');
       return;
     }
     navigator.clipboard.writeText(url);
     setCopiedId(`direct-${id}`);
+    showToast('Direct CDN link copied!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -221,15 +249,20 @@ const MediaLibrary = () => {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3>Pending Uploads ({pendingUploads.length})</h3>
+                <h3 className="m-0">Pending Uploads ({pendingUploads.length})</h3>
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                  <button className="btn btn-outline" onClick={() => setPendingUploads([])}>Clear All</button>
+                  <button className="btn btn-outline" onClick={() => {
+                    confirmAction('Clear Uploads', 'Remove all pending images from the upload list?', () => {
+                      setPendingUploads([]);
+                      setModal({ ...modal, show: false });
+                    }, 'info');
+                  }}>Clear All</button>
                   <button 
                     className="btn btn-primary" 
                     onClick={uploadAll}
                     disabled={uploading}
                   >
-                    {uploading ? 'Uploading...' : `Upload All to ImageKit`}
+                    {uploading ? 'Processing...' : `Upload to ImageKit`}
                   </button>
                 </div>
               </div>
@@ -338,6 +371,53 @@ const MediaLibrary = () => {
       </main>
 
       <Footer />
+
+      {/* Custom Confirm Modal */}
+      <AnimatePresence>
+        {modal.show && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="confirm-modal glass-panel"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="modal-icon">
+                {modal.type === 'danger' ? <FaTrash /> : <FaPlus />}
+              </div>
+              <h2>{modal.title}</h2>
+              <p className="text-muted">{modal.message}</p>
+              <div className="modal-actions">
+                <button className="modal-btn cancel" onClick={() => setModal({ ...modal, show: false })}>Cancel</button>
+                <button className="modal-btn confirm" onClick={modal.onConfirm}>Confirm</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <div className="toast-container">
+        <AnimatePresence>
+          {toasts.map(t => (
+            <motion.div 
+              key={t.id}
+              className={`custom-toast ${t.type}`}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+            >
+              {t.type === 'success' ? <FaCheck /> : t.type === 'error' ? <FaTimes /> : <FaImage />}
+              {t.message}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
