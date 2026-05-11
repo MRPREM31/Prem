@@ -9,6 +9,7 @@ import ProjectDetail from './pages/ProjectDetail'
 import ReviewPage from './pages/ReviewPage'
 import ManageReviews from './pages/ManageReviews'
 import MemoriesPage from './pages/MemoriesPage'
+import MemoryDetail from './pages/MemoryDetail'
 import PersonalVault from './pages/PersonalVault'
 import AllMessages from './pages/AllMessages'
 import AllVisitors from './pages/AllVisitors'
@@ -81,11 +82,12 @@ function App() {
         <Route path="/admin" element={<Navigate to="/" replace />} />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         
-        <Route path="/certificate/:id" element={<CertificateDetail />} />
+        <Route path="/certificate/:idOrSlug" element={<CertificateDetail />} />
         <Route path="/project/:idOrSlug" element={<ProjectDetail />} />
         <Route path="/review/:slug" element={<ReviewPage />} />
         <Route path="/admin/reviews" element={<ManageReviews />} />
         <Route path="/memories" element={<MemoriesPage />} />
+        <Route path="/memory/:idOrSlug" element={<MemoryDetail />} />
         <Route path="/github-insights" element={<GithubInsights />} />
         
         {/* Catch-all redirect to home */}

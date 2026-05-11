@@ -4,7 +4,9 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+import { downloadImage } from '../utils/download';
 import '../components/MemorableImages.css'; // Reuse CSS
 
 const MemoriesPage = () => {
@@ -60,6 +62,8 @@ const MemoriesPage = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05 }}
+                  onClick={() => navigate(`/memory/${img.slug || img.id}`)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <div className="memory-image-container">
                     <img 
@@ -68,7 +72,43 @@ const MemoriesPage = () => {
                       className="memory-img" 
                       loading="lazy"
                     />
+                    
+                    {/* Top Right Share Icon */}
+                    <div className="top-share-icon" onClick={(e) => {
+                      e.stopPropagation();
+                      if (navigator.share) {
+                        navigator.share({ title: img.title, url: `${window.location.origin}/memory/${img.slug || img.id}` });
+                      } else {
+                        navigator.clipboard.writeText(`${window.location.origin}/memory/${img.slug || img.id}`);
+                        alert('Link copied!');
+                      }
+                    }}>
+                      <FaShareAlt />
+                    </div>
+
                     <div className="memory-overlay">
+                      <div className="card-actions">
+                        <div className="action-icon" title="View Detail" onClick={() => navigate(`/memory/${img.slug || img.id}`)}>
+                          <FaEye />
+                        </div>
+                        <div className="action-icon" title="Share" onClick={(e) => {
+                          e.stopPropagation();
+                          if (navigator.share) {
+                            navigator.share({ title: img.title, url: `${window.location.origin}/memory/${img.slug || img.id}` });
+                          } else {
+                            navigator.clipboard.writeText(`${window.location.origin}/memory/${img.slug || img.id}`);
+                            alert('Link copied!');
+                          }
+                        }}>
+                          <FaShareAlt />
+                        </div>
+                        <div className="action-icon" title="Download" onClick={(e) => {
+                          e.stopPropagation();
+                          downloadImage(img.image_url, `${img.title}.jpg`);
+                        }}>
+                          <FaDownload />
+                        </div>
+                      </div>
                       <h3 className="memory-title">{img.title}</h3>
                     </div>
                   </div>

@@ -54,12 +54,71 @@
   opacity: 1;
 }
 
-.memory-title {
-  color: #ffffff;
+.memory-card:hover .memory-title {
+  transform: translateY(0);
+}
+
+/* Action Icons Overlay */
+.card-actions {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 1.2rem;
+  z-index: 5;
+}
+
+.action-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
   font-size: 1.2rem;
-  font-weight: 600;
-  transform: translateY(20px);
-  transition: transform 0.4s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.action-icon:hover {
+  background: var(--accent-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--accent-primary);
+  border-color: transparent;
+}
+
+/* Top Right Share Icon */
+.top-share-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 35px;
+  height: 35px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 10;
+  opacity: 0;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.memory-card:hover .top-share-icon {
+  opacity: 1;
+}
+
+.top-share-icon:hover {
+  background: var(--accent-secondary);
+  transform: rotate(15deg);
 }
 /* Full Grid for Memories Page */
 .memories-grid.full-grid {

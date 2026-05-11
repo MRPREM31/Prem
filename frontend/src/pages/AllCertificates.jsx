@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+import { downloadImage } from '../utils/download';
 import '../components/Certificates.css';
 
 const AllCertificates = () => {
@@ -63,7 +64,7 @@ const AllCertificates = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: (index % 6) * 0.1 }}
-                    onClick={() => navigate(`/certificate/${cert.id}`)}
+                    onClick={() => navigate(`/certificate/${cert.slug || cert.id}`)}
                   >
                     <div className="cert-image-container">
                       <img 
@@ -72,8 +73,44 @@ const AllCertificates = () => {
                         className="cert-img" 
                         loading="lazy"
                       />
+                      
+                      {/* Top Right Share Icon */}
+                      <div className="top-share-icon" onClick={(e) => {
+                        e.stopPropagation();
+                        if (navigator.share) {
+                          navigator.share({ title: cert.title, url: `${window.location.origin}/certificate/${cert.slug || cert.id}` });
+                        } else {
+                          navigator.clipboard.writeText(`${window.location.origin}/certificate/${cert.slug || cert.id}`);
+                          alert('Link copied!');
+                        }
+                      }}>
+                        <FaShareAlt />
+                      </div>
+
                       <div className="cert-overlay">
-                        <button className="btn btn-primary btn-sm">See full detail</button>
+                        <div className="card-actions">
+                          <div className="action-icon" title="View Detail" onClick={() => navigate(`/certificate/${cert.slug || cert.id}`)}>
+                            <FaEye />
+                          </div>
+                          <div className="action-icon" title="Share" onClick={(e) => {
+                            e.stopPropagation();
+                            if (navigator.share) {
+                              navigator.share({ title: cert.title, url: `${window.location.origin}/certificate/${cert.slug || cert.id}` });
+                            } else {
+                              navigator.clipboard.writeText(`${window.location.origin}/certificate/${cert.slug || cert.id}`);
+                              alert('Link copied!');
+                            }
+                          }}>
+                            <FaShareAlt />
+                          </div>
+                          <div className="action-icon" title="Download" onClick={(e) => {
+                            e.stopPropagation();
+                            const downloadUrl = cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image;
+                            downloadImage(downloadUrl, `${cert.title}.jpg`);
+                          }}>
+                            <FaDownload />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="cert-content">

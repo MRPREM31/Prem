@@ -1134,11 +1134,14 @@ app.get('/api/certificates', async (req, res) => {
 // API: Get Single Certificate
 app.get('/api/certificates/:id', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('certificates')
-      .select('*')
-      .eq('id', req.params.id)
-      .single();
+    const isId = /^\d+$/.test(req.params.id);
+    let query = supabase.from('certificates').select('*');
+    if (isId) {
+      query = query.or(`id.eq.${req.params.id},slug.eq.${req.params.id}`);
+    } else {
+      query = query.eq('slug', req.params.id);
+    }
+    const { data, error } = await query.single();
 
     if (error) throw error;
     if (data) {
@@ -1158,11 +1161,12 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
   const imageUrl = req.file.path; // Cloudinary URL
+  const slug = slugify(title, { lower: true, strict: true });
   
   try {
     const { data, error } = await supabase
       .from('certificates')
-      .insert([{ title, description, date, image: imageUrl, image_alt }])
+      .insert([{ title, description, date, image: imageUrl, image_alt, slug }])
       .select();
 
     if (error) throw error;
@@ -1176,7 +1180,8 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
 // API: Update Certificate (Protected)
 app.put('/api/admin/certificates/:id', verifyToken, upload.single('certificate_image'), async (req, res) => {
   const { title, description, date, image_alt } = req.body;
-  const updateData = { title, description, date, image_alt };
+  const slug = slugify(title, { lower: true, strict: true });
+  const updateData = { title, description, date, image_alt, slug };
   
   if (req.file) {
     updateData.image = req.file.path;
@@ -1313,12 +1318,37 @@ app.get('/api/memorable-images', async (req, res) => {
   }
 });
 
+// API: Get Single Memorable Image
+app.get('/api/memorable-images/:id', async (req, res) => {
+  try {
+    const isId = /^\d+$/.test(req.params.id);
+    let query = supabase.from('memorable_images').select('*');
+    if (isId) {
+      query = query.or(`id.eq.${req.params.id},slug.eq.${req.params.id}`);
+    } else {
+      query = query.eq('slug', req.params.id);
+    }
+    const { data, error } = await query.single();
+
+    if (error) throw error;
+    if (data) {
+      res.json(data);
+    } else {
+      res.status(404).json({ error: 'Memory not found' });
+    }
+  } catch (error) {
+    console.error('Supabase Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // API: Create Memorable Image (Protected)
 app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), async (req, res) => {
   const { title, image_alt, image_description } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
   const imageUrl = req.file.path; // Cloudinary URL
+  const slug = slugify(title || 'Untitled Memory', { lower: true, strict: true }) + '-' + Date.now().toString().slice(-4);
   
   let aspectRatio = 'landscape';
   if (req.file.width && req.file.height) {
@@ -1334,7 +1364,8 @@ app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), asy
         aspect_ratio: aspectRatio,
         upload_date: new Date().toISOString(),
         image_alt,
-        image_description
+        image_description,
+        slug
       }])
       .select();
 

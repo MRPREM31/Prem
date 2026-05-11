@@ -3,10 +3,11 @@ import SEO from '../components/SEO';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { FaArrowLeft, FaShareAlt } from 'react-icons/fa';
 import './CertificateDetail.css';
 
 const CertificateDetail = () => {
-  const { id } = useParams();
+  const { idOrSlug } = useParams();
   const navigate = useNavigate();
   const [certificate, setCertificate] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ const CertificateDetail = () => {
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates/${idOrSlug}`);
         if (!res.ok) {
           navigate('/');
           return;
@@ -29,7 +30,20 @@ const CertificateDetail = () => {
       }
     };
     fetchCertificate();
-  }, [id, navigate]);
+  }, [idOrSlug, navigate]);
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: certificate.title,
+        text: `Check out my certificate: ${certificate.title}`,
+        url: window.location.href,
+      }).catch(err => console.log('Error sharing:', err));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
 
   if (loading) {
     return (
@@ -52,18 +66,22 @@ const CertificateDetail = () => {
     <div className="portfolio-page">
       <SEO 
         title={`${certificate.title} | Certificates`}
-        description={certificate.description.substring(0, 160)}
         image={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image}
-        url={`certificate/${id}`}
+        url={`certificate/${certificate.slug || certificate.id}`}
         type="article"
       />
       <Navbar />
       <main className="main-content">
         <div className="cert-detail-page section">
           <div className="container">
-            <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
-              &larr; Back to Portfolio
-            </button>
+            <div className="section-header-flex mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
+                <FaArrowLeft /> Back
+              </button>
+              <button className="btn btn-primary share-btn" onClick={handleShare}>
+                <FaShareAlt /> Share Certificate
+              </button>
+            </div>
             
             <div className="cert-detail-container glass-panel">
               <div className="cert-detail-image-wrapper">
