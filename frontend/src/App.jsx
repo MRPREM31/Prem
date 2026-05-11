@@ -16,6 +16,8 @@ import AllVisitors from './pages/AllVisitors'
 import AllProjects from './pages/AllProjects'
 import AllCertificates from './pages/AllCertificates'
 import GithubInsights from './pages/GithubInsights'
+import MediaLibrary from './pages/MediaLibrary'
+import PublicImageDetail from './pages/PublicImageDetail'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
 import './App.css'
@@ -89,6 +91,8 @@ function App() {
         <Route path="/memories" element={<MemoriesPage />} />
         <Route path="/memory/:idOrSlug" element={<MemoryDetail />} />
         <Route path="/github-insights" element={<GithubInsights />} />
+        <Route path="/admin/media" element={<MediaLibrary />} />
+        <Route path="/cdn/:slug" element={<PublicImageDetail />} />
         
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

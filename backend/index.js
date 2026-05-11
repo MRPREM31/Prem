@@ -15,7 +15,14 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const Groq = require('groq-sdk');
 const slugify = require('slugify');
+const ImageKit = require('imagekit');
 const app = express();
+
+const imagekit = new ImageKit({
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY || 'placeholder_public_key',
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY || 'placeholder_private_key',
+  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || 'https://ik.imagekit.io/placeholder'
+});
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || 'placeholder_key' });
 if (!process.env.GROQ_API_KEY) {
@@ -1715,6 +1722,107 @@ app.get('/image-sitemap.xml', async (req, res) => {
     res.send(xml);
   } catch (error) {
     res.status(500).send('Error generating sitemap');
+  }
+});
+
+// --- MEDIA LIBRARY ROUTES ---
+app.post('/api/media/upload', verifyToken, multer().single('image'), async (req, res) => {
+  try {
+    const { name } = req.body;
+    const file = req.file;
+
+    if (!file) return res.status(400).json({ error: 'No image provided' });
+
+    const slug = slugify(name || file.originalname, { lower: true, strict: true });
+    
+    // Upload to ImageKit
+    const uploadResponse = await imagekit.upload({
+      file: file.buffer,
+      fileName: slug + path.extname(file.originalname),
+      folder: '/portfolio_media'
+    });
+
+    // Save to Supabase
+    const { data, error } = await supabase
+      .from('media_library')
+      .insert([{
+        name: name || file.originalname,
+        slug: slug + '-' + Math.random().toString(36).substr(2, 5),
+        url: uploadResponse.url,
+        imagekit_file_id: uploadResponse.fileId,
+        size: file.size,
+        uploaded_by: 'Admin'
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(data);
+  } catch (err) {
+    console.error('Media upload error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/media', async (req, res) => {
+  try {
+    const { search } = req.query;
+    let query = supabase.from('media_library').select('*').order('upload_date', { ascending: false });
+
+    if (search) {
+      query = query.ilike('name', `%${search}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/media/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get file ID first
+    const { data: media, error: fetchError } = await supabase
+      .from('media_library')
+      .select('imagekit_file_id')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // Delete from ImageKit
+    await imagekit.deleteFile(media.imagekit_file_id);
+
+    // Delete from Supabase
+    const { error: deleteError } = await supabase
+      .from('media_library')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
+    res.json({ message: 'Media deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/media/slug/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { data, error } = await supabase
+      .from('media_library')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error) return res.status(404).json({ error: 'Media not found' });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
