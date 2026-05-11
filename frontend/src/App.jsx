@@ -87,11 +87,11 @@ function App() {
         <Route path="/certificate/:idOrSlug" element={<CertificateDetail />} />
         <Route path="/project/:idOrSlug" element={<ProjectDetail />} />
         <Route path="/review/:slug" element={<ReviewPage />} />
-        <Route path="/admin/reviews" element={<ManageReviews />} />
+        <Route path="/prem-manage-reviews" element={<ManageReviews />} />
         <Route path="/memories" element={<MemoriesPage />} />
         <Route path="/memory/:idOrSlug" element={<MemoryDetail />} />
         <Route path="/github-insights" element={<GithubInsights />} />
-        <Route path="/admin/media" element={<MediaLibrary />} />
+        <Route path="/prem-media-library" element={<MediaLibrary />} />
         <Route path="/cdn/:slug" element={<PublicImageDetail />} />
         
         {/* Catch-all redirect to home */}

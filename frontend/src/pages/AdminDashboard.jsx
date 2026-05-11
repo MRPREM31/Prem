@@ -864,7 +864,7 @@ const AdminDashboard = () => {
             </div>
             <div className="dashboard-actions">
               {isSuperAdmin && (
-                <button onClick={() => navigate('/admin/media')} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #10b981, #3b82f6)' }}>
+                <button onClick={() => navigate('/prem-media-library')} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #10b981, #3b82f6)' }}>
                   <FaImage /> Media Library / CDN
                 </button>
               )}
