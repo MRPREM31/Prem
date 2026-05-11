@@ -102,7 +102,7 @@ const PublicImageDetail = () => {
               <button className="btn btn-outline back-btn" onClick={() => navigate('/#home')}>
                 <FaArrowLeft /> Back to Portfolio
               </button>
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div className="header-actions-group">
                 <button className="btn btn-outline" onClick={handleCopy}>
                   {copied ? <FaCheck style={{ color: '#10b981' }} /> : <FaCopy />} Copy Link
                 </button>
@@ -129,18 +129,18 @@ const PublicImageDetail = () => {
                   <span>Size: {(image.size / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
                 
-                <div className="mt-4" style={{ display: 'flex', gap: '1rem' }}>
+                <div className="cdn-info-box mt-5 glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+                  <p className="small text-muted mb-2">Private CDN Link:</p>
+                  <code style={{ color: 'var(--primary-color)', wordBreak: 'break-all' }}>{window.location.href}</code>
+                </div>
+
+                <div className="mt-4 action-buttons" style={{ display: 'flex', gap: '1rem' }}>
                   <button onClick={handleDownload} className="btn btn-primary">
                     <FaDownload /> Download Original
                   </button>
                   <a href={image.url} target="_blank" rel="noreferrer" className="btn btn-outline">
                     <FaExternalLinkAlt /> View Source
                   </a>
-                </div>
-                
-                <div className="cdn-info-box mt-5 glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                  <p className="small text-muted mb-2">Private CDN Link:</p>
-                  <code style={{ color: 'var(--primary-color)', wordBreak: 'break-all' }}>{window.location.href}</code>
                 </div>
               </div>
             </motion.div>
