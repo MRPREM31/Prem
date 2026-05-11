@@ -11,8 +11,7 @@ const MediaLibrary = () => {
   const [media, setMedia] = useState([]);
   const [search, setSearch] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [imageName, setImageName] = useState('');
+  const [pendingUploads, setPendingUploads] = useState([]); // [{file, name, preview, status}]
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
   const navigate = useNavigate();
@@ -40,31 +39,70 @@ const MediaLibrary = () => {
     fetchMedia();
   }, [fetchMedia, navigate, token]);
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!selectedFile) return;
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    const newUploads = files.map(file => ({
+      file,
+      name: file.name.split('.')[0], // Default name from filename
+      preview: URL.createObjectURL(file),
+      status: 'idle' // idle, uploading, success, error
+    }));
+    setPendingUploads([...pendingUploads, ...newUploads]);
+    e.target.value = ''; // Reset input
+  };
 
+  const updatePendingName = (index, newName) => {
+    const updated = [...pendingUploads];
+    updated[index].name = newName;
+    setPendingUploads(updated);
+  };
+
+  const removePending = (index) => {
+    const updated = [...pendingUploads];
+    URL.revokeObjectURL(updated[index].preview);
+    updated.splice(index, 1);
+    setPendingUploads(updated);
+  };
+
+  const uploadAll = async () => {
     setUploading(true);
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-    formData.append('name', imageName);
+    
+    for (let i = 0; i < pendingUploads.length; i++) {
+      if (pendingUploads[i].status === 'success') continue;
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
-      });
-      if (res.ok) {
-        setImageName('');
-        setSelectedFile(null);
-        fetchMedia();
+      const updated = [...pendingUploads];
+      updated[i].status = 'uploading';
+      setPendingUploads([...updated]);
+
+      const formData = new FormData();
+      formData.append('image', pendingUploads[i].file);
+      formData.append('name', pendingUploads[i].name);
+
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        
+        if (res.ok) {
+          updated[i].status = 'success';
+        } else {
+          updated[i].status = 'error';
+        }
+      } catch (err) {
+        updated[i].status = 'error';
       }
-    } catch (err) {
-      console.error('Upload error:', err);
-    } finally {
-      setUploading(false);
+      setPendingUploads([...updated]);
     }
+
+    setUploading(false);
+    fetchMedia();
+    
+    // Clear successful uploads after a delay
+    setTimeout(() => {
+      setPendingUploads(prev => prev.filter(u => u.status !== 'success'));
+    }, 3000);
   };
 
   const handleDelete = async (id) => {
@@ -153,37 +191,71 @@ const MediaLibrary = () => {
             className="upload-card glass-panel"
             onClick={() => document.getElementById('media-upload').click()}
           >
-            <FaUpload />
-            <h3>{selectedFile ? selectedFile.name : 'Click to Upload Image'}</h3>
-            <p className="text-muted">PNG, JPG, WEBP up to 10MB</p>
+            <FaUpload style={{ fontSize: '3rem', color: 'var(--primary-color)' }} />
+            <h3>Click to select multiple images</h3>
+            <p className="text-muted">Upload professional assets to your private CDN</p>
             <input 
               type="file" 
               id="media-upload" 
               hidden 
+              multiple
               accept="image/*"
-              onChange={(e) => setSelectedFile(e.target.files[0])}
+              onChange={handleFileSelect}
             />
           </div>
-          
-          <div className="upload-inputs glass-panel" style={{ padding: '2rem' }}>
-            <div className="form-group mb-3">
-              <label className="text-muted mb-2 d-block small">Image Display Name</label>
-              <input 
-                type="text" 
-                placeholder="e.g. Project Hero Image"
-                className="form-input w-100"
-                value={imageName}
-                onChange={(e) => setImageName(e.target.value)}
-              />
-            </div>
-            <button 
-              className="btn btn-primary w-100" 
-              onClick={handleUpload}
-              disabled={uploading || !selectedFile}
+
+          {pendingUploads.length > 0 && (
+            <motion.div 
+              className="pending-section glass-panel p-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              {uploading ? 'Processing...' : 'Upload to ImageKit'}
-            </button>
-          </div>
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h3>Pending Uploads ({pendingUploads.length})</h3>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button className="btn btn-outline" onClick={() => setPendingUploads([])}>Clear All</button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={uploadAll}
+                    disabled={uploading}
+                  >
+                    {uploading ? 'Uploading...' : `Upload All to ImageKit`}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pending-uploads-grid">
+                {pendingUploads.map((item, idx) => (
+                  <div key={idx} className="pending-item glass-panel">
+                    <button className="remove-pending" onClick={() => removePending(idx)}><FaTrash size={12} /></button>
+                    <img src={item.preview} alt="preview" className="pending-preview" />
+                    <div className="pending-info">
+                      <input 
+                        type="text" 
+                        value={item.name} 
+                        onChange={(e) => updatePendingName(idx, e.target.value)}
+                        className="form-input w-100"
+                        placeholder="Image Name"
+                        disabled={item.status === 'uploading' || item.status === 'success'}
+                      />
+                      {item.status === 'uploading' && (
+                        <div className="upload-progress-bar">
+                          <motion.div 
+                            className="upload-progress-fill"
+                            initial={{ width: 0 }}
+                            animate={{ width: '100%' }}
+                            transition={{ duration: 2 }}
+                          />
+                        </div>
+                      )}
+                      {item.status === 'success' && <span style={{ color: '#10b981', fontSize: '0.8rem' }}><FaCheck /> Ready</span>}
+                      {item.status === 'error' && <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>Error uploading</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </section>
 
         {loading ? (
@@ -193,7 +265,7 @@ const MediaLibrary = () => {
           </div>
         ) : media.length === 0 ? (
           <div className="empty-media">
-            <FaImage />
+            <FaImage style={{ fontSize: '4rem', opacity: 0.3 }} />
             <h2>No assets found</h2>
             <p>Try searching for something else or upload a new image.</p>
           </div>
