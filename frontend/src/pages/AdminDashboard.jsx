@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar, FaLink, FaQrcode, FaEyeSlash } from 'react-icons/fa';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar, FaLink, FaQrcode, FaEyeSlash, FaImage } from 'react-icons/fa';
 import { QRCodeCanvas } from 'qrcode.react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
