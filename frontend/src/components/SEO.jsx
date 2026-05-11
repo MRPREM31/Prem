@@ -5,7 +5,8 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
   const siteTitle = "Prem Prasad Pradhan | Software Developer Portfolio";
   const defaultDescription = "Official portfolio of Prem Prasad Pradhan. A passionate Software Developer specializing in full-stack web development, AI automation, and professional UI/UX design.";
   const siteUrl = "https://mrprem.in/";
-  const defaultImage = "https://res.cloudinary.com/dmy2piasa/image/upload/v1777986860/portfolio/xbb3bxhruzwwg69ezwbj.jpg";
+  // Default to the professional profile image
+  const defaultImage = "https://res.cloudinary.com/dmy2piasa/image/upload/v1741356501/portfolio/profile_photo.jpg";
 
   const seoTitle = title ? `${title} | Prem Prasad Pradhan` : siteTitle;
   const seoDescription = description || defaultDescription;

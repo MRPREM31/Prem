@@ -45,82 +45,76 @@ const CertificateDetail = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="portfolio-page">
-        <Navbar />
-        <main className="main-content">
-          <div className="cert-detail-loading">
-            <div className="spinner"></div>
-            <p>Loading certificate details...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!certificate) return null;
-
   return (
     <div className="portfolio-page">
       <SEO 
-        title={`${certificate.title} | Certificates`}
-        image={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image}
-        url={`certificate/${certificate.slug || certificate.id}`}
+        title={certificate ? `${certificate.title} | Certificates` : "Certificate Detail"}
+        image={certificate ? (certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image) : null}
+        url={certificate ? `certificate/${certificate.slug || certificate.id}` : `certificate/${idOrSlug}`}
         type="article"
       />
       <Navbar />
       <main className="main-content">
-        <div className="cert-detail-page section">
-          <div className="container">
-            <div className="section-header-flex mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <button className="btn btn-outline back-btn" onClick={() => navigate('/all-certificates')}>
-                <FaArrowLeft /> Back
-              </button>
-              <button className="btn btn-primary share-btn" onClick={handleShare}>
-                <FaShareAlt /> Share Certificate
-              </button>
-            </div>
-            
-            <div className="cert-detail-container glass-panel">
-              <div className="cert-detail-image-wrapper">
-                {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
-                  <div className="pdf-viewer-container">
-                    <iframe 
-                      src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
-                      title={certificate.title}
-                      className="pdf-iframe"
-                    />
-                    <div className="pdf-actions">
-                      <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
-                         Open PDF in New Tab
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  <img 
-                    src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
-                    alt={certificate.title} 
-                    className="cert-detail-img" 
-                  />
-                )}
+        {loading ? (
+          <div className="cert-detail-loading">
+            <div className="spinner"></div>
+            <p>Loading certificate details...</p>
+          </div>
+        ) : !certificate ? (
+          <div className="cert-detail-error">
+            <p>Certificate not found.</p>
+          </div>
+        ) : (
+          <div className="cert-detail-page section">
+            <div className="container">
+              <div className="section-header-flex mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button className="btn btn-outline back-btn" onClick={() => navigate('/all-certificates')}>
+                  <FaArrowLeft /> Back
+                </button>
+                <button className="btn btn-primary share-btn" onClick={handleShare}>
+                  <FaShareAlt /> Share Certificate
+                </button>
               </div>
               
-              <div className="cert-detail-info">
-                <h1 className="cert-detail-title gradient-text">{certificate.title}</h1>
-                <div className="cert-detail-meta">
-                  <span className="cert-detail-date">{certificate.date}</span>
+              <div className="cert-detail-container glass-panel">
+                <div className="cert-detail-image-wrapper">
+                  {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
+                    <div className="pdf-viewer-container">
+                      <iframe 
+                        src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                        title={certificate.title}
+                        className="pdf-iframe"
+                      />
+                      <div className="pdf-actions">
+                        <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
+                           Open PDF in New Tab
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <img 
+                      src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                      alt={certificate.title} 
+                      className="cert-detail-img" 
+                    />
+                  )}
                 </div>
-                <div className="cert-detail-desc">
-                  {certificate.description.split('\n').map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
+                
+                <div className="cert-detail-info">
+                  <h1 className="cert-detail-title gradient-text">{certificate.title}</h1>
+                  <div className="cert-detail-meta">
+                    <span className="cert-detail-date">{certificate.date}</span>
+                  </div>
+                  <div className="cert-detail-desc">
+                    {certificate.description.split('\n').map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>

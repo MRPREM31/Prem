@@ -47,81 +47,75 @@ const MemoryDetail = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="portfolio-page">
-        <Navbar />
-        <main className="main-content">
-          <div className="cert-detail-loading">
-            <div className="spinner"></div>
-            <p>Capturing the moment...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!memory) return null;
-
   return (
     <div className="portfolio-page">
       <SEO 
-        title={`${memory.title} | Memories`}
-        description={memory.image_description || `Explore this memorable moment: ${memory.title} captured by Prem Prasad Pradhan.`}
-        image={memory.image_url}
-        url={`memory/${memory.slug || memory.id}`}
+        title={memory ? `${memory.title} | Memories` : "Memorable Moment"}
+        description={memory?.image_description || "Explore this memorable moment captured by Prem Prasad Pradhan."}
+        image={memory ? (memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url) : null}
+        url={memory ? `memory/${memory.slug || memory.id}` : `memory/${idOrSlug}`}
         type="article"
       />
       <Navbar />
       <main className="main-content">
-        <div className="cert-detail-page section">
-          <div className="container">
-            <div className="section-header-flex mb-4">
-              <button className="btn btn-outline back-btn" onClick={() => navigate('/memories')}>
-                <FaArrowLeft /> Back to Memories
-              </button>
-              <button className="btn btn-primary share-btn" onClick={handleShare}>
-                <FaShareAlt /> Share Memory
-              </button>
-            </div>
-            
-            <motion.div 
-              className="cert-detail-container glass-panel"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="cert-detail-image-wrapper memory-detail-image-wrapper">
-                <img 
-                  src={optimizeCloudinaryUrl(memory.image_url, 1200)} 
-                  alt={memory.image_alt || memory.title} 
-                  className="cert-detail-img memory-detail-img" 
-                />
+        {loading ? (
+          <div className="cert-detail-loading">
+            <div className="spinner"></div>
+            <p>Capturing the moment...</p>
+          </div>
+        ) : !memory ? (
+          <div className="cert-detail-error">
+            <p>Memory not found.</p>
+          </div>
+        ) : (
+          <div className="cert-detail-page section">
+            <div className="container">
+              <div className="section-header-flex mb-4">
+                <button className="btn btn-outline back-btn" onClick={() => navigate('/memories')}>
+                  <FaArrowLeft /> Back to Memories
+                </button>
+                <button className="btn btn-primary share-btn" onClick={handleShare}>
+                  <FaShareAlt /> Share Memory
+                </button>
               </div>
               
-              <div className="cert-detail-info">
-                <h1 className="cert-detail-title gradient-text">{memory.title}</h1>
-                <div className="cert-detail-meta">
-                  <span className="cert-detail-date">
-                    {new Date(memory.upload_date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </span>
+              <motion.div 
+                className="cert-detail-container glass-panel"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="cert-detail-image-wrapper memory-detail-image-wrapper">
+                  <img 
+                    src={optimizeCloudinaryUrl(memory.image_url, 1200)} 
+                    alt={memory.image_alt || memory.title} 
+                    className="cert-detail-img memory-detail-img" 
+                  />
                 </div>
-                {memory.image_description && (
-                  <div className="cert-detail-desc">
-                    {memory.image_description.split('\n').map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
+                
+                <div className="cert-detail-info">
+                  <h1 className="cert-detail-title gradient-text">{memory.title}</h1>
+                  <div className="cert-detail-meta">
+                    <span className="cert-detail-date">
+                      {new Date(memory.upload_date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </span>
                   </div>
-                )}
-              </div>
-            </motion.div>
+                  {memory.image_description && (
+                    <div className="cert-detail-desc">
+                      {memory.image_description.split('\n').map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <Footer />
     </div>
