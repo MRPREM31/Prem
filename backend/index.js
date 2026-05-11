@@ -1742,6 +1742,8 @@ app.post('/api/media/upload', verifyToken, multer().single('image'), async (req,
       folder: '/portfolio_media'
     });
 
+    const direct_image_url = `https://img.mrprem.in${uploadResponse.filePath}`;
+
     // Save to Supabase
     const { data, error } = await supabase
       .from('media_library')
@@ -1749,6 +1751,7 @@ app.post('/api/media/upload', verifyToken, multer().single('image'), async (req,
         name: name || file.originalname,
         slug: slug + '-' + Math.random().toString(36).substr(2, 5),
         url: uploadResponse.url,
+        direct_image_url: direct_image_url,
         imagekit_file_id: uploadResponse.fileId,
         size: file.size,
         uploaded_by: 'Admin'

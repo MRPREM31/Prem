@@ -121,7 +121,17 @@ const MediaLibrary = () => {
   const copyLink = (id, slug) => {
     const link = `${window.location.origin}/cdn/${slug}`;
     navigator.clipboard.writeText(link);
-    setCopiedId(id);
+    setCopiedId(`branded-${id}`);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const copyDirectLink = (id, url) => {
+    if (!url) {
+      alert('Direct URL not available for this image. Please re-upload or run migration.');
+      return;
+    }
+    navigator.clipboard.writeText(url);
+    setCopiedId(`direct-${id}`);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -290,18 +300,32 @@ const MediaLibrary = () => {
                       <div className="media-overlay">
                         <h4 className="media-name">{item.name}</h4>
                         <div className="media-actions">
-                          <button className="media-action-btn" onClick={() => copyLink(item.id, item.slug)} title="Copy CDN Link">
-                            {copiedId === item.id ? <FaCheck style={{ color: '#10b981' }} /> : <FaCopy />}
-                          </button>
-                          <button className="media-action-btn" onClick={() => window.open(`${window.location.origin}/cdn/${item.slug}`, '_blank')} title="View Public Page">
-                            <FaLink />
-                          </button>
-                          <button className="media-action-btn" onClick={() => downloadImage(item.url, item.name)} title="Download">
-                            <FaDownload />
-                          </button>
-                          <button className="media-action-btn delete" onClick={() => handleDelete(item.id)} title="Delete Permanently">
-                            <FaTrash />
-                          </button>
+                          <div className="action-group" title="Public Branded Page">
+                            <button className="media-action-btn" onClick={() => copyLink(item.id, item.slug)} title="Copy Branded Page Link">
+                              {copiedId === `branded-${item.id}` ? <FaCheck style={{ color: '#10b981' }} /> : <FaLink />}
+                            </button>
+                            <button className="media-action-btn" onClick={() => window.open(`${window.location.origin}/cdn/${item.slug}`, '_blank')} title="View Branded Page">
+                              <FaShareAlt />
+                            </button>
+                          </div>
+
+                          <div className="action-group highlight" title="Direct CDN Link">
+                            <button className="media-action-btn" onClick={() => copyDirectLink(item.id, item.direct_image_url)} title="Copy Direct Image URL">
+                              {copiedId === `direct-${item.id}` ? <FaCheck style={{ color: '#10b981' }} /> : <FaCopy />}
+                            </button>
+                            <button className="media-action-btn" onClick={() => window.open(item.direct_image_url || item.url, '_blank')} title="Open Raw Image">
+                              <FaImage />
+                            </button>
+                          </div>
+                          
+                          <div className="action-group">
+                            <button className="media-action-btn" onClick={() => downloadImage(item.url, item.name)} title="Download Original">
+                              <FaDownload />
+                            </button>
+                            <button className="media-action-btn delete" onClick={() => handleDelete(item.id)} title="Delete Permanently">
+                              <FaTrash />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </motion.div>

@@ -230,32 +230,56 @@
 
 .media-actions {
   display: flex;
-  gap: 8px;
-  justify-content: space-between;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-group.highlight {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
 .media-action-btn {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.9rem;
-  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.85rem;
+  border: 1px solid rgba(255,255,255,0.05);
   transition: all 0.2s ease;
 }
 
 .media-action-btn:hover {
   background: var(--primary-color);
   transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.action-group.highlight .media-action-btn:hover {
+  background: #4f46e5;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
 .media-action-btn.delete:hover {
   background: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 /* Status Badges */
