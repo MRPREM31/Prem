@@ -4,15 +4,25 @@ import SEO from '../components/SEO';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion } from 'framer-motion';
-import { FaDownload, FaShareAlt, FaCopy, FaCheck, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
-import '../pages/CertificateDetail.css'; // Reuse premium layout styles
+import { FaDownload, FaShareAlt, FaCopy, FaCheck, FaArrowLeft, FaExternalLinkAlt, FaTimes, FaImage } from 'react-icons/fa';
+import { downloadImage } from '../utils/download';
+import '../pages/CertificateDetail.css';
 
 const PublicImageDetail = () => {
   const { slug } = useParams();
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [toasts, setToasts] = useState([]);
   const navigate = useNavigate();
+
+  const showToast = (message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 3000);
+  };
 
   useEffect(() => {
     const fetchImageData = async () => {
@@ -34,6 +44,7 @@ const PublicImageDetail = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
+    showToast('Branded link copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -43,10 +54,17 @@ const PublicImageDetail = () => {
         title: image.name,
         text: `Check out this professional asset by Prem Prasad Pradhan`,
         url: window.location.href
-      });
+      }).then(() => showToast('Shared successfully!'))
+        .catch(() => showToast('Share cancelled', 'info'));
     } else {
       handleCopy();
     }
+  };
+
+  const handleDownload = async () => {
+    showToast('Download started...', 'info');
+    await downloadImage(image.url, image.name);
+    showToast('Download complete!');
   };
 
   if (loading) {
@@ -81,8 +99,8 @@ const PublicImageDetail = () => {
         <div className="cert-detail-page section">
           <div className="container">
             <div className="section-header-flex mb-4">
-              <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
-                <FaArrowLeft /> Back
+              <button className="btn btn-outline back-btn" onClick={() => navigate('/#home')}>
+                <FaArrowLeft /> Back to Portfolio
               </button>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <button className="btn btn-outline" onClick={handleCopy}>
@@ -112,9 +130,9 @@ const PublicImageDetail = () => {
                 </div>
                 
                 <div className="mt-4" style={{ display: 'flex', gap: '1rem' }}>
-                  <a href={image.url} download={image.name} className="btn btn-primary">
+                  <button onClick={handleDownload} className="btn btn-primary">
                     <FaDownload /> Download Original
-                  </a>
+                  </button>
                   <a href={image.url} target="_blank" rel="noreferrer" className="btn btn-outline">
                     <FaExternalLinkAlt /> View Source
                   </a>
@@ -131,6 +149,24 @@ const PublicImageDetail = () => {
       </main>
 
       <Footer />
+
+      {/* Toast Notifications */}
+      <div className="toast-container">
+        <AnimatePresence>
+          {toasts.map(t => (
+            <motion.div 
+              key={t.id}
+              className={`custom-toast ${t.type}`}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+            >
+              {t.type === 'success' ? <FaCheck /> : t.type === 'error' ? <FaTimes /> : <FaImage />}
+              {t.message}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
