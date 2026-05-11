@@ -75,7 +75,7 @@ const CertificateDetail = () => {
         <div className="cert-detail-page section">
           <div className="container">
             <div className="section-header-flex mb-4" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <button className="btn btn-outline back-btn" onClick={() => navigate(-1)}>
+              <button className="btn btn-outline back-btn" onClick={() => navigate('/all-certificates')}>
                 <FaArrowLeft /> Back
               </button>
               <button className="btn btn-primary share-btn" onClick={handleShare}>

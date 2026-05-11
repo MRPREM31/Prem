@@ -42,8 +42,8 @@ const AllCertificates = () => {
           <div className="container">
             <div className="section-header-flex mb-4">
               <div>
-                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate(-1)}>
-                  <FaArrowLeft /> Back
+                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/')}>
+                  <FaArrowLeft /> Back to Portfolio
                 </button>
                 <h1 className="section-title gradient-text">All Certificates ({certificates.length})</h1>
               </div>

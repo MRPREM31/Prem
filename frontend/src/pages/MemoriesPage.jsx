@@ -41,7 +41,7 @@ const MemoriesPage = () => {
       <main className="main-content">
         <section className="section memories-page-section" style={{ paddingTop: '120px' }}>
           <div className="container">
-            <button className="btn btn-outline back-btn" onClick={() => navigate(-1)} style={{ marginBottom: '2rem' }}>
+            <button className="btn btn-outline back-btn" onClick={() => navigate('/')} style={{ marginBottom: '2rem' }}>
               &larr; Back to Portfolio
             </button>
             <motion.h1 
