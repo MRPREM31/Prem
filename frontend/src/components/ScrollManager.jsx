@@ -49,7 +49,7 @@ const ScrollManager = () => {
 
       const performScroll = () => {
         if (savedY) {
-          window.scrollTo(0, parseInt(savedY, 10));
+          window.scrollTo({ top: parseInt(savedY, 10), behavior: "instant" });
         } else if (lastSection && pathname === "/") {
           const element = document.getElementById(lastSection);
           if (element) {

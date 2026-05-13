@@ -111,7 +111,7 @@ const Certificates = () => {
           <div className="view-all-container">
             <button 
               className="btn btn-primary view-all-btn"
-              onClick={() => navigate('/all-certificates')}
+              onClick={() => navigate('/all-certificates', { state: { scrollY: window.scrollY, section: 'certificates' } })}
             >
               See All Certificates ({certificates.length})
             </button>

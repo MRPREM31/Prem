@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -13,6 +13,8 @@ const AllCertificates = () => {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { scrollY, section } = location.state || {};
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,7 +44,7 @@ const AllCertificates = () => {
           <div className="container">
             <div className="section-header-flex mb-4">
               <div>
-                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/')}>
+                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/', { state: { fromPortfolio: true, section: section || 'certificates', scrollY } })}>
                   <FaArrowLeft /> Back to Portfolio
                 </button>
                 <h1 className="section-title gradient-text">All Certificates ({certificates.length})</h1>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
@@ -12,6 +12,8 @@ import '../components/MemorableImages.css'; // Reuse CSS
 const MemoriesPage = () => {
   const [images, setImages] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { scrollY, section } = location.state || {};
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images`)
@@ -31,7 +33,7 @@ const MemoriesPage = () => {
 
   return (
     <div className="portfolio-page">
-      <SEO 
+      <SEO
         title="Memories | Prem Prasad Pradhan Portfolio"
         description="Explore memorable moments, achievements, experiences, and personal highlights from the journey of Prem Prasad Pradhan (MR.PREM)."
         url="memories"
@@ -41,10 +43,10 @@ const MemoriesPage = () => {
       <main className="main-content">
         <section className="section memories-page-section" style={{ paddingTop: '120px' }}>
           <div className="container">
-            <button className="btn btn-outline back-btn" onClick={() => navigate('/')} style={{ marginBottom: '2rem' }}>
+            <button className="btn btn-outline back-btn" onClick={() => navigate('/', { state: { fromPortfolio: true, section: section || 'memories', scrollY } })} style={{ marginBottom: '2rem' }}>
               &larr; Back to Portfolio
             </button>
-            <motion.h1 
+            <motion.h1
               className="section-title gradient-text text-center"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -56,7 +58,7 @@ const MemoriesPage = () => {
 
             <div className="memories-grid full-grid">
               {images.map((img, index) => (
-                <motion.div 
+                <motion.div
                   key={img.id}
                   className={`memory-card glass-panel ${img.aspect_ratio}`}
                   initial={{ opacity: 0, y: 30 }}
@@ -66,13 +68,13 @@ const MemoriesPage = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="memory-image-container">
-                    <img 
-                      src={optimizeCloudinaryUrl(img.image_url, 1200)} 
-                      alt={img.image_alt || `Prem Prasad Pradhan Memory: ${img.title} - ${img.image_description || ''}`} 
-                      className="memory-img" 
+                    <img
+                      src={optimizeCloudinaryUrl(img.image_url, 1200)}
+                      alt={img.image_alt || `Prem Prasad Pradhan Memory: ${img.title} - ${img.image_description || ''}`}
+                      className="memory-img"
                       loading="lazy"
                     />
-                    
+
                     {/* Top Right Share Icon */}
                     <div className="top-share-icon" onClick={(e) => {
                       e.stopPropagation();
@@ -115,7 +117,7 @@ const MemoriesPage = () => {
                 </motion.div>
               ))}
             </div>
-            
+
             {images.length === 0 && (
               <p className="text-center text-muted mt-5">No memories shared yet.</p>
             )}

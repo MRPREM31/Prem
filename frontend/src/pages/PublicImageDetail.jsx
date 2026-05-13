@@ -99,7 +99,7 @@ const PublicImageDetail = () => {
         <div className="cert-detail-page section">
           <div className="container">
             <div className="section-header-flex mb-4">
-              <button className="btn btn-outline back-btn" onClick={() => navigate('/#home')}>
+              <button className="btn btn-outline back-btn" onClick={() => navigate('/')}>
                 <FaArrowLeft /> Back to Portfolio
               </button>
               <div className="header-actions-group">

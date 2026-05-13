@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
@@ -11,6 +11,8 @@ const AllProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { scrollY, section } = location.state || {};
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,8 +40,8 @@ const AllProjects = () => {
           <div className="container">
             <div className="section-header-flex">
               <div>
-                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate(-1)}>
-                  <FaArrowLeft /> Back
+                <button className="btn btn-outline btn-sm mb-3" onClick={() => navigate('/', { state: { fromPortfolio: true, section: section || 'projects', scrollY } })}>
+                  <FaArrowLeft /> Back to Portfolio
                 </button>
                 <h1 className="section-title gradient-text">All Projects ({projects.length})</h1>
               </div>

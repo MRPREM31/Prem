@@ -79,7 +79,7 @@ const Projects = () => {
           <div className="view-all-container">
             <motion.button 
               className="btn btn-primary view-all-btn"
-              onClick={() => navigate('/all-projects')}
+              onClick={() => navigate('/all-projects', { state: { scrollY: window.scrollY, section: 'projects' } })}
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
