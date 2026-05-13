@@ -900,3 +900,121 @@
 .mr-2 {
   margin-right: 0.5rem;
 }
+
+/* VAULT MANAGEMENT SPECIFIC */
+.manage-secure-vault {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.admin-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.admin-table-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.action-btn.edit { color: var(--accent-primary); }
+.action-btn.delete { color: #ef4444; }
+.action-btn.view { color: #10b981; }
+
+.action-btn.edit:hover { background: rgba(var(--primary-rgb), 0.1); }
+.action-btn.delete:hover { background: rgba(239, 68, 68, 0.1); }
+.action-btn.view:hover { background: rgba(16, 185, 129, 0.1); }
+
+.info-card {
+  background: rgba(var(--primary-rgb), 0.05);
+  border-left: 4px solid var(--primary-color);
+}
+
+.info-card ul {
+  padding-left: 20px;
+}
+
+.info-card li {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 992px) {
+  .manage-secure-vault .row {
+    flex-direction: column;
+  }
+  
+  .manage-secure-vault .col-md-7,
+  .manage-secure-vault .col-md-5 {
+    width: 100%;
+  }
+}
+
+/* Global table long text fix */
+.admin-table td {
+  max-width: 200px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.vault-admin-container {
+  padding-top: 120px !important;
+  padding-bottom: 100px !important;
+}
+
+/* Mobile Card Enhancements */
+.manage-secure-vault .glass-panel.border-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+.manage-secure-vault .glass-panel.border-secondary:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(var(--primary-rgb), 0.3) !important;
+}
+
+.sticky-top {
+  z-index: 10;
+}
+
+@media (max-width: 1200px) {
+  .sticky-top {
+    position: relative !important;
+    top: 0 !important;
+  }
+}
+
+
+

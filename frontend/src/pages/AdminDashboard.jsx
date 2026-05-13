@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar, FaLink, FaQrcode, FaEyeSlash, FaImage } from 'react-icons/fa';
+import { FaTrash, FaSignOutAlt, FaUpload, FaEdit, FaPlus, FaEye, FaEnvelope, FaClock, FaUser, FaReply, FaTimes, FaStar, FaLink, FaQrcode, FaEyeSlash, FaImage, FaShieldAlt } from 'react-icons/fa';
 import { QRCodeCanvas } from 'qrcode.react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -869,6 +869,11 @@ const AdminDashboard = () => {
                 </button>
               )}
               {isSuperAdmin && (
+                <button onClick={() => navigate('/admin/manage-vault')} className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>
+                  <FaShieldAlt /> Manage Secure Vault
+                </button>
+              )}
+              {isSuperAdmin && (
                 <button onClick={() => navigate('/personal-vault')} className="btn btn-primary">
                   Access Personal Data
                 </button>
@@ -1268,7 +1273,7 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
-
+          
           {/* ADMIN WHITELIST SECTION (Super Admin Only) */}
           {isSuperAdmin && (
             <div id="admin-whitelist" className="dashboard-content glass-panel mb-4" style={{ border: '1px solid var(--primary-color)' }}>

@@ -117,6 +117,28 @@ transporter.verify((error, success) => {
 app.use(cors());
 app.use(express.json());
 
+// --- MIDDLEWARE DEFINITIONS ---
+const verifyToken = (req, res, next) => {
+  let token = req.headers['authorization'];
+  if (!token && req.query.token) token = `Bearer ${req.query.token}`;
+  if (!token) return res.status(403).json({ error: 'No token provided.' });
+  const tokenParts = token.split(' ');
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') return res.status(403).json({ error: 'Malformed token.' });
+  jwt.verify(tokenParts[1], JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ error: 'Session expired. Please login again.' });
+    req.user = decoded;
+    next();
+  });
+};
+
+const verifySuperAdmin = (req, res, next) => {
+  if (req.user && req.user.email === 'mr.prem2006@gmail.com') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access Denied: Personal Vault is only for the Primary Super Admin.' });
+  }
+};
+
 // Cloudinary Configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -157,28 +179,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_here';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
-// Middleware to verify JWT
-const verifyToken = (req, res, next) => {
-  let token = req.headers['authorization'];
-  
-  // Also check query params for "open in new tab" scenarios
-  if (!token && req.query.token) {
-    token = `Bearer ${req.query.token}`;
-  }
-
-  if (!token) return res.status(403).json({ error: 'No token provided.' });
-  
-  const tokenParts = token.split(' ');
-  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
-    return res.status(403).json({ error: 'Malformed token.' });
-  }
-
-  jwt.verify(tokenParts[1], JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ error: 'Session expired. Please login again.' });
-    req.user = decoded;
-    next();
-  });
-};
+// Middleware definitions moved for initialization order
 
 // API: Submit Contact Form
 // API: Submit Contact Form
@@ -201,6 +202,62 @@ app.post('/api/contact', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// --- ADMIN MANAGEMENT OF SECURE PORTAL ---
+app.get('/api/admin/secure-links', verifyToken, verifySuperAdmin, async (req, res) => {
+  console.log('GET /api/admin/secure-links hit');
+  try {
+    const { data, error } = await supabase
+      .from('secure_links')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/secure-links', verifyToken, verifySuperAdmin, async (req, res) => {
+  console.log('POST /api/admin/secure-links hit');
+  const { title, description, google_drive_link, category } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('secure_links')
+      .insert([{ title, description, google_drive_link, category: category || 'Other' }])
+      .select();
+    if (error) throw error;
+    res.status(201).json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/admin/secure-links/:id', verifyToken, verifySuperAdmin, async (req, res) => {
+  const { title, description, google_drive_link, category } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('secure_links')
+      .update({ title, description, google_drive_link, category, updated_at: new Date() })
+      .eq('id', req.params.id)
+      .select();
+    if (error) throw error;
+    res.json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/admin/secure-links/:id', verifyToken, verifySuperAdmin, async (req, res) => {
+  try {
+    const { error } = await supabase.from('secure_links').delete().eq('id', req.params.id);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 const bcrypt = require('bcryptjs');
 
@@ -349,14 +406,7 @@ app.post('/api/admin/reset-admin-password', verifyToken, async (req, res) => {
 
 // --- PERSONAL VAULT SYSTEM (SUPER ADMIN ONLY) ---
 
-// Middleware for Vault Access
-const verifySuperAdmin = (req, res, next) => {
-  if (req.user && req.user.email === 'mr.prem2006@gmail.com') {
-    next();
-  } else {
-    res.status(403).json({ error: 'Access Denied: Personal Vault is only for the Primary Super Admin.' });
-  }
-};
+// Middleware moved for initialization order
 
 // API: Get Vault Files
 app.get('/api/admin/vault-files', verifyToken, verifySuperAdmin, async (req, res) => {
@@ -438,6 +488,112 @@ app.get('/api/admin/open-vault-file/:id', verifyToken, verifySuperAdmin, async (
     res.redirect(decryptedUrl);
   } catch (error) {
     res.status(404).send('File not found or unauthorized.');
+  }
+});
+
+// --- SECURE PRIVATE PORTAL (FRONTEND VAULT) ---
+const VAULT_JWT_SECRET = process.env.JWT_SECRET + "_vault";
+
+const vaultLoginAttempts = {};
+
+const verifyFrontendVaultToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(403).json({ error: 'No token provided' });
+  const token = authHeader.split(' ')[1];
+  jwt.verify(token, VAULT_JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ error: 'Unauthorized: Session expired or invalid' });
+    req.vaultUser = decoded;
+    next();
+  });
+};
+
+app.post('/api/vault/login', async (req, res) => {
+  const { username, password } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  if (vaultLoginAttempts[ip] && vaultLoginAttempts[ip].count >= 5) {
+    const timePassed = Date.now() - vaultLoginAttempts[ip].lastAttempt;
+    if (timePassed < 15 * 60 * 1000) {
+      return res.status(429).json({ error: 'Too many attempts. You are locked out for 15 minutes.' });
+    } else {
+      vaultLoginAttempts[ip] = { count: 0, lastAttempt: Date.now() };
+    }
+  }
+
+  try {
+    const { data: user, error } = await supabase
+      .from('access_users')
+      .select('*')
+      .eq('username', username)
+      .single();
+
+    if (error || !user) {
+      vaultLoginAttempts[ip] = { count: (vaultLoginAttempts[ip]?.count || 0) + 1, lastAttempt: Date.now() };
+      return res.status(401).json({ error: 'Nice try 😅 But this vault only opens for legends.' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.encrypted_password);
+    if (!validPassword) {
+      vaultLoginAttempts[ip] = { count: (vaultLoginAttempts[ip]?.count || 0) + 1, lastAttempt: Date.now() };
+      return res.status(401).json({ error: 'Nice try 😅 But this vault only opens for legends.' });
+    }
+
+    delete vaultLoginAttempts[ip];
+    await supabase.from('access_users').update({ last_login: new Date() }).eq('id', user.id);
+
+    const token = jwt.sign({ id: user.id, username: user.username, role: 'vault_access' }, VAULT_JWT_SECRET, { expiresIn: '20m' });
+    res.json({ token, message: 'Welcome to the Secure Vault.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/vault/links', verifyFrontendVaultToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('secure_links')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/vault/open-link/:id', verifyFrontendVaultToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('secure_links')
+      .select('google_drive_link')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error || !data) throw new Error('Link not found');
+    res.json({ url: data.google_drive_link });
+  } catch (error) {
+    res.status(404).json({ error: 'Link not found or unauthorized.' });
+  }
+});
+
+// --- ADMIN MANAGEMENT OF SECURE PORTAL ---
+// Vault routes moved to top for visibility
+
+app.post('/api/admin/vault-credentials', verifyToken, verifySuperAdmin, async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const encrypted_password = await bcrypt.hash(password, 10);
+    const { data: existingUser } = await supabase.from('access_users').select('id').eq('username', username).single();
+    
+    if (existingUser) {
+      await supabase.from('access_users').update({ encrypted_password }).eq('id', existingUser.id);
+    } else {
+      await supabase.from('access_users').insert([{ username, encrypted_password }]);
+    }
+    res.json({ success: true, message: 'Vault credentials updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

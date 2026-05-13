@@ -18,6 +18,8 @@ import AllCertificates from './pages/AllCertificates'
 import GithubInsights from './pages/GithubInsights'
 import MediaLibrary from './pages/MediaLibrary'
 import PublicImageDetail from './pages/PublicImageDetail'
+import SecurePortal from './pages/SecurePortal'
+import AdminVault from './pages/AdminVault'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
 import './App.css'
@@ -93,6 +95,8 @@ function App() {
         <Route path="/github-insights" element={<GithubInsights />} />
         <Route path="/prem-media-library" element={<MediaLibrary />} />
         <Route path="/cdn/:slug" element={<PublicImageDetail />} />
+        <Route path="/secure-portal" element={<SecurePortal />} />
+        <Route path="/admin/manage-vault" element={<AdminVault />} />
         
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
