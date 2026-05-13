@@ -1649,6 +1649,65 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// --- DYNAMIC SITEMAP ---
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const [projectsRes, certificatesRes, memoriesRes, imagesRes] = await Promise.all([
+      supabase.from('projects').select('id, slug'),
+      supabase.from('certificates').select('id, slug'),
+      supabase.from('memorable_images').select('id, slug'),
+      supabase.from('media_library').select('slug')
+    ]);
+
+    const siteUrl = 'https://mrprem.in';
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    const addUrl = (path, priority, freq) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${siteUrl}${path}</loc>\n`;
+      xml += `    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n`;
+      xml += `    <changefreq>${freq}</changefreq>\n`;
+      xml += `    <priority>${priority}</priority>\n`;
+      xml += `  </url>\n`;
+    };
+
+    // Static Core Pages
+    addUrl('', '1.0', 'weekly');
+    addUrl('/all-projects', '0.9', 'weekly');
+    addUrl('/all-certificates', '0.9', 'monthly');
+    addUrl('/memories', '0.9', 'monthly');
+    addUrl('/github-insights', '0.8', 'daily');
+    addUrl('/prem-media-library', '0.7', 'monthly');
+
+    // Dynamic Project Pages
+    projectsRes.data?.forEach(p => {
+      addUrl(`/project/${p.slug || p.id}`, '0.8', 'monthly');
+    });
+
+    // Dynamic Certificate Pages
+    certificatesRes.data?.forEach(c => {
+      addUrl(`/certificate/${c.slug || c.id}`, '0.8', 'monthly');
+    });
+
+    // Dynamic Memory Pages
+    memoriesRes.data?.forEach(m => {
+      addUrl(`/memory/${m.slug || m.id}`, '0.7', 'monthly');
+    });
+
+    // Dynamic CDN Image Pages
+    imagesRes.data?.forEach(img => {
+      addUrl(`/cdn/${img.slug}`, '0.6', 'yearly');
+    });
+
+    xml += `</urlset>`;
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (error) {
+    res.status(500).send('Error generating sitemap');
+  }
+});
+
 // --- DYNAMIC IMAGE SITEMAP ---
 app.get('/image-sitemap.xml', async (req, res) => {
   try {

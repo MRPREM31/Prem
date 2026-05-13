@@ -28,11 +28,26 @@ const AllProjects = () => {
       });
   }, []);
 
+  const itemListSchema = projects.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "All Projects by Prem Prasad Pradhan",
+    "description": "A comprehensive list of software development and AI projects built by Prem Prasad Pradhan.",
+    "itemListElement": projects.map((p, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://mrprem.in/project/${p.slug || p.id}`,
+      "name": p.title
+    }))
+  } : undefined;
+
   return (
     <div className="portfolio-page">
       <SEO 
         title="All Projects | Prem Prasad Pradhan"
         description={`Browse all ${projects.length} professional projects by Prem Prasad Pradhan.`}
+        schema={itemListSchema}
+        url="all-projects"
       />
       <Navbar />
       <main className="main-content">

@@ -32,11 +32,26 @@ const AllCertificates = () => {
     fetchCertificates();
   }, []);
 
+  const itemListSchema = certificates.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "All Certificates by Prem Prasad Pradhan",
+    "description": "Professional certifications and achievements of Prem Prasad Pradhan.",
+    "itemListElement": certificates.map((cert, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://mrprem.in/certificate/${cert.slug || cert.id}`,
+      "name": cert.title
+    }))
+  } : undefined;
+
   return (
     <div className="portfolio-page">
       <SEO 
         title="All Certificates | Prem Prasad Pradhan"
         description={`View all ${certificates.length} professional certifications and achievements of Prem Prasad Pradhan.`}
+        schema={itemListSchema}
+        url="all-certificates"
       />
       <Navbar />
       <main className="main-content">

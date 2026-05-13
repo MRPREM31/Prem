@@ -47,6 +47,19 @@ const MemoryDetail = () => {
     }
   };
 
+  const imageSchema = memory ? {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url,
+    "name": memory.title,
+    "description": memory.image_description || memory.title,
+    "uploadDate": memory.upload_date,
+    "author": {
+      "@type": "Person",
+      "name": "Prem Prasad Pradhan"
+    }
+  } : undefined;
+
   return (
     <div className="portfolio-page">
       <SEO 
@@ -55,6 +68,7 @@ const MemoryDetail = () => {
         image={memory ? (memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url) : null}
         url={memory ? `memory/${memory.slug || memory.id}` : `memory/${idOrSlug}`}
         type="article"
+        schema={imageSchema}
       />
       <Navbar />
       <main className="main-content">

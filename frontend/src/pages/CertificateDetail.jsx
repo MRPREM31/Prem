@@ -45,6 +45,17 @@ const CertificateDetail = () => {
     }
   };
 
+  const credentialSchema = certificate ? {
+    "@context": "https://schema.org",
+    "@type": "EducationalOccupationalCredential",
+    "name": certificate.title,
+    "description": certificate.description,
+    "dateCreated": certificate.date,
+    "credentialCategory": "Certificate",
+    "url": `https://mrprem.in/certificate/${certificate.slug || certificate.id}`,
+    "image": certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image
+  } : undefined;
+
   return (
     <div className="portfolio-page">
       <SEO 
@@ -52,6 +63,7 @@ const CertificateDetail = () => {
         image={certificate ? (certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image) : null}
         url={certificate ? `certificate/${certificate.slug || certificate.id}` : `certificate/${idOrSlug}`}
         type="article"
+        schema={credentialSchema}
       />
       <Navbar />
       <main className="main-content">

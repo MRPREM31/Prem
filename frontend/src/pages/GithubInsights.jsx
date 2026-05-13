@@ -84,6 +84,22 @@ const GithubInsights = () => {
     );
   }
 
+  const profileSchema = data ? {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "Prem Prasad Pradhan",
+      "alternateName": data.user.login,
+      "identifier": data.user.login,
+      "interactionStatistic": [{
+        "@type": "InteractionCounter",
+        "interactionType": "https://schema.org/FollowAction",
+        "userInteractionCount": data.user.followers
+      }]
+    }
+  } : undefined;
+
   return (
     <div className="github-insights-page">
       <SEO 
@@ -91,6 +107,7 @@ const GithubInsights = () => {
         description="Explore the live GitHub contribution graph, coding activity, repositories, commits, developer analytics, and technical journey of Prem Prasad Pradhan (MR.PREM)."
         keywords="GitHub analytics, contribution graph, coding dashboard, developer activity, MR.PREM GitHub, Prem developer dashboard, Prem portfolio analytics"
         url="github-insights"
+        schema={profileSchema}
       />
       <Navbar />
       
