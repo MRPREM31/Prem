@@ -4,6 +4,7 @@ import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, Fa
 import { RESUME_LINK } from '../config';
 import SEO from '../components/SEO';
 import { useNotifications } from '../hooks/useNotifications';
+import { sendFrontendPushNotification } from '../services/notificationService';
 import toast from 'react-hot-toast';
 import './Maintenance.css';
 
@@ -100,20 +101,61 @@ const Maintenance = ({ settings, onUnlock }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
   const [progress, setProgress] = useState(0);
 
+  const triggerLiveNotification = useCallback(async () => {
+    if (!settings.end_time) return;
+    
+    // Prevent duplicate triggers per maintenance window and session
+    const lastNotified = localStorage.getItem('mrprem_last_notified_end_time');
+    const isSentLocal = localStorage.getItem('maintenance_notification_sent') === 'true';
+    const isSentSession = sessionStorage.getItem('maintenance_notification_sent') === 'true';
+    
+    if (lastNotified === settings.end_time || isSentLocal || isSentSession) {
+      return;
+    }
+    
+    localStorage.setItem('mrprem_last_notified_end_time', settings.end_time);
+    localStorage.setItem('maintenance_notification_sent', 'true');
+    sessionStorage.setItem('maintenance_notification_sent', 'true');
+    
+    try {
+      await sendFrontendPushNotification({
+        title: "🚀 Prem's Portfolio Is Back Online!",
+        message: "Maintenance has completed. Click to check out new updates!",
+        url: "https://mrprem.in"
+      });
+      console.log("[Maintenance Completion] Broadcasted live notification successfully from frontend.");
+    } catch (err) {
+      console.error("[Maintenance Completion] Failed to broadcast live notification from frontend:", err);
+    }
+  }, [settings.end_time]);
+
   useEffect(() => {
+    // If maintenance is active and countdown is not finished yet, reset the notification sent flags
+    const initialTime = calculateTimeLeft();
+    if (initialTime.total > 0) {
+      localStorage.removeItem('maintenance_notification_sent');
+      sessionStorage.removeItem('maintenance_notification_sent');
+    } else {
+      // Check if already expired on mount to trigger it
+      triggerLiveNotification();
+      if (onUnlock) onUnlock();
+      return;
+    }
+
     const timer = setInterval(() => {
       const calculated = calculateTimeLeft();
       setTimeLeft(calculated);
 
       // Trigger automatic unlock if the countdown hits zero
-      if (calculated.total === 0 && onUnlock) {
+      if (calculated.total === 0) {
         clearInterval(timer);
-        onUnlock();
+        triggerLiveNotification();
+        if (onUnlock) onUnlock();
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [calculateTimeLeft, onUnlock]);
+  }, [calculateTimeLeft, onUnlock, triggerLiveNotification]);
 
   // Calculate overall progress percentage
   useEffect(() => {

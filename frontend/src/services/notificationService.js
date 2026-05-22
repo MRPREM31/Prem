@@ -189,3 +189,55 @@ export const getNotificationState = async () => {
     };
   }
 };
+
+// Safely broadcast a push notification directly from the frontend (Vercel client-side fallback)
+export const sendFrontendPushNotification = async ({ title, message, url }) => {
+  const apiKey = import.meta.env.VITE_ONESIGNAL_REST_API_KEY;
+
+  if (!apiKey) {
+    console.warn("[OneSignal Frontend REST] VITE_ONESIGNAL_REST_API_KEY is not defined in frontend env. Attempting public backend broadcast fallback...");
+    try {
+      const response = await fetch(`${API_URL}/api/notifications/send-public`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, message, url }),
+      });
+      if (!response.ok) {
+        throw new Error(`Backend public broadcast route failed with status ${response.status}`);
+      }
+      return await response.json();
+    } catch (err) {
+      console.error("[OneSignal Frontend REST] Public backend broadcast fallback failed:", err);
+      throw err;
+    }
+  }
+
+  try {
+    const response = await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": `Basic ${apiKey}`,
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        contents: { en: message },
+        headings: { en: title },
+        included_segments: ["Subscribed Users"],
+        url: url || "https://mrprem.in",
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.errors ? data.errors.join(", ") : "OneSignal API Error");
+    }
+    console.log("[OneSignal Frontend REST] Push notification broadcasted successfully directly from browser:", data);
+    return data;
+  } catch (err) {
+    console.error("[OneSignal Frontend REST] Direct frontend API broadcast failed:", err);
+    throw err;
+  }
+};

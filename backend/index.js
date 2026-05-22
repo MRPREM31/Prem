@@ -1855,6 +1855,30 @@ app.post('/api/notifications/send', verifyToken, async (req, res) => {
   }
 });
 
+// API: Send Push Notification (Public Fallback for Maintenance Completion only)
+app.post('/api/notifications/send-public', async (req, res) => {
+  const { title, message, url } = req.body;
+  if (!title || !message) {
+    return res.status(400).json({ error: 'Title and message are required fields.' });
+  }
+
+  // Strict Security Filter: Only allow maintenance completion messages to be broadcasted publicly
+  const isTitleValid = title.toLowerCase().includes('live') || title.toLowerCase().includes('maintenance') || title.toLowerCase().includes('portfolio');
+  const isMessageValid = message.toLowerCase().includes('maintenance') || message.toLowerCase().includes('live') || message.toLowerCase().includes('explore') || message.toLowerCase().includes('complete');
+
+  if (!isTitleValid || !isMessageValid) {
+    return res.status(403).json({ error: 'Abuse Blocked: This public endpoint is restricted strictly to maintenance completion announcements.' });
+  }
+
+  try {
+    const result = await sendPushNotification({ title, message, url });
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('[Notification Send Public API Error]:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- VISITOR ANALYTICS ---
 
 // API: Track Visitor
