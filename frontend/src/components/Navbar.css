@@ -83,13 +83,11 @@
 }
 
 .navbar.scrolled .nav-profile-img {
-  position: absolute;
-  left: 5px;
-  z-index: -1;
   width: 32px;
   height: 32px;
-  opacity: 0.5;
-  filter: blur(1px) grayscale(30%);
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
 }
 
 .logo {
@@ -101,7 +99,7 @@
 }
 
 .navbar.scrolled .logo {
-  padding-left: 10px;
+  padding-left: 0;
 }
 
 .nav-links {

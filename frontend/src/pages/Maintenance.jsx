@@ -232,148 +232,181 @@ const Maintenance = ({ settings, onUnlock }) => {
         initial="hidden"
         animate="visible"
       >
-        {/* Compact Circular Avatar */}
-        <div className="avatar-header-wrap">
-          <motion.div 
-            className="avatar-container"
-            variants={itemVariants}
-            custom={0}
-          >
-            <div className="avatar-neon-ring">
-              <img 
-                src={profileImage} 
-                alt="Prem Prasad Pradhan" 
-                className="user-avatar-small" 
-                onError={(e) => {
-                  e.target.src = 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg';
-                }}
-              />
-              <span className="live-status-dot"></span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Developer Clean Title */}
-        <motion.h1 className="maintenance-title" variants={itemVariants} custom={1}>
-          System Upgrades In Progress
-        </motion.h1>
-
-        <motion.p className="maintenance-subtitle" variants={itemVariants} custom={2}>
-          {settings.message || "Undergoing scheduled maintenance. The portfolio will automatically resume once the upgrade is completed."}
-        </motion.p>
-
-        {/* Minimal Monospace Inline Countdown */}
-        {settings.end_time && timeLeft.total > 0 && (
-          <motion.div className="mono-countdown" variants={itemVariants} custom={3}>
-            <div className="time-segment">
-              <span className="time-val">{formatNum(timeLeft.days)}</span>
-              <span className="time-unit">d</span>
-            </div>
-            <span className="time-sep">:</span>
-            <div className="time-segment">
-              <span className="time-val">{formatNum(timeLeft.hours)}</span>
-              <span className="time-unit">h</span>
-            </div>
-            <span className="time-sep">:</span>
-            <div className="time-segment">
-              <span className="time-val">{formatNum(timeLeft.minutes)}</span>
-              <span className="time-unit">m</span>
-            </div>
-            <span className="time-sep">:</span>
-            <div className="time-segment-active">
-              <span className="time-val glow-seconds">{formatNum(timeLeft.seconds)}</span>
-              <span className="time-unit">s</span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Ultra-thin Compact Progress Line */}
-        {settings.start_time && settings.end_time && timeLeft.total > 0 && (
-          <motion.div className="progress-section" variants={itemVariants} custom={4}>
-            <div className="progress-container">
+        <div className="maintenance-layout-grid">
+          {/* Left Panel: Branding & Countdown */}
+          <div className="maintenance-left">
+            {/* Compact Circular Avatar */}
+            <div className="avatar-header-wrap">
               <motion.div 
-                className="progress-bar" 
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-            </div>
-            <div className="progress-label-wrap">
-              <span className="progress-percentage">{Math.round(progress)}% UPGRADED</span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Sleek single-line estimated completion display */}
-        {settings.end_time && (
-          <motion.div className="estimated-completion-text" variants={itemVariants} custom={4.5}>
-            <span>Estimated resumption: </span>
-            <strong className="glow-time">{formatResumeDateTime()}</strong>
-          </motion.div>
-        )}
-
-        {/* Sleek Push Notification Subscription Section */}
-        <motion.div className="maintenance-notify-capsule" variants={itemVariants} custom={4.8}>
-          {isSubscribed ? (
-            <div className="notify-status active">
-              <FaCheckCircle className="notify-status-icon success-glow" />
-              <span>You're subscribed! We'll notify you the moment we go live. 🚀</span>
-            </div>
-          ) : permission === "denied" ? (
-            <div className="notify-status blocked">
-              <FaBellSlash className="notify-status-icon blocked-glow" />
-              <span>Notification permission blocked. Please reset browser permissions. 🔒</span>
-            </div>
-          ) : (
-            <div className="notify-prompt-wrap">
-              <span className="notify-desc">Want to know when we are back online?</span>
-              <button 
-                className="maintenance-notify-btn" 
-                onClick={handleSubscribeClick}
-                disabled={subscribing}
+                className="avatar-container"
+                variants={itemVariants}
+                custom={0}
               >
-                {subscribing ? (
-                  <>
-                    <FaSpinner className="spinner-icon" />
-                    <span>Subscribing...</span>
-                  </>
-                ) : (
-                  <>
-                    <FaBell className="bell-pulse-anim" />
-                    <span>Notify Me On Completion</span>
-                  </>
-                )}
-              </button>
+                <div className="avatar-neon-ring">
+                  <img 
+                    src={profileImage} 
+                    alt="Prem Prasad Pradhan" 
+                    className="user-avatar-small" 
+                    onError={(e) => {
+                      e.target.src = 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg';
+                    }}
+                  />
+                  <span className="live-status-dot"></span>
+                </div>
+              </motion.div>
             </div>
-          )}
-        </motion.div>
 
-        {/* Sleek Glass Capsule Email Contact */}
-        <motion.div className="developer-contact-pill" variants={itemVariants} custom={5}>
-          <div className="contact-body">
-            <span className="contact-prefix">In the meantime, you can contact Prem by this email:</span>
-            <a href="mailto:contact@mrprem.in" className="contact-email-link">
-              <FaEnvelope className="contact-icon" />
-              <span>contact@mrprem.in</span>
-            </a>
+            {/* Developer Clean Title */}
+            <motion.h1 className="maintenance-title" variants={itemVariants} custom={1}>
+              System Upgrades In Progress
+            </motion.h1>
+
+            <motion.p className="maintenance-subtitle" variants={itemVariants} custom={2}>
+              {settings.message || "Undergoing scheduled maintenance. The portfolio will automatically resume once the upgrade is completed."}
+            </motion.p>
+
+            {/* Minimal Monospace Inline Countdown */}
+            {settings.end_time && timeLeft.total > 0 && (
+              <motion.div className="mono-countdown" variants={itemVariants} custom={3}>
+                <div className="time-segment">
+                  <span className="time-val">{formatNum(timeLeft.days)}</span>
+                  <span className="time-unit">d</span>
+                </div>
+                <span className="time-sep">:</span>
+                <div className="time-segment">
+                  <span className="time-val">{formatNum(timeLeft.hours)}</span>
+                  <span className="time-unit">h</span>
+                </div>
+                <span className="time-sep">:</span>
+                <div className="time-segment">
+                  <span className="time-val">{formatNum(timeLeft.minutes)}</span>
+                  <span className="time-unit">m</span>
+                </div>
+                <span className="time-sep">:</span>
+                <div className="time-segment-active">
+                  <span className="time-val glow-seconds">{formatNum(timeLeft.seconds)}</span>
+                  <span className="time-unit">s</span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Sleek single-line estimated completion display */}
+            {settings.end_time && (
+              <motion.div className="estimated-completion-text" variants={itemVariants} custom={4.5}>
+                <span>Estimated resumption: </span>
+                <strong className="glow-time">{formatResumeDateTime()}</strong>
+              </motion.div>
+            )}
           </div>
-        </motion.div>
 
-        {/* Footer & Social Section */}
-        <motion.div className="social-section" variants={itemVariants} custom={6}>
-          <a href="https://linkedin.com/in/mr-prem-pradhan" target="_blank" rel="noreferrer" className="social-icon-link" title="LinkedIn">
-            <FaLinkedinIn />
-          </a>
-          <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer" className="social-icon-link" title="GitHub">
-            <FaGithub />
-          </a>
-          <a href="mailto:contact@mrprem.in" className="social-icon-link" title="Official Contact Email">
-            <FaEnvelope />
-          </a>
-          <a href={resumeUrl} target="_blank" rel="noreferrer" className="social-icon-link" title="Download Resume">
-            <FaFilePdf />
-          </a>
-        </motion.div>
+          {/* Right Panel: Progress, Diagnostics Terminal & Interaction */}
+          <div className="maintenance-right">
+            {/* Real-time Diagnostics Terminal */}
+            {timeLeft.total > 0 && (
+              <motion.div className="diagnostics-panel" variants={itemVariants} custom={4.6}>
+                <div className="terminal-header">
+                  <div className="terminal-dot red"></div>
+                  <div className="terminal-dot yellow"></div>
+                  <div className="terminal-dot green"></div>
+                  <span className="terminal-title">upgrade_pipeline.sh</span>
+                </div>
+                <div className="terminal-body">
+                  {activeTasks.map((task, idx) => (
+                    <div key={idx} className={`diagnostic-task ${task.status}`}>
+                      <div className="task-status-indicator">
+                        {task.status === 'completed' && <FaCheckCircle className="task-icon completed-icon" />}
+                        {task.status === 'running' && <FaSpinner className="task-icon running-icon spin-slow" />}
+                        {task.status === 'pending' && <div className="task-icon-dot pending-icon" />}
+                      </div>
+                      <span className="task-name">{task.name}</span>
+                      <span className="task-status-badge">{task.status.toUpperCase()}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Ultra-thin Compact Progress Line */}
+            {settings.start_time && settings.end_time && timeLeft.total > 0 && (
+              <motion.div className="progress-section" variants={itemVariants} custom={4.7}>
+                <div className="progress-container">
+                  <motion.div 
+                    className="progress-bar" 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                  />
+                </div>
+                <div className="progress-label-wrap">
+                  <span className="progress-percentage">{Math.round(progress)}% UPGRADED</span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Sleek Push Notification Subscription Section */}
+            <motion.div className="maintenance-notify-capsule" variants={itemVariants} custom={4.8}>
+              {isSubscribed ? (
+                <div className="notify-status active">
+                  <FaCheckCircle className="notify-status-icon success-glow" />
+                  <span>You're subscribed! We'll notify you when we go live. 🚀</span>
+                </div>
+              ) : permission === "denied" ? (
+                <div className="notify-status blocked">
+                  <FaBellSlash className="notify-status-icon blocked-glow" />
+                  <span>Notification permission blocked. Please reset browser permissions. 🔒</span>
+                </div>
+              ) : (
+                <div className="notify-prompt-wrap">
+                  <span className="notify-desc">Want to know when we are back online?</span>
+                  <button 
+                    className="maintenance-notify-btn" 
+                    onClick={handleSubscribeClick}
+                    disabled={subscribing}
+                  >
+                    {subscribing ? (
+                      <>
+                        <FaSpinner className="spinner-icon" />
+                        <span>Subscribing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaBell className="bell-pulse-anim" />
+                        <span>Notify Me On Completion</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Sleek Glass Capsule Email Contact */}
+            <motion.div className="developer-contact-pill" variants={itemVariants} custom={5}>
+              <div className="contact-body">
+                <span className="contact-prefix">In the meantime, you can contact Prem by this email:</span>
+                <a href="mailto:contact@mrprem.in" className="contact-email-link">
+                  <FaEnvelope className="contact-icon" />
+                  <span>contact@mrprem.in</span>
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Footer & Social Section */}
+            <motion.div className="social-section" variants={itemVariants} custom={6}>
+              <a href="https://linkedin.com/in/mr-prem-pradhan" target="_blank" rel="noreferrer" className="social-icon-link" title="LinkedIn">
+                <FaLinkedinIn />
+              </a>
+              <a href="https://github.com/MRPREM31" target="_blank" rel="noreferrer" className="social-icon-link" title="GitHub">
+                <FaGithub />
+              </a>
+              <a href="mailto:contact@mrprem.in" className="social-icon-link" title="Official Contact Email">
+                <FaEnvelope />
+              </a>
+              <a href={resumeUrl} target="_blank" rel="noreferrer" className="social-icon-link" title="Download Resume">
+                <FaFilePdf />
+              </a>
+            </motion.div>
+          </div>
+        </div>
       </motion.div>
     </div>
   );
