@@ -56,7 +56,16 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 
 ---
 
-## 🛠️ Recent Updates (May 9, 2026)
+## 🛠️ Recent Updates (May 23, 2026)
+
+- 🔔 **Fully Frontend-Driven Maintenance Completion Notifications**: Decoupled the portfolio-complete push notifications from the Render backend daemon to resolve sleeping/exhausted free hours limitations.
+- 🛡️ **Multi-Tab & Session Anti-Spam Duplicate Safeguards**: Implemented dual `localStorage` and `sessionStorage` guard flags (`maintenance_notification_sent=true`) to block duplicate notification prompts across multiple concurrent tabs and browser sessions.
+- 📱 **Liquid & Responsive Maintenance UI**: Overhauled `Maintenance.css` with vertical fluid centering (`min-height` layout & auto vertical card margins) to prevent vertical clipping and provide perfect responsiveness on all devices from small mobiles to massive displays.
+- 🌐 **Direct OneSignal REST & Public Routing Fallback**: Programmed a seamless pathway that automatically triggers direct OneSignal client-side REST broadcasts when the countdown expires, with public backend routing safeguards.
+
+---
+
+## 🛠️ Previous Updates (May 9, 2026)
 
 - 📊 **Scalable Review Moderation**: Migrated from dashboard-only reviews to a dedicated, searchable moderation system (`/admin/reviews`).
 - 🔍 **Advanced Filtering**: Added capability to search reviews by **Project Name**, **Project ID**, and **Reviewer Name**.
