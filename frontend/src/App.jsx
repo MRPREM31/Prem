@@ -103,6 +103,8 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (loading || maintenance.active) return;
+
     const fetchFavicon = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favicon`);
@@ -138,7 +140,7 @@ function App() {
       body: JSON.stringify({ sessionId })
     })
       .catch(err => console.error('Visitor tracking failed:', err));
-  }, []);
+  }, [loading, maintenance.active]);
 
   const isAdminPath = (path) => {
     const adminRoutes = [

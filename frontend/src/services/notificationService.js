@@ -25,23 +25,54 @@ export const loadOneSignalSDK = () => {
   });
 };
 
+// Asynchronously and safely fetch the initialized OneSignal instance with a timeout failsafe
+export const getOneSignalInstance = (timeoutMs = 4000) => {
+  return new Promise((resolve, reject) => {
+    // If window.OneSignal and Notifications namespace are already available, resolve immediately
+    if (window.OneSignal && window.OneSignal.Notifications) {
+      resolve(window.OneSignal);
+      return;
+    }
+
+    // Safeguard timeout to prevent hanging UI if blocked by Brave Shield/uBlock/etc.
+    const timer = setTimeout(() => {
+      reject(new Error("ONESIGNAL_TIMEOUT"));
+    }, timeoutMs);
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push((OneSignalInstance) => {
+      clearTimeout(timer);
+      if (OneSignalInstance && OneSignalInstance.Notifications) {
+        resolve(OneSignalInstance);
+      } else {
+        reject(new Error("ONESIGNAL_NOT_AVAILABLE"));
+      }
+    });
+  });
+};
+
 // Initialize OneSignal
 export const initializeOneSignal = async () => {
   try {
     await loadOneSignalSDK();
     
     return new Promise((resolve) => {
-      window.OneSignal = window.OneSignal || [];
-      window.OneSignal.push(async () => {
-        await window.OneSignal.init({
-          appId: ONESIGNAL_APP_ID,
-          allowLocalhostAsSecureOrigin: true,
-          notifyButton: {
-            enable: false, // Custom bell and popup will be used
-          },
-        });
-        console.log("OneSignal initialized successfully");
-        resolve(window.OneSignal);
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async (OneSignal) => {
+        try {
+          await OneSignal.init({
+            appId: ONESIGNAL_APP_ID,
+            allowLocalhostAsSecureOrigin: true,
+            notifyButton: {
+              enable: false, // Custom bell and popup will be used
+            },
+          });
+          console.log("OneSignal initialized successfully");
+        } catch (initErr) {
+          // Ignore "Already initialized" error warnings from OneSignal
+          console.log("OneSignal init status:", initErr.message || initErr);
+        }
+        resolve(OneSignal);
       });
     });
   } catch (error) {
@@ -95,7 +126,34 @@ export const syncPushSubscription = async ({
 
 // Request Notification Permission and Opt-in
 export const requestPushPermission = async () => {
-  if (!window.OneSignal || !window.OneSignal.Notifications) {
+  try {
+    // Wait for OneSignal instance (4-second timeout)
+    const OneSignal = await getOneSignalInstance(4000);
+    
+    // Trigger OneSignal permission pop-up
+    await OneSignal.Notifications.requestPermission();
+    
+    const permission = OneSignal.Notifications.permission;
+    const isSubscribed = OneSignal.User?.PushSubscription?.optedIn || false;
+    const subscriptionId = OneSignal.User?.PushSubscription?.id || null;
+    
+    // Sync with backend immediately if subscribed
+    if (isSubscribed) {
+      syncPushSubscription({
+        subscriptionStatus: "subscribed",
+        subscriptionId: subscriptionId,
+        lastPromptTime: new Date().toISOString(),
+        deviceBrowser: navigator.userAgent,
+      }).catch(err => console.error("Background subscription sync failed:", err));
+    }
+    
+    return {
+      permission,
+      isSubscribed,
+      subscriptionId,
+    };
+  } catch (err) {
+    console.error("OneSignal requestPermission failed or timed out:", err);
     return {
       permission: "default",
       isSubscribed: false,
@@ -103,45 +161,25 @@ export const requestPushPermission = async () => {
       error: "SDK_NOT_LOADED",
     };
   }
-
-  return new Promise((resolve, reject) => {
-    window.OneSignal = window.OneSignal || [];
-    window.OneSignal.push(async () => {
-      try {
-        // Trigger OneSignal permission pop-up
-        await window.OneSignal.Notifications.requestPermission();
-        
-        const permission = window.OneSignal.Notifications.permission;
-        const isSubscribed = window.OneSignal.User.PushSubscription.optedIn;
-        const subscriptionId = window.OneSignal.User.PushSubscription.id;
-        
-        // Sync with backend immediately if subscribed
-        if (isSubscribed) {
-          await syncPushSubscription({
-            subscriptionStatus: "subscribed",
-            subscriptionId: subscriptionId,
-            lastPromptTime: new Date().toISOString(),
-            deviceBrowser: navigator.userAgent,
-          });
-        }
-        
-        resolve({
-          permission,
-          isSubscribed,
-          subscriptionId,
-        });
-      } catch (err) {
-        console.error("OneSignal requestPermission failed:", err);
-        reject(err);
-      }
-    });
-  });
 };
 
 // Get current push notification status
 export const getNotificationState = async () => {
-  // If OneSignal SDK is not fully loaded or initialized yet, return local offline fallback
-  if (!window.OneSignal || !window.OneSignal.Notifications) {
+  try {
+    // Short 1.5s timeout for status checks to prevent slow site boots
+    const OneSignal = await getOneSignalInstance(1500);
+    
+    const permission = OneSignal.Notifications.permission;
+    const isSubscribed = OneSignal.User?.PushSubscription?.optedIn || false;
+    const subscriptionId = OneSignal.User?.PushSubscription?.id || null;
+    
+    return {
+      permission,
+      isSubscribed,
+      subscriptionId,
+    };
+  } catch (err) {
+    // Fallback to local storage on timeout or load block (e.g. adblocker)
     const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true" ||
       localStorage.getItem("notification_subscribed") === "true";
     return {
@@ -150,27 +188,4 @@ export const getNotificationState = async () => {
       subscriptionId: null,
     };
   }
-
-  return new Promise((resolve) => {
-    window.OneSignal.push(async () => {
-      try {
-        const permission = window.OneSignal.Notifications.permission;
-        const isSubscribed = window.OneSignal.User.PushSubscription.optedIn;
-        const subscriptionId = window.OneSignal.User.PushSubscription.id;
-        
-        resolve({
-          permission,
-          isSubscribed,
-          subscriptionId,
-        });
-      } catch (err) {
-        console.error("Error fetching notification status:", err);
-        resolve({
-          permission: "default",
-          isSubscribed: false,
-          subscriptionId: null,
-        });
-      }
-    });
-  });
 };

@@ -77,20 +77,19 @@ export const useNotifications = () => {
         setIsInitialized(true);
         await syncState();
 
-        // Listen to subscription state transitions
-        window.OneSignal = window.OneSignal || [];
-        window.OneSignal.push(() => {
-          window.OneSignal.Notifications.addEventListener("permissionChange", async () => {
+        // Listen to subscription state transitions directly on the resolved SDK instance
+        if (sdk.Notifications) {
+          sdk.Notifications.addEventListener("permissionChange", async () => {
             if (active) await syncState();
           });
-          
-          // Listen to User Change if available
-          if (window.OneSignal.User && window.OneSignal.User.PushSubscription) {
-            window.OneSignal.User.PushSubscription.addEventListener("change", async () => {
-              if (active) await syncState();
-            });
-          }
-        });
+        }
+        
+        // Listen to User Change if available
+        if (sdk.User && sdk.User.PushSubscription) {
+          sdk.User.PushSubscription.addEventListener("change", async () => {
+            if (active) await syncState();
+          });
+        }
       } catch (err) {
         console.error("OneSignal initialization failed, continuing in offline fallback:", err);
       }
