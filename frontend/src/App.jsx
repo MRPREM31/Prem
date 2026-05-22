@@ -25,6 +25,7 @@ import ChatBot from './components/ChatBot'
 import Maintenance from './pages/Maintenance'
 import maintenanceConfig from './config/maintenanceConfig'
 import SubscriptionPopup from './components/SubscriptionPopup'
+import { Toaster } from 'react-hot-toast'
 import './App.css'
 
 // MANDATORY: Disable browser's native scroll restoration globally to take full control.
@@ -181,6 +182,7 @@ function App() {
       <HelmetProvider>
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
+        <Toaster position="top-center" reverseOrder={false} />
         <Maintenance 
           settings={maintenance} 
           onUnlock={() => setMaintenance(prev => ({ ...prev, active: false }))} 
@@ -228,6 +230,7 @@ function App() {
       </Routes>
       <ChatBot />
       <SubscriptionPopup />
+      <Toaster position="top-center" reverseOrder={false} />
     </HelmetProvider>
   )
 }

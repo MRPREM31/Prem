@@ -4,6 +4,7 @@ import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, Fa
 import { RESUME_LINK } from '../config';
 import SEO from '../components/SEO';
 import { useNotifications } from '../hooks/useNotifications';
+import toast from 'react-hot-toast';
 import './Maintenance.css';
 
 const Maintenance = ({ settings, onUnlock }) => {
@@ -20,9 +21,53 @@ const Maintenance = ({ settings, onUnlock }) => {
   const handleSubscribeClick = async () => {
     setSubscribing(true);
     try {
-      await subscribe();
+      const result = await subscribe();
+      if (result && result.error === "SDK_NOT_LOADED") {
+        toast.error("Could not connect to notification service. Please disable your adblocker/Brave Shield or try over HTTPS! 🛡️", {
+          style: {
+            background: "#121214",
+            color: "#fff",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            fontSize: "14px",
+            padding: "12px 16px",
+            borderRadius: "12px",
+          },
+        });
+      } else if (result && result.isSubscribed) {
+        toast.success("Successfully subscribed to updates! 🔔", {
+          style: {
+            background: "#121214",
+            color: "#fff",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            fontSize: "14px",
+            padding: "12px 16px",
+            borderRadius: "12px",
+          },
+        });
+      } else if (result && result.permission === "denied") {
+        toast.error("Notification permission denied. Please reset browser permissions. 🔒", {
+          style: {
+            background: "#121214",
+            color: "#fff",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            fontSize: "14px",
+            padding: "12px 16px",
+            borderRadius: "12px",
+          },
+        });
+      }
     } catch (error) {
       console.error('Failed to subscribe from maintenance page:', error);
+      toast.error("An unexpected error occurred. Please try again later.", {
+        style: {
+          background: "#121214",
+          color: "#fff",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          fontSize: "14px",
+          padding: "12px 16px",
+          borderRadius: "12px",
+        },
+      });
     } finally {
       setSubscribing(false);
     }

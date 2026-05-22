@@ -95,6 +95,15 @@ export const syncPushSubscription = async ({
 
 // Request Notification Permission and Opt-in
 export const requestPushPermission = async () => {
+  if (!window.OneSignal || !window.OneSignal.Notifications) {
+    return {
+      permission: "default",
+      isSubscribed: false,
+      subscriptionId: null,
+      error: "SDK_NOT_LOADED",
+    };
+  }
+
   return new Promise((resolve, reject) => {
     window.OneSignal = window.OneSignal || [];
     window.OneSignal.push(async () => {

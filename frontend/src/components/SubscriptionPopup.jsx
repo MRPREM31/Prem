@@ -1,9 +1,24 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNotifications } from "../hooks/useNotifications";
 import { BellRing, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 export const SubscriptionPopup = () => {
   const { showPopup, subscribe, dismiss } = useNotifications();
+
+  const handlePopupSubscribe = async () => {
+    toast.loading("Opening subscription request...", { id: "sub-popup-toast" });
+    const result = await subscribe();
+    if (result && result.isSubscribed) {
+      toast.success("Successfully subscribed to notifications! 🔔", { id: "sub-popup-toast" });
+    } else if (result && result.permission === "denied") {
+      toast.error("Notification permission was denied. Please reset permissions in your browser. 🔒", { id: "sub-popup-toast" });
+    } else if (result && result.error === "SDK_NOT_LOADED") {
+      toast.error("Could not connect to notification service. Please disable your adblocker/Brave Shield or try over HTTPS! 🛡️", { id: "sub-popup-toast" });
+    } else {
+      toast.dismiss("sub-popup-toast");
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -50,7 +65,7 @@ export const SubscriptionPopup = () => {
               <button className="popup-btn-secondary" onClick={dismiss}>
                 Maybe Later
               </button>
-              <button className="popup-btn-primary" onClick={subscribe}>
+              <button className="popup-btn-primary" onClick={handlePopupSubscribe}>
                 <span>Subscribe</span>
                 <span className="btn-glow-layer"></span>
               </button>

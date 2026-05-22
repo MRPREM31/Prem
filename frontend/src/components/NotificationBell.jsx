@@ -27,6 +27,8 @@ export const NotificationBell = () => {
       toast.success("Successfully subscribed to notifications! 🔔", { id: "sub-bell-toast" });
     } else if (result && result.permission === "denied") {
       toast.error("Notification permission was denied. Please reset permissions in your browser. 🔒", { id: "sub-bell-toast" });
+    } else if (result && result.error === "SDK_NOT_LOADED") {
+      toast.error("Could not connect to notification service. Please disable your adblocker/Brave Shield or try over HTTPS! 🛡️", { id: "sub-bell-toast" });
     } else {
       toast.dismiss("sub-bell-toast");
     }
