@@ -131,8 +131,17 @@ export const requestPushPermission = async () => {
 
 // Get current push notification status
 export const getNotificationState = async () => {
+  // If OneSignal SDK is not fully loaded or initialized yet, return local offline fallback
+  if (!window.OneSignal || !window.OneSignal.Notifications) {
+    const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true";
+    return {
+      permission: isSubscribedLocal ? "granted" : "default",
+      isSubscribed: isSubscribedLocal,
+      subscriptionId: null,
+    };
+  }
+
   return new Promise((resolve) => {
-    window.OneSignal = window.OneSignal || [];
     window.OneSignal.push(async () => {
       try {
         const permission = window.OneSignal.Notifications.permission;
@@ -147,7 +156,7 @@ export const getNotificationState = async () => {
       } catch (err) {
         console.error("Error fetching notification status:", err);
         resolve({
-          permission: false,
+          permission: "default",
           isSubscribed: false,
           subscriptionId: null,
         });

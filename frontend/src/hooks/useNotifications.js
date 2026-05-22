@@ -5,9 +5,7 @@ import {
   requestPushPermission,
   syncPushSubscription,
 } from "../services/notificationService";
-
-const COOLDOWN_DAYS = 7;
-const COOLDOWN_MS = COOLDOWN_DAYS * 24 * 60 * 60 * 1000;
+import notificationConfig from "../config/notificationConfig";
 
 export const useNotifications = () => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -22,6 +20,12 @@ export const useNotifications = () => {
     setIsSubscribed(state.isSubscribed);
     setPermission(state.permission);
     setSubscriptionId(state.subscriptionId);
+
+    // If auto-popup prompt is disabled globally, never show the subscription popup automatically
+    if (!notificationConfig.enableAutoPopup) {
+      setShowPopup(false);
+      return;
+    }
 
     // Smart logic for showing the premium subscription popup
     const dismissedAtStr = localStorage.getItem("mrprem_notification_dismissed_at");
@@ -43,9 +47,10 @@ export const useNotifications = () => {
 
     // Cooldown logic for dismissed popups
     if (dismissedAtStr) {
+      const cooldownMs = (notificationConfig.cooldownDays || 7) * 24 * 60 * 60 * 1000;
       const dismissedAt = new Date(dismissedAtStr).getTime();
       const now = Date.now();
-      if (now - dismissedAt < COOLDOWN_MS) {
+      if (now - dismissedAt < cooldownMs) {
         setShowPopup(false);
         return;
       }
@@ -60,26 +65,33 @@ export const useNotifications = () => {
     let active = true;
 
     const runInit = async () => {
-      const sdk = await initializeOneSignal();
-      if (!sdk || !active) return;
-
-      setIsInitialized(true);
+      // Run initial sync using local fallback state so popup shows immediately if unsubscribed
       await syncState();
 
-      // Listen to subscription state transitions
-      window.OneSignal = window.OneSignal || [];
-      window.OneSignal.push(() => {
-        window.OneSignal.Notifications.addEventListener("permissionChange", async () => {
-          if (active) await syncState();
-        });
-        
-        // Listen to User Change if available
-        if (window.OneSignal.User && window.OneSignal.User.PushSubscription) {
-          window.OneSignal.User.PushSubscription.addEventListener("change", async () => {
+      try {
+        const sdk = await initializeOneSignal();
+        if (!sdk || !active) return;
+
+        setIsInitialized(true);
+        await syncState();
+
+        // Listen to subscription state transitions
+        window.OneSignal = window.OneSignal || [];
+        window.OneSignal.push(() => {
+          window.OneSignal.Notifications.addEventListener("permissionChange", async () => {
             if (active) await syncState();
           });
-        }
-      });
+          
+          // Listen to User Change if available
+          if (window.OneSignal.User && window.OneSignal.User.PushSubscription) {
+            window.OneSignal.User.PushSubscription.addEventListener("change", async () => {
+              if (active) await syncState();
+            });
+          }
+        });
+      } catch (err) {
+        console.error("OneSignal initialization failed, continuing in offline fallback:", err);
+      }
     };
 
     runInit();
