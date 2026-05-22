@@ -58,9 +58,12 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 
 ## 🛠️ Recent Updates (May 23, 2026)
 
+- 🖥️ **Premium Desktop Split-Dashboard**: Transformed the maintenance page layout on laptop and PC screens (width $\ge 1024$px) into an immersive, wide glassmorphic split dashboard (left status pane, right interactive action pane) with dynamic separators, while leaving mobile/tablet layouts 100% untouched.
+- 🎨 **High-Contrast Tab Favicon**: Replaced the blurry, thin-outlined favicon with a solid vibrant brand gradient circle containing an ultra-bold modern geometric white `"P"` monogram to guarantee flawless, razor-sharp legibility (down to 16x16 pixels) in both dark and light browser theme tabs.
+- 🏷️ **Official Brand Header**: Integrated a beautiful brand logo header (`MR.PREM` text and glowing brand icon) directly onto the maintenance page to establish clear official branding.
 - 🔔 **Fully Frontend-Driven Maintenance Completion Notifications**: Decoupled the portfolio-complete push notifications from the Render backend daemon to resolve sleeping/exhausted free hours limitations.
 - 🛡️ **Multi-Tab & Session Anti-Spam Duplicate Safeguards**: Implemented dual `localStorage` and `sessionStorage` guard flags (`maintenance_notification_sent=true`) to block duplicate notification prompts across multiple concurrent tabs and browser sessions.
-- 📱 **Liquid & Responsive Maintenance UI**: Overhauled `Maintenance.css` with vertical fluid centering (`min-height` layout & auto vertical card margins) to prevent vertical clipping and provide perfect responsiveness on all devices from small mobiles to massive displays.
+- 📱 **Liquid & Responsive Maintenance UI**: Overhauled `Maintenance.css` with vertical fluid centering (`min-height` layout & auto vertical card margins) to prevent vertical clipping and provide perfect responsiveness on all devices.
 - 🌐 **Direct OneSignal REST & Public Routing Fallback**: Programmed a seamless pathway that automatically triggers direct OneSignal client-side REST broadcasts when the countdown expires, with public backend routing safeguards.
 
 ---

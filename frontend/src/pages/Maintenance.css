@@ -665,228 +665,194 @@
   }
 }
 
-/* Split Grid & Widescreen Dashboard Enhancements */
-.maintenance-layout-grid {
+/* Brand Logo Header Styling */
+.maintenance-logo-header {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1.8rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   width: 100%;
 }
 
-.maintenance-left,
-.maintenance-right {
+.maintenance-brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
+}
+
+.maintenance-brand-name {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* Default columns layout for small screens (vertical stack) */
+.maintenance-split-layout {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* Widescreen PC / Laptop Media Query */
+.maintenance-col-left, .maintenance-col-right {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Desktop & Laptop Upgrades - Immersive Full Page Split Dashboard Layout
+   ========================================================================== */
 @media (min-width: 1024px) {
-  .maintenance-card {
-    max-width: 1080px !important;
-    padding: 3.5rem !important;
-    text-align: left !important;
+  .maintenance-container {
+    padding: 3rem 2rem;
   }
 
-  .maintenance-layout-grid {
+  .maintenance-card {
+    max-width: 1120px;
+    padding: 3.5rem;
+    border-radius: 32px;
+  }
+
+  .maintenance-logo-header {
+    justify-content: flex-start;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    gap: 14px;
+  }
+
+  .maintenance-brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .maintenance-brand-name {
+    font-size: 1.45rem;
+  }
+
+  .maintenance-split-layout {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
-    gap: 3.5rem;
-    align-items: start;
+    gap: 4.5rem;
+    align-items: center;
+  }
+
+  /* Left Status Panel Alignment */
+  .maintenance-col-left {
+    align-items: flex-start;
+    text-align: left;
   }
 
   .avatar-header-wrap {
-    align-items: flex-start !important;
-    margin-bottom: 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+
+  .avatar-neon-ring {
+    width: 80px;
+    height: 80px;
   }
 
   .maintenance-title {
-    font-size: 2.4rem !important;
-    line-height: 1.2;
-    margin-bottom: 1rem;
+    font-size: 2.45rem;
+    line-height: 1.25;
+    margin-bottom: 0.8rem;
     text-align: left;
   }
 
   .maintenance-subtitle {
-    font-size: 0.95rem !important;
-    margin-bottom: 2rem;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.8rem;
     text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
   }
 
-  .mono-countdown {
-    justify-content: flex-start !important;
-    margin-bottom: 2.2rem;
-  }
-
-  .estimated-completion-text {
-    text-align: left !important;
-    margin-bottom: 0 !important;
-    font-size: 0.9rem !important;
-  }
-
-  .developer-contact-pill {
-    align-self: flex-start !important;
+  .progress-section {
+    width: 100%;
+    padding: 0;
     margin-bottom: 1.8rem;
   }
 
-  .social-section {
-    justify-content: flex-start !important;
-    padding-top: 1.5rem;
+  .progress-label-wrap {
+    justify-content: flex-start;
+  }
+
+  .estimated-completion-text {
+    text-align: left;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+  }
+
+  /* Right Action Panel Alignment */
+  .maintenance-col-right {
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    padding-left: 4.5rem;
+  }
+
+  .mono-countdown {
+    margin-bottom: 2rem;
+    gap: 0.8rem;
+  }
+
+  .time-segment, .time-segment-active {
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+  }
+
+  .time-val {
+    font-size: 2.1rem;
+  }
+
+  .time-unit {
+    font-size: 0.8rem;
+  }
+
+  .time-sep {
+    font-size: 1.5rem;
   }
 
   .maintenance-notify-capsule {
-    align-items: flex-start !important;
-    padding: 1.5rem !important;
+    width: 100%;
+    padding: 1.5rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.015);
   }
 
-  .notify-prompt-wrap {
-    align-items: flex-start !important;
+  .notify-desc {
+    font-size: 0.9rem;
+  }
+
+  .maintenance-notify-btn {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.8rem;
+  }
+
+  .developer-contact-pill {
+    padding: 0.6rem 1.4rem;
+    margin-bottom: 2rem;
+  }
+
+  .social-section {
+    width: 100%;
+    gap: 1.2rem;
+    padding-top: 1.5rem;
+  }
+
+  .social-icon-link {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
   }
 }
 
-/* Widescreen Interactive Diagnostics Terminal */
-.diagnostics-panel {
-  background: rgba(4, 6, 12, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 1.2rem;
-  margin-bottom: 1.8rem;
-  font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', Monaco, Consolas, monospace;
-  box-shadow: 
-    inset 0 0 20px rgba(0, 0, 0, 0.6),
-    0 10px 30px rgba(0, 0, 0, 0.3);
-  text-align: left;
-}
-
-.terminal-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  padding-bottom: 0.5rem;
-}
-
-.terminal-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.terminal-dot.red { background: #ef4444; }
-.terminal-dot.yellow { background: #eab308; }
-.terminal-dot.green { background: #10b981; }
-
-.terminal-title {
-  font-size: 0.75rem;
-  color: #475569;
-  margin-left: 6px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.terminal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.diagnostic-task {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  transition: all 0.3s ease;
-}
-
-.diagnostic-task.completed {
-  border-color: rgba(16, 185, 129, 0.15);
-  background: rgba(16, 185, 129, 0.02);
-}
-
-.diagnostic-task.running {
-  border-color: rgba(99, 102, 241, 0.2);
-  background: rgba(99, 102, 241, 0.04);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.05);
-}
-
-.diagnostic-task.pending {
-  color: #475569;
-}
-
-.task-status-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-}
-
-.task-icon.completed-icon {
-  color: #10b981;
-  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.3));
-}
-
-.task-icon.running-icon {
-  color: #818cf8;
-  font-size: 0.85rem;
-}
-
-.task-icon-dot.pending-icon {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #334155;
-}
-
-.task-name {
-  flex-grow: 1;
-  margin-left: 10px;
-  font-weight: 500;
-}
-
-.diagnostic-task.completed .task-name {
-  color: #94a3b8;
-}
-
-.diagnostic-task.running .task-name {
-  color: #e2e8f0;
-}
-
-.diagnostic-task.pending .task-name {
-  color: #475569;
-}
-
-.task-status-badge {
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
-}
-
-.completed .task-status-badge {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-}
-
-.running .task-status-badge {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a5b4fc;
-  animation: pulse-badge 1.5s infinite alternate;
-}
-
-.pending .task-status-badge {
-  background: rgba(255, 255, 255, 0.03);
-  color: #475569;
-}
-
-@keyframes pulse-badge {
-  0% { opacity: 0.6; }
-  100% { opacity: 1; }
-}

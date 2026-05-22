@@ -232,9 +232,15 @@ const Maintenance = ({ settings, onUnlock }) => {
         initial="hidden"
         animate="visible"
       >
-        <div className="maintenance-layout-grid">
-          {/* Left Panel: Branding & Countdown */}
-          <div className="maintenance-left">
+        {/* Sleek Brand Logo Header */}
+        <div className="maintenance-logo-header">
+          <img src="/favicon.svg" alt="MR.PREM Logo" className="maintenance-brand-logo" />
+          <span className="maintenance-brand-name gradient-text">MR.PREM</span>
+        </div>
+
+        <div className="maintenance-split-layout">
+          {/* Left Column: Status Information */}
+          <div className="maintenance-col-left">
             {/* Compact Circular Avatar */}
             <div className="avatar-header-wrap">
               <motion.div 
@@ -265,6 +271,34 @@ const Maintenance = ({ settings, onUnlock }) => {
               {settings.message || "Undergoing scheduled maintenance. The portfolio will automatically resume once the upgrade is completed."}
             </motion.p>
 
+            {/* Ultra-thin Compact Progress Line */}
+            {settings.start_time && settings.end_time && timeLeft.total > 0 && (
+              <motion.div className="progress-section" variants={itemVariants} custom={4}>
+                <div className="progress-container">
+                  <motion.div 
+                    className="progress-bar" 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                  />
+                </div>
+                <div className="progress-label-wrap">
+                  <span className="progress-percentage">{Math.round(progress)}% UPGRADED</span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Sleek single-line estimated completion display */}
+            {settings.end_time && (
+              <motion.div className="estimated-completion-text" variants={itemVariants} custom={4.5}>
+                <span>Estimated resumption: </span>
+                <strong className="glow-time">{formatResumeDateTime()}</strong>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Right Column: Interactive Controls */}
+          <div className="maintenance-col-right">
             {/* Minimal Monospace Inline Countdown */}
             {settings.end_time && timeLeft.total > 0 && (
               <motion.div className="mono-countdown" variants={itemVariants} custom={3}>
@@ -290,65 +324,12 @@ const Maintenance = ({ settings, onUnlock }) => {
               </motion.div>
             )}
 
-            {/* Sleek single-line estimated completion display */}
-            {settings.end_time && (
-              <motion.div className="estimated-completion-text" variants={itemVariants} custom={4.5}>
-                <span>Estimated resumption: </span>
-                <strong className="glow-time">{formatResumeDateTime()}</strong>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Right Panel: Progress, Diagnostics Terminal & Interaction */}
-          <div className="maintenance-right">
-            {/* Real-time Diagnostics Terminal */}
-            {timeLeft.total > 0 && (
-              <motion.div className="diagnostics-panel" variants={itemVariants} custom={4.6}>
-                <div className="terminal-header">
-                  <div className="terminal-dot red"></div>
-                  <div className="terminal-dot yellow"></div>
-                  <div className="terminal-dot green"></div>
-                  <span className="terminal-title">upgrade_pipeline.sh</span>
-                </div>
-                <div className="terminal-body">
-                  {activeTasks.map((task, idx) => (
-                    <div key={idx} className={`diagnostic-task ${task.status}`}>
-                      <div className="task-status-indicator">
-                        {task.status === 'completed' && <FaCheckCircle className="task-icon completed-icon" />}
-                        {task.status === 'running' && <FaSpinner className="task-icon running-icon spin-slow" />}
-                        {task.status === 'pending' && <div className="task-icon-dot pending-icon" />}
-                      </div>
-                      <span className="task-name">{task.name}</span>
-                      <span className="task-status-badge">{task.status.toUpperCase()}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Ultra-thin Compact Progress Line */}
-            {settings.start_time && settings.end_time && timeLeft.total > 0 && (
-              <motion.div className="progress-section" variants={itemVariants} custom={4.7}>
-                <div className="progress-container">
-                  <motion.div 
-                    className="progress-bar" 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
-                  />
-                </div>
-                <div className="progress-label-wrap">
-                  <span className="progress-percentage">{Math.round(progress)}% UPGRADED</span>
-                </div>
-              </motion.div>
-            )}
-
             {/* Sleek Push Notification Subscription Section */}
             <motion.div className="maintenance-notify-capsule" variants={itemVariants} custom={4.8}>
               {isSubscribed ? (
                 <div className="notify-status active">
                   <FaCheckCircle className="notify-status-icon success-glow" />
-                  <span>You're subscribed! We'll notify you when we go live. 🚀</span>
+                  <span>You're subscribed! We'll notify you the moment we go live. 🚀</span>
                 </div>
               ) : permission === "denied" ? (
                 <div className="notify-status blocked">
@@ -409,6 +390,7 @@ const Maintenance = ({ settings, onUnlock }) => {
         </div>
       </motion.div>
     </div>
+
   );
 };
 
