@@ -8,8 +8,8 @@ import toast from 'react-hot-toast';
 import './Maintenance.css';
 
 const Maintenance = ({ settings, onUnlock }) => {
-  const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
-  const [resumeUrl, setResumeUrl] = useState(
+  const [profileImage] = useState('https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg');
+  const [resumeUrl] = useState(
     RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf" 
       ? RESUME_LINK 
       : '/Prem_Prasad_Pradhan_CV.pdf'
@@ -72,56 +72,13 @@ const Maintenance = ({ settings, onUnlock }) => {
       setSubscribing(false);
     }
   };
-  
-  useEffect(() => {
-    const fetchDynamicResume = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resume`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.resumeUrl) {
-            setResumeUrl(data.resumeUrl.startsWith('/uploads') 
-              ? `${import.meta.env.VITE_API_URL}${data.resumeUrl}` 
-              : data.resumeUrl
-            );
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching dynamic resume link:', err);
-      }
-    };
-    fetchDynamicResume();
-  }, []);
-  const [activeTasks, setActiveTasks] = useState([
+
+  const [activeTasks] = useState([
     { name: 'Core Engine Upgrades', status: 'completed' },
     { name: 'Database Schema Optimization', status: 'completed' },
     { name: 'AI Diagnostics Agent Synced', status: 'running' },
     { name: 'CDN Cache Synchronization', status: 'pending' }
   ]);
-
-  // Fetch the current dynamic profile picture
-  useEffect(() => {
-    const fetchProfileImage = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.imageUrl) {
-            setProfileImage(data.imageUrl.startsWith('/uploads') 
-              ? `${import.meta.env.VITE_API_URL}${data.imageUrl}` 
-              : data.imageUrl
-            );
-          }
-        } else {
-          setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg');
-        }
-      } catch (err) {
-        console.error('Error fetching maintenance page profile image:', err);
-        setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg');
-      }
-    };
-    fetchProfileImage();
-  }, []);
 
   const calculateTimeLeft = useCallback(() => {
     if (!settings.end_time) {
