@@ -117,6 +117,110 @@ transporter.verify((error, success) => {
 app.use(cors());
 app.use(express.json());
 
+// --- MAINTENANCE CACHING & MIDDLEWARE WITH LOCAL FALLBACK ---
+const fs = require('fs');
+const MAINTENANCE_FILE = path.join(__dirname, 'maintenance_settings.json');
+
+let cachedMaintenanceSettings = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 10000; // Cache database query for 10 seconds to avoid overloading database
+
+function readLocalMaintenanceSettings() {
+  try {
+    if (fs.existsSync(MAINTENANCE_FILE)) {
+      const fileData = fs.readFileSync(MAINTENANCE_FILE, 'utf8');
+      return JSON.parse(fileData);
+    }
+  } catch (err) {
+    console.error('Error reading local maintenance settings:', err);
+  }
+  return { maintenance_enabled: false };
+}
+
+function writeLocalMaintenanceSettings(settings) {
+  try {
+    fs.writeFileSync(MAINTENANCE_FILE, JSON.stringify(settings, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error writing local maintenance settings:', err);
+  }
+}
+
+async function getMaintenanceSettings() {
+  const now = Date.now();
+  if (cachedMaintenanceSettings && (now - cacheTimestamp < CACHE_DURATION)) {
+    return cachedMaintenanceSettings;
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('maintenance_settings')
+      .select('*')
+      .eq('id', 1)
+      .single();
+      
+    if (!error && data) {
+      cachedMaintenanceSettings = data;
+      cacheTimestamp = now;
+      // Backup to local file
+      writeLocalMaintenanceSettings(data);
+      return cachedMaintenanceSettings;
+    } else {
+      // Fallback if table doesn't exist yet
+      cachedMaintenanceSettings = readLocalMaintenanceSettings();
+      cacheTimestamp = now;
+      return cachedMaintenanceSettings;
+    }
+  } catch (err) {
+    console.error('Error fetching maintenance settings from Supabase, using local fallback:', err);
+    cachedMaintenanceSettings = readLocalMaintenanceSettings();
+    cacheTimestamp = now;
+    return cachedMaintenanceSettings;
+  }
+}
+
+function isMaintenanceActive(settings) {
+  if (!settings || !settings.maintenance_enabled) return false;
+  const now = new Date();
+  const start = settings.start_time ? new Date(settings.start_time) : null;
+  const end = settings.end_time ? new Date(settings.end_time) : null;
+
+  if (start && now < start) return false;
+  if (end && now > end) return false;
+  return true;
+}
+
+const maintenanceMiddleware = async (req, res, next) => {
+  const path = req.path;
+  
+  // Bypass maintenance status, public design assets, and all admin endpoints
+  if (
+    path === '/api/maintenance-status' ||
+    path === '/api/profile-image' ||
+    path === '/api/profile-image/direct' ||
+    path === '/api/favicon' ||
+    path.startsWith('/api/admin/')
+  ) {
+    return next();
+  }
+  
+  const settings = await getMaintenanceSettings();
+  if (isMaintenanceActive(settings)) {
+    return res.status(503).json({
+      error: 'Service Unavailable: Website is currently undergoing maintenance.',
+      maintenanceActive: true,
+      settings: {
+        start_time: settings.start_time,
+        end_time: settings.end_time,
+        message: settings.message
+      }
+    });
+  }
+  
+  next();
+};
+
+app.use(maintenanceMiddleware);
+
 // --- MIDDLEWARE DEFINITIONS ---
 const verifyToken = (req, res, next) => {
   let token = req.headers['authorization'];
@@ -255,6 +359,67 @@ app.delete('/api/admin/secure-links/:id', verifyToken, verifySuperAdmin, async (
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+
+// --- MAINTENANCE SYSTEM ENDPOINTS ---
+app.get('/api/maintenance-status', async (req, res) => {
+  try {
+    const settings = await getMaintenanceSettings();
+    const active = isMaintenanceActive(settings);
+    res.json({
+      active,
+      maintenance_enabled: settings.maintenance_enabled,
+      start_time: settings.start_time,
+      end_time: settings.end_time,
+      message: settings.message,
+      updated_at: settings.updated_at
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/maintenance', verifyToken, async (req, res) => {
+  const { maintenance_enabled, start_time, end_time, message } = req.body;
+  const payload = {
+    id: 1,
+    maintenance_enabled: !!maintenance_enabled,
+    start_time: start_time || null,
+    end_time: end_time || null,
+    message: message || 'Sorry for the inconvenience. The portfolio is currently under maintenance and will automatically resume once the upgrade is completed.',
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from('maintenance_settings')
+      .upsert(payload)
+      .select();
+      
+    if (error) {
+      console.warn('Could not save to Supabase maintenance_settings, using local fallback.', error);
+      writeLocalMaintenanceSettings(payload);
+      cachedMaintenanceSettings = payload;
+      cacheTimestamp = Date.now();
+      return res.json({ success: true, settings: payload, fallback: true });
+    }
+    
+    // Invalidate backend cache immediately
+    cachedMaintenanceSettings = data[0];
+    cacheTimestamp = Date.now();
+    
+    // Sync to local file as backup
+    writeLocalMaintenanceSettings(data[0]);
+    
+    res.json({ success: true, settings: data[0] });
+  } catch (err) {
+    console.warn('Error updating maintenance settings in Supabase, using local fallback:', err);
+    writeLocalMaintenanceSettings(payload);
+    cachedMaintenanceSettings = payload;
+    cacheTimestamp = Date.now();
+    res.json({ success: true, settings: payload, fallback: true });
   }
 });
 

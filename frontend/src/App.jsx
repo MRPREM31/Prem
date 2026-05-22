@@ -1,6 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Portfolio from './pages/Portfolio'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
@@ -22,6 +22,7 @@ import SecurePortal from './pages/SecurePortal'
 import AdminVault from './pages/AdminVault'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
+import Maintenance from './pages/Maintenance'
 import './App.css'
 
 // MANDATORY: Disable browser's native scroll restoration globally to take full control.
@@ -31,6 +32,30 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 }
 
 function App() {
+  const location = useLocation();
+  const [maintenance, setMaintenance] = useState({ active: false, start_time: null, end_time: null, message: '' });
+  const [loading, setLoading] = useState(true);
+
+  const checkMaintenance = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
+      const data = await res.json();
+      setMaintenance(data);
+    } catch (err) {
+      console.error('Error checking maintenance status:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    checkMaintenance();
+    
+    // Poll maintenance status every 30 seconds
+    const interval = setInterval(checkMaintenance, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const fetchFavicon = async () => {
       try {
@@ -42,7 +67,11 @@ function App() {
           link.rel = 'icon';
           document.getElementsByTagName('head')[0].appendChild(link);
         }
-        link.href = data.faviconUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.faviconUrl}?t=${new Date().getTime()}` : data.faviconUrl;
+        if (data && data.faviconUrl) {
+          link.href = data.faviconUrl.startsWith('/uploads') 
+            ? `${import.meta.env.VITE_API_URL}${data.faviconUrl}?t=${new Date().getTime()}` 
+            : data.faviconUrl;
+        }
       } catch (err) {
         console.error('Error fetching favicon:', err);
       }
@@ -63,6 +92,64 @@ function App() {
     })
       .catch(err => console.error('Visitor tracking failed:', err));
   }, []);
+
+  const isAdminPath = (path) => {
+    const adminRoutes = [
+      '/prem-login-2026',
+      '/prem-dashboard-2026',
+      '/personal-vault',
+      '/all-messages',
+      '/all-visitors',
+      '/all-projects',
+      '/all-certificates',
+      '/prem-manage-reviews',
+      '/prem-media-library',
+      '/admin/manage-vault'
+    ];
+    return adminRoutes.some(route => path.toLowerCase().startsWith(route));
+  };
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: '#0b1120',
+        color: '#f1f5f9',
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div style={{
+          width: '50px',
+          height: '50px',
+          borderRadius: '50%',
+          border: '3px solid rgba(99, 102, 241, 0.1)',
+          borderTopColor: '#6366f1',
+          animation: 'spin 1s infinite linear'
+        }} />
+        <style>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (maintenance.active && !isAdminPath(location.pathname)) {
+    return (
+      <HelmetProvider>
+        <div className="blob blob-1"></div>
+        <div className="blob blob-2"></div>
+        <Maintenance 
+          settings={maintenance} 
+          onUnlock={() => setMaintenance(prev => ({ ...prev, active: false }))} 
+        />
+      </HelmetProvider>
+    );
+  }
 
   return (
     <HelmetProvider>

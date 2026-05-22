@@ -97,6 +97,15 @@ const AdminDashboard = () => {
   const [resettingAdmin, setResettingAdmin] = useState(null); // stores admin object
   const [adminResetPass, setAdminResetPass] = useState('');
 
+  // Maintenance System states
+  const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
+  const [maintenanceStartDate, setMaintenanceStartDate] = useState('');
+  const [maintenanceStartTime, setMaintenanceStartTime] = useState('');
+  const [maintenanceEndDate, setMaintenanceEndDate] = useState('');
+  const [maintenanceEndTime, setMaintenanceEndTime] = useState('');
+  const [maintenanceMessage, setMaintenanceMessage] = useState('');
+  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -124,6 +133,7 @@ const AdminDashboard = () => {
     fetchSkills();
     fetchMemorableImages();
     fetchVisitors();
+    fetchMaintenance();
     
     const adminEmail = localStorage.getItem('adminEmail');
     if (adminEmail === 'mr.prem2006@gmail.com') {
@@ -149,6 +159,94 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     navigate('/prem-login-2026');
+  };
+
+  const fetchMaintenance = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
+      const data = await res.json();
+      setMaintenanceEnabled(data.maintenance_enabled || false);
+      setMaintenanceMessage(data.message || '');
+
+      if (data.start_time) {
+        const start = new Date(data.start_time);
+        const yyyy = start.getFullYear();
+        const mm = String(start.getMonth() + 1).padStart(2, '0');
+        const dd = String(start.getDate()).padStart(2, '0');
+        setMaintenanceStartDate(`${yyyy}-${mm}-${dd}`);
+
+        const hh = String(start.getHours()).padStart(2, '0');
+        const min = String(start.getMinutes()).padStart(2, '0');
+        setMaintenanceStartTime(`${hh}:${min}`);
+      } else {
+        setMaintenanceStartDate('');
+        setMaintenanceStartTime('');
+      }
+
+      if (data.end_time) {
+        const end = new Date(data.end_time);
+        const yyyy = end.getFullYear();
+        const mm = String(end.getMonth() + 1).padStart(2, '0');
+        const dd = String(end.getDate()).padStart(2, '0');
+        setMaintenanceEndDate(`${yyyy}-${mm}-${dd}`);
+
+        const hh = String(end.getHours()).padStart(2, '0');
+        const min = String(end.getMinutes()).padStart(2, '0');
+        setMaintenanceEndTime(`${hh}:${min}`);
+      } else {
+        setMaintenanceEndDate('');
+        setMaintenanceEndTime('');
+      }
+    } catch (err) {
+      console.error('Error fetching maintenance settings:', err);
+    }
+  };
+
+  const handleMaintenanceSubmit = async (e) => {
+    e.preventDefault();
+    setMaintenanceLoading(true);
+
+    let start_time = null;
+    if (maintenanceStartDate && maintenanceStartTime) {
+      start_time = new Date(`${maintenanceStartDate}T${maintenanceStartTime}`).toISOString();
+    } else if (maintenanceStartDate) {
+      start_time = new Date(`${maintenanceStartDate}T00:00`).toISOString();
+    }
+
+    let end_time = null;
+    if (maintenanceEndDate && maintenanceEndTime) {
+      end_time = new Date(`${maintenanceEndDate}T${maintenanceEndTime}`).toISOString();
+    } else if (maintenanceEndDate) {
+      end_time = new Date(`${maintenanceEndDate}T00:00`).toISOString();
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/maintenance`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          maintenance_enabled: maintenanceEnabled,
+          start_time,
+          end_time,
+          message: maintenanceMessage
+        })
+      });
+
+      if (res.ok) {
+        showToast('Maintenance settings updated successfully!');
+        fetchMaintenance();
+      } else {
+        showToast('Failed to update maintenance settings', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Network error', 'error');
+    } finally {
+      setMaintenanceLoading(false);
+    }
   };
 
   // --- FETCH DATA ---
@@ -1017,6 +1115,88 @@ const AdminDashboard = () => {
               <div className="form-actions" style={{marginTop: '1rem'}}>
                 <button type="submit" className="btn btn-primary" disabled={statsLoading}>
                   {statsLoading ? 'Updating...' : 'Update Statistics'}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* MAINTENANCE MODE SYSTEM SECTION */}
+          <div id="admin-maintenance" className="dashboard-content glass-panel mb-4">
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3>Maintenance Mode System</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="tiny-text" style={{ fontSize: '0.9rem', color: maintenanceEnabled ? 'var(--accent-tertiary)' : 'var(--text-muted)', fontWeight: 600 }}>
+                  {maintenanceEnabled ? 'Active / Scheduled' : 'Deactivated'}
+                </span>
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={maintenanceEnabled} 
+                    onChange={e => setMaintenanceEnabled(e.target.checked)} 
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <form onSubmit={handleMaintenanceSubmit} className="project-form">
+              <div className="form-row">
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Start Date</label>
+                  <input 
+                    type="date" 
+                    value={maintenanceStartDate} 
+                    onChange={e => setMaintenanceStartDate(e.target.value)} 
+                    className="form-input" 
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Start Time</label>
+                  <input 
+                    type="time" 
+                    value={maintenanceStartTime} 
+                    onChange={e => setMaintenanceStartTime(e.target.value)} 
+                    className="form-input" 
+                  />
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>End Date</label>
+                  <input 
+                    type="date" 
+                    value={maintenanceEndDate} 
+                    onChange={e => setMaintenanceEndDate(e.target.value)} 
+                    className="form-input" 
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>End Time</label>
+                  <input 
+                    type="time" 
+                    value={maintenanceEndTime} 
+                    onChange={e => setMaintenanceEndTime(e.target.value)} 
+                    className="form-input" 
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Custom Maintenance Message</label>
+                <textarea 
+                  placeholder="Sorry for the inconvenience. The portfolio is currently under maintenance and will automatically resume once the upgrade is completed." 
+                  value={maintenanceMessage} 
+                  onChange={e => setMaintenanceMessage(e.target.value)} 
+                  required 
+                  className="form-input" 
+                  rows="3" 
+                />
+              </div>
+
+              <div className="form-actions" style={{ marginTop: '1rem' }}>
+                <button type="submit" className="btn btn-primary" disabled={maintenanceLoading}>
+                  {maintenanceLoading ? 'Updating settings...' : 'Save Maintenance Settings'}
                 </button>
               </div>
             </form>
