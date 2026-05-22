@@ -27,11 +27,11 @@ const Maintenance = ({ settings, onUnlock }) => {
             );
           }
         } else {
-          setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1741356501/portfolio/profile_photo.jpg');
+          setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg');
         }
       } catch (err) {
         console.error('Error fetching maintenance page profile image:', err);
-        setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1741356501/portfolio/profile_photo.jpg');
+        setProfileImage('https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg');
       }
     };
     fetchProfileImage();
@@ -160,7 +160,7 @@ const Maintenance = ({ settings, onUnlock }) => {
                 alt="Prem Prasad Pradhan" 
                 className="user-avatar-small" 
                 onError={(e) => {
-                  e.target.src = 'https://res.cloudinary.com/dmy2piasa/image/upload/v1741356501/portfolio/profile_photo.jpg';
+                  e.target.src = 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg';
                 }}
               />
               <span className="live-status-dot"></span>
