@@ -73,7 +73,7 @@ const Maintenance = ({ settings, onUnlock }) => {
     }
   };
 
-  const [activeTasks] = useState([
+  const [activeTasks, setActiveTasks] = useState([
     { name: 'Core Engine Upgrades', status: 'completed' },
     { name: 'Database Schema Optimization', status: 'completed' },
     { name: 'AI Diagnostics Agent Synced', status: 'running' },
