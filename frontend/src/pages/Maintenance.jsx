@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, FaSpinner, FaFilePdf } from 'react-icons/fa';
+import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, FaSpinner, FaFilePdf, FaBell, FaBellSlash } from 'react-icons/fa';
 import { RESUME_LINK } from '../config';
 import SEO from '../components/SEO';
+import { useNotifications } from '../hooks/useNotifications';
 import './Maintenance.css';
 
 const Maintenance = ({ settings, onUnlock }) => {
@@ -12,6 +13,20 @@ const Maintenance = ({ settings, onUnlock }) => {
       ? RESUME_LINK 
       : '/Prem_Prasad_Pradhan_CV.pdf'
   );
+  
+  const { isSubscribed, permission, subscribe } = useNotifications();
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleSubscribeClick = async () => {
+    setSubscribing(true);
+    try {
+      await subscribe();
+    } catch (error) {
+      console.error('Failed to subscribe from maintenance page:', error);
+    } finally {
+      setSubscribing(false);
+    }
+  };
   
   useEffect(() => {
     const fetchDynamicResume = async () => {
@@ -253,6 +268,41 @@ const Maintenance = ({ settings, onUnlock }) => {
           </motion.div>
         )}
 
+        {/* Sleek Push Notification Subscription Section */}
+        <motion.div className="maintenance-notify-capsule" variants={itemVariants} custom={4.8}>
+          {isSubscribed ? (
+            <div className="notify-status active">
+              <FaCheckCircle className="notify-status-icon success-glow" />
+              <span>You're subscribed! We'll notify you the moment we go live. 🚀</span>
+            </div>
+          ) : permission === "denied" ? (
+            <div className="notify-status blocked">
+              <FaBellSlash className="notify-status-icon blocked-glow" />
+              <span>Notification permission blocked. Please reset browser permissions. 🔒</span>
+            </div>
+          ) : (
+            <div className="notify-prompt-wrap">
+              <span className="notify-desc">Want to know when we are back online?</span>
+              <button 
+                className="maintenance-notify-btn" 
+                onClick={handleSubscribeClick}
+                disabled={subscribing}
+              >
+                {subscribing ? (
+                  <>
+                    <FaSpinner className="spinner-icon" />
+                    <span>Subscribing...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaBell className="bell-pulse-anim" />
+                    <span>Notify Me On Completion</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </motion.div>
 
         {/* Sleek Glass Capsule Email Contact */}
         <motion.div className="developer-contact-pill" variants={itemVariants} custom={5}>
