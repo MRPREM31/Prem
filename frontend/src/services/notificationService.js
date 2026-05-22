@@ -142,7 +142,8 @@ export const requestPushPermission = async () => {
 export const getNotificationState = async () => {
   // If OneSignal SDK is not fully loaded or initialized yet, return local offline fallback
   if (!window.OneSignal || !window.OneSignal.Notifications) {
-    const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true";
+    const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true" ||
+      localStorage.getItem("notification_subscribed") === "true";
     return {
       permission: isSubscribedLocal ? "granted" : "default",
       isSubscribed: isSubscribedLocal,

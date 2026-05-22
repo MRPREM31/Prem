@@ -60,27 +60,35 @@ function App() {
 
   const checkMaintenance = async () => {
     const emergencyActive = isEmergencyMaintenanceActive();
+    
+    // If the frontend hardcoded emergency maintenance override is active, immediately use the frontend configuration
+    if (emergencyActive) {
+      setMaintenance({
+        active: true,
+        fallback: true,
+        start_time: new Date().toISOString(),
+        end_time: maintenanceConfig.endDate,
+        message: maintenanceConfig.message
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
+      if (!res.ok) throw new Error("Backend response error");
       const data = await res.json();
       
-      setMaintenance(prev => ({
-        ...data,
-        active: emergencyActive ? true : data.active,
-        end_time: emergencyActive ? maintenanceConfig.endDate : data.end_time,
-        message: emergencyActive ? (maintenanceConfig.message || data.message) : data.message
-      }));
+      setMaintenance(data);
     } catch (err) {
-      console.error('Error checking maintenance status:', err);
-      // Fallback if backend is completely down (Render credit limits reached)
-      if (emergencyActive) {
-        setMaintenance({
-          active: true,
-          start_time: new Date().toISOString(),
-          end_time: maintenanceConfig.endDate,
-          message: maintenanceConfig.message
-        });
-      }
+      console.log("Backend unavailable. Using frontend maintenance fallback.");
+      setMaintenance({
+        active: true,
+        fallback: true,
+        start_time: new Date().toISOString(),
+        end_time: maintenanceConfig.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        message: maintenanceConfig.message || "The portfolio is currently undergoing scheduled maintenance and upgrades. We will resume automatically once completed!"
+      });
     } finally {
       setLoading(false);
     }

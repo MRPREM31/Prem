@@ -29,7 +29,8 @@ export const useNotifications = () => {
 
     // Smart logic for showing the premium subscription popup
     const dismissedAtStr = localStorage.getItem("mrprem_notification_dismissed_at");
-    const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true";
+    const isSubscribedLocal = localStorage.getItem("mrprem_notification_subscribed") === "true" ||
+      localStorage.getItem("notification_subscribed") === "true";
     
     // If browser says granted but state hasn't synced, or local storage says subscribed
     const actuallySubscribed = state.isSubscribed || isSubscribedLocal || state.permission === "granted";
@@ -37,6 +38,7 @@ export const useNotifications = () => {
     if (actuallySubscribed) {
       setShowPopup(false);
       localStorage.setItem("mrprem_notification_subscribed", "true");
+      localStorage.setItem("notification_subscribed", "true");
       return;
     }
 
@@ -111,6 +113,7 @@ export const useNotifications = () => {
       
       if (result.isSubscribed) {
         localStorage.setItem("mrprem_notification_subscribed", "true");
+        localStorage.setItem("notification_subscribed", "true");
         localStorage.removeItem("mrprem_notification_dismissed_at");
         setShowPopup(false);
       }
