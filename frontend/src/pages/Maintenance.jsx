@@ -1,11 +1,37 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { FaLinkedinIn, FaGithub, FaEnvelope, FaGlobe, FaTools, FaCheckCircle, FaSpinner, FaFilePdf } from 'react-icons/fa';
+import { RESUME_LINK } from '../config';
 import SEO from '../components/SEO';
 import './Maintenance.css';
 
 const Maintenance = ({ settings, onUnlock }) => {
   const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
+  const [resumeUrl, setResumeUrl] = useState(
+    RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf" 
+      ? RESUME_LINK 
+      : '/Prem_Prasad_Pradhan_CV.pdf'
+  );
+  
+  useEffect(() => {
+    const fetchDynamicResume = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/resume`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.resumeUrl) {
+            setResumeUrl(data.resumeUrl.startsWith('/uploads') 
+              ? `${import.meta.env.VITE_API_URL}${data.resumeUrl}` 
+              : data.resumeUrl
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic resume link:', err);
+      }
+    };
+    fetchDynamicResume();
+  }, []);
   const [activeTasks, setActiveTasks] = useState([
     { name: 'Core Engine Upgrades', status: 'completed' },
     { name: 'Database Schema Optimization', status: 'completed' },
@@ -250,8 +276,8 @@ const Maintenance = ({ settings, onUnlock }) => {
           <a href="mailto:contact@mrprem.in" className="social-icon-link" title="Official Contact Email">
             <FaEnvelope />
           </a>
-          <a href="https://mrprem.in/" target="_blank" rel="noreferrer" className="social-icon-link" title="Official Domain">
-            <FaGlobe />
+          <a href={resumeUrl} target="_blank" rel="noreferrer" className="social-icon-link" title="Download Resume">
+            <FaFilePdf />
           </a>
         </motion.div>
       </motion.div>
