@@ -219,6 +219,15 @@ const Maintenance = ({ settings, onUnlock }) => {
           </motion.div>
         )}
 
+        {/* Sleek single-line estimated completion display */}
+        {settings.end_time && (
+          <motion.div className="estimated-completion-text" variants={itemVariants} custom={4.5}>
+            <span>Estimated resumption: </span>
+            <strong className="glow-time">{formatResumeDateTime()}</strong>
+          </motion.div>
+        )}
+
+
         {/* Sleek Glass Capsule Email Contact */}
         <motion.div className="developer-contact-pill" variants={itemVariants} custom={5}>
           <div className="contact-body">

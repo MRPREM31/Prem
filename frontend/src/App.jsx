@@ -23,6 +23,7 @@ import AdminVault from './pages/AdminVault'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
 import Maintenance from './pages/Maintenance'
+import maintenanceConfig from './config/maintenanceConfig'
 import './App.css'
 
 // MANDATORY: Disable browser's native scroll restoration globally to take full control.
@@ -33,16 +34,51 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 
 function App() {
   const location = useLocation();
-  const [maintenance, setMaintenance] = useState({ active: false, start_time: null, end_time: null, message: '' });
+
+  // Helper to determine if the frontend emergency maintenance is active and within bounds
+  const isEmergencyMaintenanceActive = () => {
+    if (!maintenanceConfig || !maintenanceConfig.enabled) return false;
+    const now = new Date();
+    const end = new Date(maintenanceConfig.endDate);
+    return now < end;
+  };
+
+  // Initialize state instantly to support offline / fast load
+  const [maintenance, setMaintenance] = useState(() => {
+    const active = isEmergencyMaintenanceActive();
+    return {
+      active: active,
+      start_time: active ? new Date().toISOString() : null,
+      end_time: active ? maintenanceConfig.endDate : null,
+      message: active ? maintenanceConfig.message : ''
+    };
+  });
+
   const [loading, setLoading] = useState(true);
 
   const checkMaintenance = async () => {
+    const emergencyActive = isEmergencyMaintenanceActive();
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
       const data = await res.json();
-      setMaintenance(data);
+      
+      setMaintenance(prev => ({
+        ...data,
+        active: emergencyActive ? true : data.active,
+        end_time: emergencyActive ? maintenanceConfig.endDate : data.end_time,
+        message: emergencyActive ? (maintenanceConfig.message || data.message) : data.message
+      }));
     } catch (err) {
       console.error('Error checking maintenance status:', err);
+      // Fallback if backend is completely down (Render credit limits reached)
+      if (emergencyActive) {
+        setMaintenance({
+          active: true,
+          start_time: new Date().toISOString(),
+          end_time: maintenanceConfig.endDate,
+          message: maintenanceConfig.message
+        });
+      }
     } finally {
       setLoading(false);
     }

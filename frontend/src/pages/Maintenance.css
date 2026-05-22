@@ -303,6 +303,20 @@
   100% { background-position: 200% 50%; }
 }
 
+/* Elegant Estimated Completion Text */
+.estimated-completion-text {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 1.4rem;
+  letter-spacing: 0.5px;
+}
+
+.glow-time {
+  color: #a5b4fc;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(165, 180, 252, 0.2);
+}
+
 /* Sleek Glass Capsule Email Contact */
 .developer-contact-pill {
   background: rgba(255, 255, 255, 0.01);
@@ -482,6 +496,11 @@
 
   .progress-container {
     height: 3px;
+  }
+
+  .estimated-completion-text {
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
   }
 
   .developer-contact-pill {
