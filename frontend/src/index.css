@@ -269,3 +269,490 @@ ul {
     gap: 1.5rem;
   }
 }
+
+/* --- PUSH NOTIFICATION SYSTEM STYLES --- */
+
+/* Smart Glassmorphic Popup Overlay */
+.subscription-popup-overlay {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.subscription-popup-card {
+  width: 380px;
+  max-width: calc(100vw - 48px);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.1);
+  border-radius: 18px;
+  padding: 30px 24px 24px 24px;
+  position: relative;
+  text-align: center;
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+[data-theme="light"] .subscription-popup-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1), 0 0 20px rgba(37, 99, 235, 0.05);
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.popup-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+[data-theme="light"] .popup-close-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.popup-icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.glowing-bell-ring {
+  background: rgba(59, 130, 246, 0.15);
+  padding: 16px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] .glowing-bell-ring {
+  background: rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+}
+
+.bell-svg-glow {
+  color: var(--accent-primary);
+  filter: drop-shadow(0 0 6px var(--accent-primary));
+}
+
+.popup-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
+}
+
+.popup-message {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.popup-btn-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.popup-btn-secondary {
+  flex: 1;
+  padding: 11px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.popup-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .popup-btn-secondary {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .popup-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.popup-btn-primary {
+  flex: 1.3;
+  padding: 11px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border: none;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+  transition: all 0.25s ease;
+}
+
+.popup-btn-primary:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(96, 165, 250, 0.45);
+}
+
+.btn-glow-layer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+
+.popup-btn-primary:hover .btn-glow-layer {
+  left: 100%;
+}
+
+/* Micro-interactive Bell in Navbar */
+.notification-bell-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bell-nav-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-muted);
+}
+
+[data-theme="light"] .bell-nav-btn {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.bell-nav-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .bell-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.bell-nav-btn.subscribed {
+  color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.bell-glow-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--accent-tertiary);
+  border-radius: 50%;
+  border: 1px solid var(--bg-color);
+  box-shadow: 0 0 6px var(--accent-tertiary);
+}
+
+.bell-active-icon {
+  filter: drop-shadow(0 0 2px var(--accent-primary));
+}
+
+.bell-disabled-icon {
+  opacity: 0.6;
+}
+
+/* Glassmorphic Tooltip styling */
+.bell-tooltip-glass {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.bell-tooltip-glass .tooltip-content {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-main);
+  white-space: nowrap;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-theme="light"] .bell-tooltip-glass .tooltip-content {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+}
+
+.tooltip-indicator {
+  position: absolute;
+  bottom: 100%;
+  right: 50%;
+  transform: translateX(50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .tooltip-indicator {
+  border-bottom: 5px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Professional Confirmation Modal */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999999;
+  background: rgba(7, 11, 21, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.confirm-modal-card {
+  width: 440px;
+  max-width: 100%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  padding: 36px 30px 30px 30px;
+  text-align: center;
+  position: relative;
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+[data-theme="light"] .confirm-modal-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+.confirm-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.confirm-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.confirm-icon-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.warning-pulse-container {
+  background: rgba(239, 68, 68, 0.15);
+  padding: 18px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="light"] .warning-pulse-container {
+  background: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+}
+
+.warning-svg-icon {
+  color: #ef4444;
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5));
+}
+
+.confirm-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.3px;
+}
+
+.confirm-message {
+  font-size: 0.94rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.confirm-btn-group {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.confirm-btn-secondary {
+  flex: 1;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.confirm-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+[data-theme="light"] .confirm-btn-secondary {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .confirm-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.confirm-btn-primary {
+  flex: 1.5;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: none;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+  transition: all 0.2s ease;
+}
+
+.confirm-btn-primary:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+}
+
+.confirm-btn-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+
+.confirm-btn-primary:hover .confirm-btn-glow {
+  left: 100%;
+}
+
+/* Responsiveness adaptation */
+@media (max-width: 480px) {
+  .subscription-popup-overlay {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  
+  .subscription-popup-card {
+    width: 100%;
+    padding: 24px 16px 20px 16px;
+  }
+  
+  .popup-btn-group, .confirm-btn-group {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .popup-btn-secondary, .popup-btn-primary,
+  .confirm-btn-secondary, .confirm-btn-primary {
+    width: 100%;
+  }
+}

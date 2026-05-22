@@ -117,6 +117,97 @@ transporter.verify((error, success) => {
 app.use(cors());
 app.use(express.json());
 
+// --- ONESIGNAL PUSH NOTIFICATION UTILITY ---
+async function sendPushNotification({ title, message, url }) {
+  const appId = process.env.ONESIGNAL_APP_ID || '454dcf3b-18c2-4b30-bf85-b43b67161d92';
+  const apiKey = process.env.ONESIGNAL_REST_API_KEY;
+
+  if (!apiKey || apiKey === 'your_onesignal_rest_api_key') {
+    console.warn(`[OneSignal REST API] ONESIGNAL_REST_API_KEY is not defined or is placeholder. Simulating push notification:
+    -> Title: ${title}
+    -> Message: ${message}
+    -> URL: ${url || 'https://mrprem.in'}`);
+    return { simulated: true, success: true, id: 'simulated-push-id-' + Date.now() };
+  }
+
+  try {
+    const response = await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': `Basic ${apiKey}`
+      },
+      body: JSON.stringify({
+        app_id: appId,
+        contents: { en: message },
+        headings: { en: title },
+        included_segments: ['Subscribed Users'],
+        url: url || 'https://mrprem.in'
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.errors ? data.errors.join(', ') : 'OneSignal API Error');
+    }
+    console.log('[OneSignal REST API] Push notification sent successfully:', data);
+    return data;
+  } catch (err) {
+    console.error('[OneSignal REST API] Failed to send push notification:', err.message);
+    throw err;
+  }
+}
+
+async function sendAutomaticMaintenanceLiveNotification() {
+  console.log('[Maintenance Daemon] Maintenance mode ended. Automatically notifying subscribers...');
+  try {
+    await sendPushNotification({
+      title: '✅ MRPREM Portfolio Is Live Again',
+      message: 'Maintenance has been completed successfully. Click to explore the updated website.',
+      url: 'https://mrprem.in'
+    });
+  } catch (err) {
+    console.error('[Maintenance Daemon] Error sending end-of-maintenance notification:', err);
+  }
+}
+
+// Global variable to track the last known active status of maintenance
+let wasMaintenanceActive = null;
+
+// Background daemon to check maintenance status transition every 30 seconds
+async function initMaintenanceDaemon() {
+  try {
+    const settings = await getMaintenanceSettings();
+    wasMaintenanceActive = isMaintenanceActive(settings);
+    console.log(`[Maintenance Daemon] Started. Initial maintenance state: ${wasMaintenanceActive ? 'ACTIVE' : 'INACTIVE'}`);
+  } catch (err) {
+    console.error('[Maintenance Daemon] Initialization failed, will retry on next tick:', err);
+  }
+
+  setInterval(async () => {
+    try {
+      const settings = await getMaintenanceSettings();
+      const active = isMaintenanceActive(settings);
+
+      if (wasMaintenanceActive === null) {
+        wasMaintenanceActive = active;
+        return;
+      }
+
+      if (wasMaintenanceActive === true && active === false) {
+        await sendAutomaticMaintenanceLiveNotification();
+      }
+
+      wasMaintenanceActive = active;
+    } catch (err) {
+      console.error('[Maintenance Daemon] Background error checking transition:', err);
+    }
+  }, 30000);
+}
+
+// Start background checker
+setTimeout(initMaintenanceDaemon, 5000); // delay initial call slightly to ensure all configurations are loaded
+
 // --- MAINTENANCE CACHING & MIDDLEWARE WITH LOCAL FALLBACK ---
 const fs = require('fs');
 const MAINTENANCE_FILE = path.join(__dirname, 'maintenance_settings.json');
@@ -383,6 +474,11 @@ app.get('/api/maintenance-status', async (req, res) => {
 
 app.post('/api/admin/maintenance', verifyToken, async (req, res) => {
   const { maintenance_enabled, start_time, end_time, message } = req.body;
+  
+  // Get old active status before updating settings
+  const oldSettings = await getMaintenanceSettings();
+  const oldActive = isMaintenanceActive(oldSettings);
+
   const payload = {
     id: 1,
     maintenance_enabled: !!maintenance_enabled,
@@ -393,6 +489,7 @@ app.post('/api/admin/maintenance', verifyToken, async (req, res) => {
   };
 
   try {
+    let finalSettings;
     const { data, error } = await supabase
       .from('maintenance_settings')
       .upsert(payload)
@@ -403,22 +500,43 @@ app.post('/api/admin/maintenance', verifyToken, async (req, res) => {
       writeLocalMaintenanceSettings(payload);
       cachedMaintenanceSettings = payload;
       cacheTimestamp = Date.now();
-      return res.json({ success: true, settings: payload, fallback: true });
+      finalSettings = payload;
+    } else {
+      // Invalidate backend cache immediately
+      cachedMaintenanceSettings = data[0];
+      cacheTimestamp = Date.now();
+      
+      // Sync to local file as backup
+      writeLocalMaintenanceSettings(data[0]);
+      finalSettings = data[0];
     }
     
-    // Invalidate backend cache immediately
-    cachedMaintenanceSettings = data[0];
-    cacheTimestamp = Date.now();
+    // Evaluate transition and trigger live notification if changed to off
+    const newActive = isMaintenanceActive(finalSettings);
+    if (oldActive === true && newActive === false) {
+      console.log('[Maintenance Control] Maintenance turned off. Broadcasting live notification.');
+      sendAutomaticMaintenanceLiveNotification().catch(err => 
+        console.error('[Maintenance Control] Failed to broadcast live notification:', err)
+      );
+    }
+    wasMaintenanceActive = newActive; // Synchronize with the daemon state
     
-    // Sync to local file as backup
-    writeLocalMaintenanceSettings(data[0]);
-    
-    res.json({ success: true, settings: data[0] });
+    res.json({ success: true, settings: finalSettings, fallback: !data });
   } catch (err) {
     console.warn('Error updating maintenance settings in Supabase, using local fallback:', err);
     writeLocalMaintenanceSettings(payload);
     cachedMaintenanceSettings = payload;
     cacheTimestamp = Date.now();
+
+    const newActive = isMaintenanceActive(payload);
+    if (oldActive === true && newActive === false) {
+      console.log('[Maintenance Control] Maintenance turned off (fallback). Broadcasting live notification.');
+      sendAutomaticMaintenanceLiveNotification().catch(err => 
+        console.error('[Maintenance Control] Failed to broadcast live notification:', err)
+      );
+    }
+    wasMaintenanceActive = newActive;
+
     res.json({ success: true, settings: payload, fallback: true });
   }
 });
@@ -1721,11 +1839,27 @@ app.delete('/api/admin/memorable-images/:id', verifyToken, async (req, res) => {
   }
 });
 
+// API: Send Push Notification (Protected)
+app.post('/api/notifications/send', verifyToken, async (req, res) => {
+  const { title, message, url } = req.body;
+  if (!title || !message) {
+    return res.status(400).json({ error: 'Title and message are required fields.' });
+  }
+
+  try {
+    const result = await sendPushNotification({ title, message, url });
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error('[Notification Send API Error]:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- VISITOR ANALYTICS ---
 
 // API: Track Visitor
 app.post('/api/track-visitor', async (req, res) => {
-  const { sessionId } = req.body;
+  const { sessionId, subscriptionStatus, subscriptionId, lastPromptTime, deviceBrowser } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const userAgent = req.headers['user-agent'];
   
@@ -1739,19 +1873,43 @@ app.post('/api/track-visitor', async (req, res) => {
       uniqueId = crypto.createHash('md5').update(`${ip}-${userAgent}-${today}`).digest('hex');
     }
 
-    const { error } = await supabase
+    const upsertPayload = { 
+      unique_id: uniqueId, 
+      ip, 
+      user_agent: userAgent, 
+      visited_at: new Date().toISOString() 
+    };
+
+    if (subscriptionStatus !== undefined) upsertPayload.subscription_status = subscriptionStatus;
+    if (subscriptionId !== undefined) upsertPayload.subscription_id = subscriptionId;
+    if (lastPromptTime !== undefined) upsertPayload.last_prompt_time = lastPromptTime;
+    if (deviceBrowser !== undefined) upsertPayload.device_browser = deviceBrowser;
+
+    let { error } = await supabase
       .from('visitors')
-      .upsert(
-        { unique_id: uniqueId, ip, user_agent: userAgent, visited_at: new Date().toISOString() },
-        { onConflict: 'unique_id' }
-      );
+      .upsert(upsertPayload, { onConflict: 'unique_id' });
 
     if (error) {
-      if (error.code === '42P01') {
+      if (error.code === '42703') {
+        console.warn('Subscription tracking columns not yet in Supabase table. Falling back to default visitor details.');
+        // Graceful fallback to default visitor fields
+        const fallbackPayload = { 
+          unique_id: uniqueId, 
+          ip, 
+          user_agent: userAgent, 
+          visited_at: new Date().toISOString() 
+        };
+        const fallbackResult = await supabase
+          .from('visitors')
+          .upsert(fallbackPayload, { onConflict: 'unique_id' });
+        
+        if (fallbackResult.error) throw fallbackResult.error;
+      } else if (error.code === '42P01') {
         console.warn('Visitors table missing in Supabase. Analytics disabled.');
         return res.status(200).json({ success: false, message: 'Table missing' });
+      } else {
+        throw error;
       }
-      throw error;
     }
     res.json({ success: true });
   } catch (error) {

@@ -24,6 +24,7 @@ import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
 import Maintenance from './pages/Maintenance'
 import maintenanceConfig from './config/maintenanceConfig'
+import SubscriptionPopup from './components/SubscriptionPopup'
 import './App.css'
 
 // MANDATORY: Disable browser's native scroll restoration globally to take full control.
@@ -114,12 +115,13 @@ function App() {
     };
     fetchFavicon();
     
-    // Track Visitor with Session ID
-    let sessionId = sessionStorage.getItem('visitor_session_id');
+    // Track Visitor with unified localStorage Session ID
+    let sessionId = localStorage.getItem('mrprem_session_id');
     if (!sessionId) {
-      sessionId = Math.random().toString(36).substring(2, 15) + Date.now();
-      sessionStorage.setItem('visitor_session_id', sessionId);
+      sessionId = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      localStorage.setItem('mrprem_session_id', sessionId);
     }
+    sessionStorage.setItem('visitor_session_id', sessionId);
 
     fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { 
       method: 'POST',
@@ -225,6 +227,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatBot />
+      <SubscriptionPopup />
     </HelmetProvider>
   )
 }

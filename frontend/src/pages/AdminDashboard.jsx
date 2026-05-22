@@ -6,6 +6,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ChatBot from '../components/ChatBot';
+import ConfirmNotificationModal from '../components/ConfirmNotificationModal';
 import { RESUME_LINK } from '../config';
 import './Admin.css';
 
@@ -65,6 +66,180 @@ const AdminDashboard = () => {
   
   const [greeting, setGreeting] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
+
+  // Push Notification & Confirmation Modal States
+  const [notifyProjects, setNotifyProjects] = useState(false);
+  const [notifyCertificates, setNotifyCertificates] = useState(false);
+  const [notifyMemories, setNotifyMemories] = useState(false);
+  const [notifySkills, setNotifySkills] = useState(false);
+  const [notifyProfile, setNotifyProfile] = useState(false);
+  const [notifyStats, setNotifyStats] = useState(false);
+
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    titleText: "Send Push Notification",
+    onConfirm: null
+  });
+
+  // Push Notification REST API caller
+  const sendPushNotificationAPI = async ({ title, message, url }) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/send`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ title, message, url })
+      });
+      if (res.ok) {
+        showToast('Push Notification sent to subscribers successfully! 🚀');
+      } else {
+        const errData = await res.json();
+        console.error('Failed to send push notification:', errData.error);
+        showToast(errData.error || 'Failed to send notification', 'error');
+      }
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+      showToast('Network error while sending notification.', 'error');
+    }
+  };
+
+  // Push Notification Interceptor Handlers for all Admin Actions
+  const handleProjectSubmitIntercept = async (e) => {
+    e.preventDefault();
+    if (notifyProjects) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "🚀 Send New Project Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleProjectSubmit(e);
+          await sendPushNotificationAPI({
+            title: "🚀 New Project Added",
+            message: `Explore the latest portfolio project: "${projectForm.title || 'New Project'}" now live.`,
+            url: "https://mrprem.in/#projects"
+          });
+          setNotifyProjects(false);
+        }
+      });
+    } else {
+      await handleProjectSubmit(e);
+    }
+  };
+
+  const handleCertSubmitIntercept = async (e) => {
+    e.preventDefault();
+    if (notifyCertificates) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "🏆 Send New Achievement Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleCertSubmit(e);
+          await sendPushNotificationAPI({
+            title: "🏆 New Achievement Added",
+            message: `A new certification has been added: "${certForm.title || 'New Certificate'}" to the portfolio.`,
+            url: "https://mrprem.in/#certificates"
+          });
+          setNotifyCertificates(false);
+        }
+      });
+    } else {
+      await handleCertSubmit(e);
+    }
+  };
+
+  const handleMemImageSubmitIntercept = async (e) => {
+    e.preventDefault();
+    if (notifyMemories) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "📸 Send New Memories Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleMemImageSubmit(e);
+          await sendPushNotificationAPI({
+            title: "📸 New Memories Uploaded",
+            message: `Check out the latest memorable moment: "${memImageForm.title || 'New Memory'}" now available.`,
+            url: "https://mrprem.in/#memories"
+          });
+          setNotifyMemories(false);
+        }
+      });
+    } else {
+      await handleMemImageSubmit(e);
+    }
+  };
+
+  const handleSkillsSubmitIntercept = async () => {
+    if (notifySkills) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "⚡ Send Skills Update Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleSkillsSubmit();
+          await sendPushNotificationAPI({
+            title: "⚡ Skills Updated",
+            message: "New technical skills have been added to the portfolio.",
+            url: "https://mrprem.in/#skills"
+          });
+          setNotifySkills(false);
+        }
+      });
+    } else {
+      await handleSkillsSubmit();
+    }
+  };
+
+  const handleStatsSubmitIntercept = async (e) => {
+    e.preventDefault();
+    if (notifyStats) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "⚡ Send Statistics Update Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleStatsSubmit(e);
+          await sendPushNotificationAPI({
+            title: "⚡ Portfolio Statistics Updated",
+            message: "Explore the latest portfolio improvements and statistics.",
+            url: "https://mrprem.in"
+          });
+          setNotifyStats(false);
+        }
+      });
+    } else {
+      await handleStatsSubmit(e);
+    }
+  };
+
+  const handleProfileImageSubmitIntercept = async (e) => {
+    e.preventDefault();
+    if (notifyProfile) {
+      setConfirmModal({
+        isOpen: true,
+        titleText: "👤 Send Profile Update Notification",
+        onConfirm: async () => {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+          await handleUpload(selectedImage, 'image', setUploadImgStatus, fetchProfileImage);
+          setSelectedImage(null);
+          e.target.reset();
+          await sendPushNotificationAPI({
+            title: "👤 Portfolio Profile Updated",
+            message: "Explore the latest portfolio improvements and profile image.",
+            url: "https://mrprem.in"
+          });
+          setNotifyProfile(false);
+        }
+      });
+    } else {
+      await handleUpload(selectedImage, 'image', setUploadImgStatus, fetchProfileImage);
+      setSelectedImage(null);
+      e.target.reset();
+    }
+  };
 
   // Certificates states
   const [certificates, setCertificates] = useState([]);
@@ -1031,8 +1206,19 @@ const AdminDashboard = () => {
                 <div className="preview-container">
                   {currentImage && <img src={currentImage} alt="Current Profile" className="preview-img" />}
                 </div>
-                <form onSubmit={(e) => { e.preventDefault(); handleUpload(selectedImage, 'image', setUploadImgStatus, fetchProfileImage); setSelectedImage(null); e.target.reset(); }} className="upload-form">
+                <form onSubmit={handleProfileImageSubmitIntercept} className="upload-form">
                   <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => setSelectedImage(e.target.files[0])} className="file-input" />
+                  <div className="notify-checkbox-wrapper mb-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={notifyProfile} 
+                        onChange={(e) => setNotifyProfile(e.target.checked)} 
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span>Notify Subscribers</span>
+                    </label>
+                  </div>
                   <button type="submit" className="btn btn-primary" disabled={!selectedImage}><FaUpload /> Upload</button>
                 </form>
                 {uploadImgStatus && <p className="upload-status">{uploadImgStatus}</p>}
@@ -1097,7 +1283,7 @@ const AdminDashboard = () => {
             <div className="section-header">
               <h3>Portfolio Statistics</h3>
             </div>
-            <form onSubmit={handleStatsSubmit} className="project-form">
+            <form onSubmit={handleStatsSubmitIntercept} className="project-form">
               <div className="form-row">
                 <div className="form-group">
                   <label>Years of Experience (e.g., 2+)</label>
@@ -1112,7 +1298,18 @@ const AdminDashboard = () => {
                   <input type="text" value={stats.startups_leadership} onChange={e => setStats({...stats, startups_leadership: e.target.value})} className="form-input" placeholder="2" required />
                 </div>
               </div>
-              <div className="form-actions" style={{marginTop: '1rem'}}>
+              <div className="form-actions" style={{marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '15px'}}>
+                <div className="notify-checkbox-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={notifyStats} 
+                      onChange={(e) => setNotifyStats(e.target.checked)} 
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <span>Notify Subscribers</span>
+                  </label>
+                </div>
                 <button type="submit" className="btn btn-primary" disabled={statsLoading}>
                   {statsLoading ? 'Updating...' : 'Update Statistics'}
                 </button>
@@ -1218,7 +1415,7 @@ const AdminDashboard = () => {
 
             <>
               {showProjectForm && (
-                <form className="project-form" onSubmit={handleProjectSubmit}>
+                <form className="project-form" onSubmit={handleProjectSubmitIntercept}>
                   <input type="text" placeholder="Title" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} required className="form-input" />
                   <textarea placeholder="Description" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} required className="form-input" rows="3" />
                   <input type="text" placeholder="Tags (comma separated)" value={projectForm.tags} onChange={e => setProjectForm({...projectForm, tags: e.target.value})} required className="form-input" />
@@ -1256,6 +1453,17 @@ const AdminDashboard = () => {
                     </div>
                   )}
 
+                  <div className="notify-checkbox-wrapper mb-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={notifyProjects} 
+                        onChange={(e) => setNotifyProjects(e.target.checked)} 
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <span>Notify Subscribers</span>
+                    </label>
+                  </div>
                   <div className="form-actions">
                     <button type="submit" className="btn btn-primary">{editingProject ? 'Update Info' : 'Save & Add Images'}</button>
                     <button type="button" className="btn btn-outline" onClick={() => { setShowProjectForm(false); setEditingProject(null); setProjectImages([]); }}>Cancel</button>
@@ -1304,13 +1512,24 @@ const AdminDashboard = () => {
             </div>
 
             {showCertForm && (
-              <form className="project-form" onSubmit={handleCertSubmit}>
+              <form className="project-form" onSubmit={handleCertSubmitIntercept}>
                 <input type="text" placeholder="Title" value={certForm.title} onChange={e => setCertForm({...certForm, title: e.target.value})} required className="form-input" />
                 <textarea placeholder="Description" value={certForm.description} onChange={e => setCertForm({...certForm, description: e.target.value})} required className="form-input" rows="3" />
                 <div className="form-row">
                   <input type="date" value={certForm.date} onChange={e => setCertForm({...certForm, date: e.target.value})} required className="form-input" />
                   <input type="text" placeholder="Image Alt Text (SEO)" value={certForm.image_alt || ''} onChange={e => setCertForm({...certForm, image_alt: e.target.value})} className="form-input" />
                   <input type="file" accept="image/*" onChange={e => setCertForm({...certForm, image: e.target.files[0]})} className="form-input" />
+                </div>
+                <div className="notify-checkbox-wrapper mb-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={notifyCertificates} 
+                      onChange={(e) => setNotifyCertificates(e.target.checked)} 
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <span>Notify Subscribers</span>
+                  </label>
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary">{editingCert ? 'Update' : 'Save'} Certificate</button>
@@ -1350,12 +1569,23 @@ const AdminDashboard = () => {
             </div>
 
             {showMemImageForm && (
-              <form className="project-form" onSubmit={handleMemImageSubmit}>
+              <form className="project-form" onSubmit={handleMemImageSubmitIntercept}>
                 <input type="text" placeholder="Image Title" value={memImageForm.title} onChange={e => setMemImageForm({...memImageForm, title: e.target.value})} required className="form-input" />
                 <div className="form-row">
                   <input type="text" placeholder="Image Alt Text (SEO)" value={memImageForm.image_alt || ''} onChange={e => setMemImageForm({...memImageForm, image_alt: e.target.value})} className="form-input" />
                   <input type="text" placeholder="Image SEO Description" value={memImageForm.image_description || ''} onChange={e => setMemImageForm({...memImageForm, image_description: e.target.value})} className="form-input" />
                   <input type="file" accept="image/*" onChange={e => setMemImageForm({...memImageForm, image: e.target.files[0]})} required className="form-input" />
+                </div>
+                <div className="notify-checkbox-wrapper mb-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={notifyMemories} 
+                      onChange={(e) => setNotifyMemories(e.target.checked)} 
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <span>Notify Subscribers</span>
+                  </label>
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary" disabled={memImageLoading}>
@@ -1448,7 +1678,18 @@ const AdminDashboard = () => {
             </div>
             
             <div className="form-actions mt-3">
-              <button onClick={handleSkillsSubmit} className="btn btn-primary" disabled={skillsLoading}>
+              <div className="notify-checkbox-wrapper mb-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={notifySkills} 
+                    onChange={(e) => setNotifySkills(e.target.checked)} 
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <span>Notify Subscribers</span>
+                </label>
+              </div>
+              <button onClick={handleSkillsSubmitIntercept} className="btn btn-primary" disabled={skillsLoading}>
                 {skillsLoading ? 'Saving...' : 'Save All Skills Changes'}
               </button>
             </div>
@@ -1661,6 +1902,14 @@ const AdminDashboard = () => {
         </div>
       </main>
       <Footer />
+      
+      {/* Push Notification Confirmation Modal */}
+      <ConfirmNotificationModal
+        isOpen={confirmModal.isOpen}
+        titleText={confirmModal.titleText}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+      />
     </div>
   );
 };

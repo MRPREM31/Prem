@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+import NotificationBell from './NotificationBell';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -180,6 +181,7 @@ const Navbar = () => {
         </div>
 
         <div className="nav-actions">
+          <NotificationBell />
           <button className="mobile-toggle" onClick={() => setIsMobileMenuOpen(true)}>
             <FaBars />
           </button>
