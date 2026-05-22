@@ -81,12 +81,13 @@ function App() {
       
       setMaintenance(data);
     } catch (err) {
-      console.log("Backend unavailable. Using frontend maintenance fallback.");
+      console.log("Backend unavailable. Checking frontend maintenance fallback.");
+      const isFallbackActive = isEmergencyMaintenanceActive();
       setMaintenance({
-        active: true,
+        active: isFallbackActive,
         fallback: true,
-        start_time: new Date().toISOString(),
-        end_time: maintenanceConfig.endDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        start_time: isFallbackActive ? new Date().toISOString() : null,
+        end_time: isFallbackActive ? maintenanceConfig.endDate : null,
         message: maintenanceConfig.message || "The portfolio is currently undergoing scheduled maintenance and upgrades. We will resume automatically once completed!"
       });
     } finally {
