@@ -69,14 +69,9 @@
     { "source": "/api/admin/skills", "destination": "/api/admin.js?route=skills" },
     { "source": "/api/admin/memorable-images", "destination": "/api/admin.js?route=memorable-images" },
     { "source": "/api/admin/memorable-images/:id", "destination": "/api/admin.js?route=memorable-images&id=:id" },
-    { "source": "/api/admin/upload-profile", "destination": "/api/upload.js?route=upload-profile" },
-    { "source": "/api/admin/upload-navbar", "destination": "/api/upload.js?route=upload-navbar" },
-    { "source": "/api/admin/upload-resume", "destination": "/api/upload.js?route=upload-resume" },
-    { "source": "/api/admin/upload-favicon", "destination": "/api/upload.js?route=upload-favicon" },
-    { "source": "/api/admin/upload-signature", "destination": "/api/upload.js?route=upload-signature" },
     { "source": "/api/notifications/send", "destination": "/api/admin.js?route=send-notification" },
     { "source": "/api/media/:id", "destination": "/api/admin.js?route=media&id=:id" },
 
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
