@@ -14,33 +14,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackGithub from '../data/fallbackGithub';
 import './GithubInsights.css';
 
 const GithubInsights = () => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchInsights = useCallback(async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/github-stats`);
-      if (!response.ok) throw new Error('Failed to load GitHub data');
-      const result = await response.json();
-      setData(result);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-  }, []);
+  const { data: rawData, loading } = useResilientData(
+    `${import.meta.env.VITE_API_URL}/api/github-stats`,
+    CACHE_KEYS.GITHUB_STATS,
+    fallbackGithub
+  );
 
-  useEffect(() => {
-    fetchInsights();
-    const interval = setInterval(fetchInsights, 600000);
-    return () => clearInterval(interval);
-  }, [fetchInsights]);
+  const data = rawData || fallbackGithub;
+  const error = null; // Failsafe never exposes a blocking error screen
 
   const COLORS = ['#39d353', '#38bdf8', '#8b5cf6', '#fb923c', '#f43f5e', '#10b981'];
 
@@ -209,7 +198,7 @@ const GithubInsights = () => {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={data.languageStats}
+                    data={data.languageStats || []}
                     cx="50%"
                     cy="50%"
                     innerRadius={window.innerWidth < 480 ? 50 : 70}
@@ -217,7 +206,7 @@ const GithubInsights = () => {
                     paddingAngle={8}
                     dataKey="value"
                   >
-                    {data.languageStats.map((entry, index) => (
+                    {(data.languageStats || []).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -287,7 +276,7 @@ const GithubInsights = () => {
                   >
                     <div className="repo-header">
                       <a href={repo.url} target="_blank" rel="noreferrer" className="repo-title">
-                        {repo.name.toUpperCase()}
+                        {(repo.name || '').toUpperCase()}
                       </a>
                     </div>
                     <p className="repo-desc">{repo.description || "Experimental development module with optimized code architecture."}</p>

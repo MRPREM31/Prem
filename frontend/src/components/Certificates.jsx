@@ -44,7 +44,7 @@ const Certificates = () => {
               }}>
                 <div className="cert-image-container">
                   <img 
-                    src={optimizeCloudinaryUrl(cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image, 600)} 
+                    src={optimizeCloudinaryUrl(cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || ''), 600)} 
                     alt={cert.image_alt || `Certificate of Achievement: ${cert.title} awarded to Prem Prasad Pradhan`} 
                     className="cert-img" 
                     loading="lazy"

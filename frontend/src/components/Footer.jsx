@@ -1,41 +1,51 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackProfile from '../data/fallbackProfile';
 import './Footer.css';
 
 const Footer = () => {
-  const [signature, setSignature] = useState('');
-  const [visitorCount, setVisitorCount] = useState(0);
+  const { data: sigData } = useResilientData(
+    '/api/signature',
+    CACHE_KEYS.SIGNATURE_URL,
+    { signatureUrl: fallbackProfile.signatureUrl }
+  );
+
+  const rawSignature = sigData?.signatureUrl || fallbackProfile.signatureUrl || '';
+  const signature = (rawSignature && typeof rawSignature === 'string' && rawSignature.startsWith('/uploads'))
+    ? `${import.meta.env.VITE_API_URL}${rawSignature}`
+    : rawSignature;
+
+  const [visitorCount, setVisitorCount] = useState(() => {
+    const saved = localStorage.getItem('mrprem_visitor_count');
+    return saved ? parseInt(saved, 10) : 12450; // Sensible offline default
+  });
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/signature`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.signatureUrl) {
-          setSignature(data.signatureUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${data.signatureUrl}` : data.signatureUrl);
+    const fetchVisitorStats = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/visitor-stats`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.totalVisitors === 'number') {
+            setVisitorCount(data.totalVisitors);
+            localStorage.setItem('mrprem_visitor_count', data.totalVisitors);
+          }
         }
-      })
-      .catch(err => console.error('Error fetching signature:', err));
+      } catch (err) {
+        console.warn('[Resilience] Failed to fetch visitor stats from Render backend:', err.message || err);
+      }
+    };
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/visitor-stats`)
-      .then(res => res.json())
-      .then(data => setVisitorCount(data.totalVisitors))
-      .catch(err => console.error('Error fetching visitor stats:', err));
+    fetchVisitorStats();
 
     // Real-time update polling (Every 30 seconds)
-    const interval = setInterval(() => {
-      fetch(`${import.meta.env.VITE_API_URL}/api/visitor-stats`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.totalVisitors !== visitorCount) {
-            setVisitorCount(data.totalVisitors);
-          }
-        })
-        .catch(err => console.error('Error polling visitor stats:', err));
-    }, 30000);
+    const interval = setInterval(fetchVisitorStats, 30000);
 
     return () => clearInterval(interval);
-  }, [visitorCount]);
+  }, []);
 
   const AnimatedCounter = ({ end }) => {
     const [count, setCount] = useState(end > 10 ? end - 5 : 1);

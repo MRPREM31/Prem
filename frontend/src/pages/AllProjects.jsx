@@ -81,12 +81,12 @@ const AllProjects = () => {
                     <div className="project-content">
                       <h3>{project.title}</h3>
                       <p>
-                        {project.image_description || (project.description.length > 120 
-                          ? `${project.description.substring(0, 120)}...` 
-                          : project.description)}
+                        {project.image_description || ((project.description || '').length > 120 
+                          ? `${(project.description || '').substring(0, 120)}...` 
+                          : (project.description || ''))}
                       </p>
                       <div className="project-tags">
-                        {project.tags.split(',').map((tag, i) => (
+                        {(project.tags || '').split(',').filter(Boolean).map((tag, i) => (
                           <span key={i} className="tag">{tag.trim()}</span>
                         ))}
                       </div>

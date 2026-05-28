@@ -68,14 +68,14 @@ const CertificateDetail = () => {
     "dateCreated": certificate.date,
     "credentialCategory": "Certificate",
     "url": `https://mrprem.in/certificate/${certificate.slug || certificate.id}`,
-    "image": certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image
+    "image": certificate.image && typeof certificate.image === 'string' && certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : (certificate.image || '')
   } : undefined;
 
   return (
     <div className="portfolio-page">
       <SEO 
         title={certificate ? `${certificate.title} | Certificates` : "Certificate Detail"}
-        image={certificate ? (certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image) : null}
+        image={certificate ? (certificate.image && typeof certificate.image === 'string' && certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image) : null}
         url={certificate ? `certificate/${certificate.slug || certificate.id}` : `certificate/${idOrSlug}`}
         type="article"
         schema={credentialSchema}
@@ -108,19 +108,19 @@ const CertificateDetail = () => {
                   {certificate.image && (certificate.image.toLowerCase().endsWith('.pdf') || certificate.image.includes('/raw/upload/')) ? (
                     <div className="pdf-viewer-container">
                       <iframe 
-                        src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                        src={certificate.image && typeof certificate.image === 'string' && certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
                         title={certificate.title}
                         className="pdf-iframe"
                       />
                       <div className="pdf-actions">
-                        <a href={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
+                        <a href={certificate.image && typeof certificate.image === 'string' && certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} target="_blank" rel="noreferrer" className="btn btn-primary">
                            Open PDF in New Tab
                         </a>
                       </div>
                     </div>
                   ) : (
                     <img 
-                      src={certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
+                      src={certificate.image && typeof certificate.image === 'string' && certificate.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${certificate.image}` : certificate.image} 
                       alt={certificate.title} 
                       className="cert-detail-img" 
                     />
@@ -133,7 +133,7 @@ const CertificateDetail = () => {
                     <span className="cert-detail-date">{certificate.date}</span>
                   </div>
                   <div className="cert-detail-desc">
-                    {certificate.description.split('\n').map((paragraph, index) => (
+                    {(certificate.description || '').split('\n').map((paragraph, index) => (
                       <p key={index}>{paragraph}</p>
                     ))}
                   </div>

@@ -81,7 +81,7 @@ const AllCertificates = () => {
                   >
                     <div className="cert-image-container">
                       <img 
-                        src={optimizeCloudinaryUrl(cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image, 600)} 
+                        src={optimizeCloudinaryUrl(cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || ''), 600)} 
                         alt={cert.image_alt || cert.title} 
                         className="cert-img" 
                         loading="lazy"
@@ -118,7 +118,7 @@ const AllCertificates = () => {
                           </div>
                           <div className="action-icon" title="Download" onClick={(e) => {
                             e.stopPropagation();
-                            const downloadUrl = cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : cert.image;
+                             const downloadUrl = cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || '');
                             downloadImage(downloadUrl, `${cert.title}.jpg`);
                           }}>
                             <FaDownload />
@@ -130,7 +130,7 @@ const AllCertificates = () => {
                       <h3 className="cert-title">{cert.title}</h3>
                       <p className="cert-date">{cert.date}</p>
                       <p className="cert-description">
-                        {cert.description.length > 100 ? `${cert.description.substring(0, 100)}...` : cert.description}
+                         {(cert.description || '').length > 100 ? `${(cert.description || '').substring(0, 100)}...` : (cert.description || '')}
                       </p>
                     </div>
                   </motion.div>

@@ -60,7 +60,7 @@ const Projects = () => {
                   {project.image_description || project.description}
                 </p>
                 <div className="project-tags">
-                  {project.tags.split(',').map((tag, i) => (
+                  {(project.tags || '').split(',').filter(Boolean).map((tag, i) => (
                     <span key={i} className="tag">{tag.trim()}</span>
                   ))}
                 </div>

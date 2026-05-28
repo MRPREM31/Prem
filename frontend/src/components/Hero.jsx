@@ -30,18 +30,18 @@ const Hero = () => {
   );
 
   // Parse and optimize profile image URL
-  const rawProfileImage = profileRes.data?.imageUrl || fallbackProfile.profileImageUrl;
-  const profileImage = rawProfileImage.startsWith('/uploads')
+  const rawProfileImage = profileRes.data?.imageUrl || fallbackProfile.profileImageUrl || '';
+  const profileImage = (rawProfileImage && typeof rawProfileImage === 'string' && rawProfileImage.startsWith('/uploads'))
     ? `${optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${rawProfileImage}`, 600)}`
-    : `${optimizeCloudinaryUrl(rawProfileImage, 600)}`;
+    : `${optimizeCloudinaryUrl(rawProfileImage || fallbackProfile.profileImageUrl, 600)}`;
 
   // Parse resume URL
   const rawResumeUrl = isCustomResumeSet
     ? RESUME_LINK
-    : (resumeRes.data?.resumeUrl || fallbackProfile.resumeUrl || fallbackProfile.localResumeFallbackUrl);
-  const resumeUrl = rawResumeUrl.startsWith('/uploads')
+    : (resumeRes.data?.resumeUrl || fallbackProfile.resumeUrl || fallbackProfile.localResumeFallbackUrl || '');
+  const resumeUrl = (rawResumeUrl && typeof rawResumeUrl === 'string' && rawResumeUrl.startsWith('/uploads'))
     ? `${import.meta.env.VITE_API_URL}${rawResumeUrl}`
-    : rawResumeUrl;
+    : rawResumeUrl || fallbackProfile.localResumeFallbackUrl;
 
   return (
     <section id="home" className="section hero-section">

@@ -132,9 +132,9 @@ const ProjectDetail = () => {
     <div className="portfolio-page">
       <Helmet>
         <title>{project.title} | Prem Prasad Pradhan</title>
-        <meta name="description" content={project.image_description || project.description.substring(0, 160)} />
+        <meta name="description" content={project.image_description || (project.description || '').substring(0, 160)} />
         <meta property="og:title" content={project.title} />
-        <meta property="og:description" content={project.image_description || project.description.substring(0, 160)} />
+        <meta property="og:description" content={project.image_description || (project.description || '').substring(0, 160)} />
         <meta property="og:image" content={project.images?.[0]?.image_url || '/og-image.jpg'} />
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
@@ -143,7 +143,7 @@ const ProjectDetail = () => {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             "name": project.title,
-            "description": project.image_description || project.description.substring(0, 160),
+            "description": project.image_description || (project.description || '').substring(0, 160),
             "applicationCategory": "DeveloperApplication",
             "operatingSystem": "Web",
             "author": {
@@ -158,10 +158,10 @@ const ProjectDetail = () => {
           })}
         </script>
       </Helmet>
-      <SEO 
+       <SEO 
         title={`${project.title} | Projects`}
-        description={project.description.substring(0, 160)}
-        keywords={`${project.tags}, AI projects, full stack projects, React portfolio projects`}
+        description={(project.description || '').substring(0, 160)}
+        keywords={`${project.tags || ''}, AI projects, full stack projects, React portfolio projects`}
         url={`project/${project.slug || project.id}`}
       />
       <Navbar />
@@ -179,7 +179,7 @@ const ProjectDetail = () => {
                 </div>
 
                 <div className="proj-detail-tags">
-                  {project.tags.split(',').map((tag, i) => (
+                  {(project.tags || '').split(',').filter(Boolean).map((tag, i) => (
                     <span key={i} className="tag">{tag.trim()}</span>
                   ))}
                 </div>
@@ -224,7 +224,7 @@ const ProjectDetail = () => {
                 </div>
 
                 <div className="proj-detail-desc">
-                  {project.description.split('\n').map((paragraph, index) => (
+                  {(project.description || '').split('\n').map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>
                   ))}
                 </div>
@@ -235,7 +235,7 @@ const ProjectDetail = () => {
                     <div className="proj-gallery-grid">
                       {project.images.map((img, idx) => (
                         <div key={img.id} className="proj-gallery-item" title={img.alt_text}>
-                          <img src={img.image_url} alt={img.alt_text} loading="lazy" />
+                          <img src={img.image_url && typeof img.image_url === 'string' && img.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${img.image_url}` : (img.image_url || '')} alt={img.alt_text} loading="lazy" />
                           <div className="img-badge">Image {idx + 1}</div>
                           <div className="img-hover-info">{img.alt_text}</div>
                         </div>

@@ -117,12 +117,12 @@ function App() {
           document.getElementsByTagName('head')[0].appendChild(link);
         }
         if (data && data.faviconUrl) {
-          link.href = data.faviconUrl.startsWith('/uploads') 
+          link.href = (data.faviconUrl && typeof data.faviconUrl === 'string' && data.faviconUrl.startsWith('/uploads')) 
             ? `${import.meta.env.VITE_API_URL}${data.faviconUrl}?t=${new Date().getTime()}` 
             : data.faviconUrl;
         }
       } catch (err) {
-        console.error('Error fetching favicon:', err);
+        console.warn('[Resilience] Error fetching favicon:', err.message || err);
       }
     };
     fetchFavicon();
@@ -140,7 +140,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId })
     })
-      .catch(err => console.error('Visitor tracking failed:', err));
+      .catch(err => console.warn('[Resilience] Visitor tracking backend is currently sleeping.'));
   }, [loading, maintenance.active]);
 
   const isAdminPath = (path) => {

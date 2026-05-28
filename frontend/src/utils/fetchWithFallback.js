@@ -71,11 +71,14 @@ export const fetchWithFallback = async (url, cacheKey, fallbackData, options = {
       const KEY_TO_FILE_MAP = {
         mrprem_cache_projects: '/fallback/projects.json',
         mrprem_cache_profile_image: '/fallback/profile.json',
+        mrprem_cache_navbar_image: '/fallback/profile.json',
         mrprem_cache_resume_url: '/fallback/profile.json',
+        mrprem_cache_signature_url: '/fallback/profile.json',
         mrprem_cache_skills: '/fallback/skills.json',
         mrprem_cache_certificates: '/fallback/certificates.json',
         mrprem_cache_memories: '/fallback/memories.json',
-        mrprem_cache_stats: '/fallback/stats.json'
+        mrprem_cache_stats: '/fallback/stats.json',
+        mrprem_cache_github_stats: '/fallback/github.json'
       };
 
       const fallbackFileUrl = KEY_TO_FILE_MAP[cacheKey];
@@ -90,8 +93,12 @@ export const fetchWithFallback = async (url, cacheKey, fallbackData, options = {
             let resolvedData = fallbackJson;
             if (cacheKey === 'mrprem_cache_profile_image') {
               resolvedData = { imageUrl: fallbackJson.profileImage };
+            } else if (cacheKey === 'mrprem_cache_navbar_image') {
+              resolvedData = { imageUrl: fallbackJson.navbarImage };
             } else if (cacheKey === 'mrprem_cache_resume_url') {
               resolvedData = { resumeUrl: fallbackJson.resumeUrl };
+            } else if (cacheKey === 'mrprem_cache_signature_url') {
+              resolvedData = { signatureUrl: fallbackJson.signatureUrl };
             }
 
             const processed = transform(resolvedData);

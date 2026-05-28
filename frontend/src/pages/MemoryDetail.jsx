@@ -65,7 +65,7 @@ const MemoryDetail = () => {
   const imageSchema = memory ? {
     "@context": "https://schema.org",
     "@type": "ImageObject",
-    "contentUrl": memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url,
+    "contentUrl": memory.image_url && typeof memory.image_url === 'string' && memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : (memory.image_url || ''),
     "name": memory.title,
     "description": memory.image_description || memory.title,
     "uploadDate": memory.upload_date,
@@ -80,7 +80,7 @@ const MemoryDetail = () => {
       <SEO 
         title={memory ? `${memory.title} | Memories` : "Memorable Moment"}
         description={memory?.image_description || "Explore this memorable moment captured by Prem Prasad Pradhan."}
-        image={memory ? (memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url) : null}
+        image={memory ? (memory.image_url && typeof memory.image_url === 'string' && memory.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${memory.image_url}` : memory.image_url) : null}
         url={memory ? `memory/${memory.slug || memory.id}` : `memory/${idOrSlug}`}
         type="article"
         schema={imageSchema}

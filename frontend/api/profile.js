@@ -26,6 +26,16 @@ export default async function handler(req, res) {
       return res.status(200).json({
         resumeUrl: data ? data.value : '/resume.pdf'
       });
+    } else if (type === 'navbar') {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'navbarImage')
+        .single();
+
+      return res.status(200).json({
+        imageUrl: data ? data.value : 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg'
+      });
     } else if (type === 'favicon') {
       const { data, error } = await supabase
         .from('settings')
@@ -35,6 +45,16 @@ export default async function handler(req, res) {
 
       return res.status(200).json({
         faviconUrl: data ? data.value : '/vite.svg'
+      });
+    } else if (type === 'signature') {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'signatureUrl')
+        .single();
+
+      return res.status(200).json({
+        signatureUrl: data ? data.value : 'https://res.cloudinary.com/dmy2piasa/image/upload/v1777992215/portfolio/1777992215540-prem-signature.png'
       });
     } else {
       // Default to profile image

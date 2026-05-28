@@ -6,11 +6,13 @@ import CACHE_KEYS from '../utils/cacheKeys';
 import fallbackStats from '../data/fallbackStats';
 
 const About = () => {
-  const { data: stats } = useResilientData(
+  const { data: rawStats } = useResilientData(
     `/api/stats`,
     CACHE_KEYS.STATS,
     fallbackStats
   );
+
+  const stats = rawStats || fallbackStats || {};
 
 
   return (

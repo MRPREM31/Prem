@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import NotificationBell from './NotificationBell';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackProfile from '../data/fallbackProfile';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -11,7 +14,17 @@ const Navbar = () => {
 
   // Theme logic
   const [theme, setTheme] = useState('dark');
-  const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
+
+  const { data: navbarData } = useResilientData(
+    '/api/navbar-image',
+    CACHE_KEYS.NAVBAR_IMAGE,
+    { imageUrl: fallbackProfile.navbarImageUrl }
+  );
+
+  const rawNavbarImage = navbarData?.imageUrl || fallbackProfile.navbarImageUrl || '';
+  const profileImage = (rawNavbarImage && typeof rawNavbarImage === 'string' && rawNavbarImage.startsWith('/uploads'))
+    ? optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${rawNavbarImage}`, 100)
+    : optimizeCloudinaryUrl(rawNavbarImage || '/assets/profile.jpg', 100);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -32,21 +45,6 @@ const Navbar = () => {
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
   };
-
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/navbar-image`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.imageUrl) {
-          if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${data.imageUrl}`, 100));
-          } else {
-            setProfileImage(optimizeCloudinaryUrl(data.imageUrl, 100));
-          }
-        }
-      })
-      .catch(err => console.error('Error fetching navbar image:', err));
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

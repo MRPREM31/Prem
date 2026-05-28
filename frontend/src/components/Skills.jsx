@@ -13,11 +13,13 @@ const IconRenderer = ({ iconName }) => {
 };
 
 const Skills = () => {
-  const { data: skillCategories, loading } = useResilientData(
+  const { data: rawSkillCategories, loading } = useResilientData(
     `/api/skills`,
     CACHE_KEYS.SKILLS,
     fallbackSkills
   );
+
+  const skillCategories = Array.isArray(rawSkillCategories) ? rawSkillCategories : fallbackSkills || [];
 
 
   return (
