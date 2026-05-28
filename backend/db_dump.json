@@ -1,0 +1,456 @@
+{
+  "projects": [
+    {
+      "id": 8,
+      "title": "Production-Grade SaaS Portfolio Ecosystem",
+      "description": "A modern full-stack SaaS-style portfolio platform built with React.js, Node.js, Express, Supabase, and Vite. The ecosystem includes SEO-optimized project pages, standalone review systems, admin moderation panels, GitHub insights analytics, QR-based sharing, visitor analytics, and a secure encrypted vault system. Designed with premium glassmorphism UI, scalable backend architecture, and production-grade engineering practices.",
+      "tags": "React.js, Node.js, Supabase, PostgreSQL, SaaS, Full Stack",
+      "link": "https://mrprem.in",
+      "github": "https://github.com/MRPREM31/Prem",
+      "pptLink": "",
+      "image_alt": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "image_description": "Modern full-stack SaaS portfolio ecosystem featuring project showcase pages, review systems, analytics dashboard, secure admin panel, QR sharing, SEO optimization, and glassmorphism UI built using React.js, Node.js, Supabase, PostgreSQL, Render, Vercel, and Cloudinary.",
+      "slug": "production-grade-saas-portfolio-ecosystem"
+    },
+    {
+      "id": 6,
+      "title": "Smart Attendance System",
+      "description": "A QR-code based digital attendance management application designed for schools, colleges, and offices. The system simplifies attendance tracking, reduces proxy attendance, and maintains secure digital records. Developed by Team QuantumCoders.",
+      "tags": "Android ,QR Code ,Firebase, GPS Validation, PDF Reports ,Role-Based Access",
+      "link": "https://www.quantumcoderstechlab.codes/smart-attendance/smart_attendance_index.html",
+      "github": "",
+      "pptLink": "",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "smart-attendance-system"
+    },
+    {
+      "id": 5,
+      "title": "DiagnoseHub AI – Multispecialty Medical Diagnosis System",
+      "description": "DiagnoseHub AI is an advanced multispecialty medical diagnostic platform that uses AI agents to analyze medical reports. It generates a combined expert diagnosis using 5 specialists: Cardiologist, Psychologist, Pulmonologist, Neurologist, and Gastroenterologist. The system provides medical insights, recommendations, and downloadable PDF reports.\n\nKey Features\nAI-powered multi-specialty diagnosis (5 expert agents)\nPDF report generation with QR verification\nResponsive modern medical dashboard UI\nError-handling with auto retry for rate limits\nSecure .env handling & cloud deployment on Render\nTechnologies Used\nPython (Flask Framework)\nGroq LLM – Llama 3.1 8B Model\nLangChain Agents\nHTML, CSS, JavaScript\nRender Cloud Hosting\nReportLab for PDF generation",
+      "tags": "Python, Flask ,Groq AI, LangChain, Render",
+      "link": "https://diagnosehub-ai.onrender.com/",
+      "github": "https://github.com/MRPREM31/AI-Medical-Diagnostics",
+      "pptLink": "https://drive.google.com/file/d/1E0K_h8SGJdY6ob1Hp1rhaFhZuZKoTMRS/view?usp=drive_link",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "diagnosehub-ai-multispecialty-medical-diagnosis-system"
+    },
+    {
+      "id": 4,
+      "title": "Gamified STEM Learning Platform for Rural Schools [SIH Internal Round Qualifier]",
+      "description": "A gamified digital learning platform designed specifically for rural schools to make STEM subjects fun and accessible. This project was developed for Smart India Hackathon 2025 by Team QuantumCodersx.\n\nKey Features\nLearn by Playing: STEM lessons as interactive games and challenges\nPersonal Quests: Customized tasks based on grade and subject\nProgress Tracker: Learning progress through scores and badges\nCommunity & Leaderboards: Peer competition and sharing achievements\nRewards & Recognition: Badges and certificates to boost confidence\nOffline Access: Learning without continuous internet\nMultilingual Content: Available in local languages\nTechnologies Used\nFrontend: React, TypeScript, Vite\nBackend: Node.js, JavaScript\nDatabase: SQLite\nOffline-first architecture\nResponsive design for mobile devices",
+      "tags": "React ,TypeScript ,Node.js ,SQLite",
+      "link": "https://github.com/MRPREM31/Gamified-STEM-Learning-Platform-for-Rural-Areas",
+      "github": "",
+      "pptLink": "https://drive.google.com/file/d/1AexSYvugvapLpyewhFcS9S4r1QzcaTqo/view?usp=drive_link",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "gamified-stem-learning-platform-for-rural-schools-sih-internal-round-qualifier"
+    },
+    {
+      "id": 3,
+      "title": "Adarsha Pathasala Website",
+      "description": "A complete modern school website developed for Adarsha Pathasala, featuring an AI-powered assistant, dynamic pages, responsive UI, enquiry form integration, SEO enhancements, and a clean dashboard-like layout. Designed for students, parents, and teachers.\n\nKey Features\nAI Assistant for instant guidance (admissions, timings, faculty, fees, etc.)\nModern, highly responsive UI with dark/light theme\nContact/Enquiry form integrated with Google Apps Script & automated email response\nSEO-optimized + Open Graph meta tags for social previews\nSmooth animations, structured content sections, and lazy image loading\nTechnologies Used\nHTML5, CSS3, JavaScript (ES6+)\nGoogle Apps Script (form submissions)\nFont Awesome Icons & Google Fonts\nNetlify (Hosting) + Netlify Functions (AI backend)\nGroq API (LLM: Mixtral / LLaMA-3)",
+      "tags": "JavaScript, HTML, CSS, Netlify",
+      "link": "https://adarshapathasala.netlify.app/",
+      "github": "https://github.com/MRPREM31/adarsha-pathasala-website",
+      "pptLink": "",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "adarsha-pathasala-website"
+    },
+    {
+      "id": 2,
+      "title": "ClockLive: Productivity Dashboard",
+      "description": "A beautiful, feature-rich dashboard for students and professionals with clock, timer, calculator, and weather features.\n\nKey Features\nReal-time clock with date and day display\nCustomizable timer with alarm sounds\nBuilt-in calculator with calculation history\nReal-time weather information based on location\nPersonalization options and multiple themes\nBattery status display and screen wake lock\nTechnologies Used\nHTML5, CSS3 with Glassmorphism design\nVanilla JavaScript for functionality\nGeolocation API for weather data\nBattery Status API for power monitoring\nScreen Wake Lock API to prevent screen dimming\nLocal Storage for user preferences",
+      "tags": "JavaScript, APIs, CSS3, LocalStorage",
+      "link": "https://clocklive.ct.ws/",
+      "github": "https://github.com/MRPREM31/ClockLive-Productivity-Dashboard",
+      "pptLink": "",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "clocklive-productivity-dashboard"
+    },
+    {
+      "id": 1,
+      "title": "Gamified Digital Platform for Sustainable Farming",
+      "description": "A gamified digital platform that transforms sustainable farming into an interactive and rewarding experience. This project motivates farmers through missions, points, badges, and leaderboards while providing localized, offline-first access.\n\nKey Features\nFarmer Profile: Personalized challenges based on location and crop type\nDashboard: Sustainability score, progress bar, and badges\nMissions & Challenges: Interactive tasks for sustainable practices\nLeaderboard: Community ranking to promote healthy competition\nRewards & Badges: Digital recognition and real-world benefits\nCommunity Sharing: Farmers can share progress and inspire peers\nOffline-first: Works in low-connectivity rural areas\nMultilingual: Support for Odia, Hindi, and English\nTechnologies Used\nFrontend: React, TypeScript, Vite\nBackend: Node.js, JavaScript\nDatabase: SQLite\nOffline-first architecture with data sync\nMobile-friendly UI for rural farmers",
+      "tags": "React ,TypeScript ,Node.js ,SQLite",
+      "link": "",
+      "github": "",
+      "pptLink": "https://drive.google.com/file/d/12CkhRav_m1aDVYhme5d7JariibEgfqA3/view?usp=drive_link",
+      "image_alt": "",
+      "image_description": "",
+      "slug": "gamified-digital-platform-for-sustainable-farming"
+    }
+  ],
+  "project_images": [
+    {
+      "id": 1,
+      "project_id": 5,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778328844/portfolio/1778328842783-DiagnoseHub-AI.png",
+      "alt_text": "DiagnoseHub AI – Multispecialty Medical Diagnosis System",
+      "created_at": "2026-05-09T12:14:04.936449+00:00"
+    },
+    {
+      "id": 2,
+      "project_id": 6,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778333928/portfolio/1778333924736-logo.png",
+      "alt_text": "Smart Attendance System",
+      "created_at": "2026-05-09T13:38:49.523091+00:00"
+    },
+    {
+      "id": 3,
+      "project_id": 4,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778333969/portfolio/1778333967251-Gamified%20STEM%20Learning%20Platform%20for%20Rural%20Schools.jpg",
+      "alt_text": "Gamified STEM Learning Platform for Rural Schools [SIH Internal Round Qualifier]",
+      "created_at": "2026-05-09T13:39:30.596466+00:00"
+    },
+    {
+      "id": 4,
+      "project_id": 3,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778333987/portfolio/1778333983447-adarsha%20pathasala%20home%20page.png",
+      "alt_text": "Adarsha Pathasala Website",
+      "created_at": "2026-05-09T13:39:48.460382+00:00"
+    },
+    {
+      "id": 5,
+      "project_id": 2,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778334010/portfolio/1778334007511-Study-Focus-Dashboard.webp",
+      "alt_text": "ClockLive: Productivity Dashboard",
+      "created_at": "2026-05-09T13:40:10.862139+00:00"
+    },
+    {
+      "id": 6,
+      "project_id": 1,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778334033/portfolio/1778334030366-Gamified%20Digital%20Platform%20for%20Sustainable%20Farming.jpg",
+      "alt_text": "Gamified Digital Platform for Sustainable Farming",
+      "created_at": "2026-05-09T13:40:34.518839+00:00"
+    },
+    {
+      "id": 7,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339536/portfolio/1778339536500-WhatsApp%20Image%202026-05-09%20at%2020.20.55.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 8,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339536/portfolio/1778339536741-WhatsApp%20Image%202026-05-09%20at%2020.18.47.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 9,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339536920-WhatsApp%20Image%202026-05-09%20at%2020.17.58.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 10,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537033-WhatsApp%20Image%202026-05-09%20at%2020.16.56.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 11,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537112-WhatsApp%20Image%202026-05-09%20at%2020.16.16.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 12,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537145-WhatsApp%20Image%202026-05-09%20at%2020.14.40.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    },
+    {
+      "id": 13,
+      "project_id": 8,
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537193-WhatsApp%20Image%202026-05-09%20at%2020.14.00.jpg",
+      "alt_text": "Production-Grade SaaS Portfolio Ecosystem Dashboard built by Prem Prasad Pradhan",
+      "created_at": "2026-05-09T15:12:18.274368+00:00"
+    }
+  ],
+  "project_reviews": [
+    {
+      "id": 2,
+      "project_id": 5,
+      "name": "Prem Prasad Pradhan",
+      "email": "mr.prem2006@gmail.com",
+      "message": "good",
+      "rating": 5,
+      "device_id": "dev_0pwqhmt15",
+      "created_at": "2026-05-09T12:57:44.717059+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 4,
+      "project_id": 8,
+      "name": "chandan",
+      "email": "sb631101@gmail.com",
+      "message": "good",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:27:50.627097+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 5,
+      "project_id": 6,
+      "name": "CHANDAN",
+      "email": "sb631101@gmail.com",
+      "message": "Excellent ",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:29:11.337972+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 6,
+      "project_id": 5,
+      "name": "chandan",
+      "email": "",
+      "message": "very good",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:29:47.386095+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 7,
+      "project_id": 4,
+      "name": "chandan",
+      "email": "",
+      "message": "nice",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:30:22.036315+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 8,
+      "project_id": 4,
+      "name": "chandan",
+      "email": "",
+      "message": "very very very good",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:31:04.116022+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 9,
+      "project_id": 3,
+      "name": "chandan",
+      "email": "",
+      "message": "good",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:31:27.527018+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 10,
+      "project_id": 2,
+      "name": "chandan",
+      "email": "",
+      "message": "nice",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:32:12.117736+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 11,
+      "project_id": 1,
+      "name": "cb",
+      "email": "",
+      "message": "nice",
+      "rating": 5,
+      "device_id": "dev_u80h0jcpl",
+      "created_at": "2026-05-09T15:33:58.38334+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 12,
+      "project_id": 8,
+      "name": "Sandip ",
+      "email": "",
+      "message": "Good ",
+      "rating": 5,
+      "device_id": "dev_58qqja324",
+      "created_at": "2026-05-10T11:31:50.572901+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 13,
+      "project_id": 6,
+      "name": "Sandip ",
+      "email": "",
+      "message": "Amazing Kee it up",
+      "rating": 5,
+      "device_id": "dev_58qqja324",
+      "created_at": "2026-05-10T11:36:45.296096+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 14,
+      "project_id": 8,
+      "name": "Srikant Kumar sabat ",
+      "email": "Srikantsabat777@gmail.com",
+      "message": "Good ",
+      "rating": 5,
+      "device_id": "dev_jj2lijkl2",
+      "created_at": "2026-05-11T08:55:32.177011+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 15,
+      "project_id": 6,
+      "name": "Srikant Kumar sabat ",
+      "email": "srikantsabat777@gmail.com",
+      "message": "Excellent ",
+      "rating": 5,
+      "device_id": "dev_jj2lijkl2",
+      "created_at": "2026-05-11T08:56:35.514761+00:00",
+      "is_hidden": false
+    },
+    {
+      "id": 16,
+      "project_id": 5,
+      "name": "Srikant Kumar sabat ",
+      "email": "srikantsabat777@gmail.com",
+      "message": "Good ",
+      "rating": 4,
+      "device_id": "dev_jj2lijkl2",
+      "created_at": "2026-05-11T08:57:23.432673+00:00",
+      "is_hidden": false
+    }
+  ],
+  "certificates": [
+    {
+      "id": 3,
+      "title": "Backend Development & Python Internship – Asirudh Software Pvt. Ltd.",
+      "description": "Successfully completed a 45-day industry-oriented internship in Backend Development and Python at Asirudh Software Pvt. Ltd. Worked on real-world projects including a personal portfolio and a team-based Water Supply & Service Website. Gained hands-on experience in backend technologies, project collaboration, and professional development while maintaining consistency and high-quality work.",
+      "date": "2025-07-01",
+      "image": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778081242/portfolio/1778081242101-AS-INT-094_page-0001.jpg",
+      "image_alt": null,
+      "slug": "backend-development-and-python-internship-asirudh-software-pvt-ltd"
+    },
+    {
+      "id": 2,
+      "title": "National Agritech Hackathon 2025",
+      "description": "FarmQuest is an innovative, gamified digital platform designed to make sustainable farming engaging, accessible, and impactful. It transforms traditional agricultural practices into interactive missions, enabling farmers to learn, adopt, and track eco-friendly techniques through a reward-driven system. Built with a focus on rural accessibility, the platform supports offline-first functionality and multilingual content, ensuring usability even in low-connectivity regions. By combining technology with behavioral motivation, FarmQuest empowers farmers to improve productivity while promoting long-term environmental sustainability.\r\n\r\nKey Features:\r\n\r\nPersonalized Farmer Profiles: Tailored challenges based on crop type and geographical location\r\nInteractive Dashboard: Real-time sustainability scores, progress tracking, and achievement badges\r\nMissions & Challenges: Gamified tasks encouraging adoption of sustainable farming practices\r\nLeaderboard System: Community-based rankings to foster motivation and healthy competition\r\nRewards & Recognition: Digital badges and incentives for consistent performance\r\nCommunity Engagement: Farmers can share experiences and inspire others\r\nOffline-First Architecture: Seamless functionality in low or no internet conditions\r\nMultilingual Support: Available in Odia, Hindi, and English for wider accessibility\r\n\r\nTechnologies Used:\r\nFrontend: React, TypeScript, Vite\r\nBackend: Node.js, JavaScript\r\nDatabase: SQLite\r\nAdditional: Offline-first data synchronization, mobile-responsive design optimized for rural users",
+      "date": "2025-12-23",
+      "image": "https://res.cloudinary.com/dmy2piasa/image/upload/v1777989615/portfolio/1777989614894-Prem%20Prasad%20Pradhan.jpg",
+      "image_alt": null,
+      "slug": "national-agritech-hackathon-2025"
+    },
+    {
+      "id": 1,
+      "title": "CubeX Hackathon 2025",
+      "description": "An advanced AI-powered medical diagnostic platform that simulates a real-world multidisciplinary healthcare team to analyze patient reports and generate accurate, consolidated diagnoses. The system leverages multiple specialized AI agents—each representing a different medical domain—to perform parallel analysis and produce a unified medical insight. Designed with a clean and responsive web interface, it also includes automated PDF report generation with QR-based verification for authenticity and easy sharing.\r\n\r\nKey Features:\r\n\r\nMulti-Agent AI System: Five specialized agents (Cardiology, Psychology, Pulmonology, Neurology, and General Medicine) working collaboratively\r\nParallel Medical Analysis: Simultaneous evaluation of patient reports for faster and more accurate results\r\nUnified Diagnosis Engine: Combines outputs from all agents into a single, comprehensive medical summary\r\nAutomated PDF Reports: Professionally structured reports with embedded QR verification\r\nSmart Data Extraction: Extracts and processes patient details from uploaded medical documents\r\nSecure & Scalable Design: Handles multiple requests efficiently using concurrent processing\r\nModern Web Interface: Clean, responsive UI built for accessibility and ease of use\r\n\r\nTechnologies Used:\r\nPython, Flask, LangChain, Groq AI API (LLaMA-3 / Mixtral), ReportLab (PDF Generation), HTML5, CSS3, JavaScript, QR Code Generator, Concurrent Processing, Jinja Templates",
+      "date": "2025-12-19",
+      "image": "https://res.cloudinary.com/dmy2piasa/image/upload/v1777988816/portfolio/1777988816018-prem%20prasad%20pradhan.jpg",
+      "image_alt": null,
+      "slug": "cubex-hackathon-2025"
+    }
+  ],
+  "settings": [
+    {
+      "key": "profileImage",
+      "value": "https://res.cloudinary.com/dmy2piasa/image/upload/v1777986860/portfolio/xbb3bxhruzwwg69ezwbj.jpg"
+    },
+    {
+      "key": "faviconUrl",
+      "value": "https://res.cloudinary.com/dmy2piasa/image/upload/v1777986952/portfolio/pkdubn3jjamy24efwlck.png"
+    },
+    {
+      "key": "navbarImage",
+      "value": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778143422/portfolio/1778143422301-Prem.jpg"
+    },
+    {
+      "key": "stats_years_exp",
+      "value": "2+"
+    },
+    {
+      "key": "stats_projects_completed",
+      "value": "11+"
+    },
+    {
+      "key": "signatureUrl",
+      "value": "https://res.cloudinary.com/dmy2piasa/image/upload/v1777992215/portfolio/1777992215540-prem-signature.png"
+    },
+    {
+      "key": "resumeUrl",
+      "value": "https://res.cloudinary.com/dmy2piasa/raw/upload/v1777992337/portfolio/1777992337423-Prem_Prasad_Pradhan_CV"
+    },
+    {
+      "key": "stats_startups_leadership",
+      "value": "2"
+    },
+    {
+      "key": "portfolio_skills",
+      "value": "[{\"title\":\"Programming Languages\",\"icon\":\"FaCode\",\"skills\":[{\"name\":\"C\",\"icon\":\"FaCode\"},{\"name\":\"C++\",\"icon\":\"FaCode\"},{\"name\":\"Python\",\"icon\":\"FaPython\"},{\"name\":\"HTML\",\"icon\":\"FaHtml5\"},{\"name\":\"CSS\",\"icon\":\"FaCss3Alt\"}]},{\"title\":\"Technologies\",\"icon\":\"FaLaptopCode\",\"skills\":[{\"name\":\"React\",\"icon\":\"FaReact\"},{\"name\":\"Node.js\",\"icon\":\"FaNodeJs\"},{\"name\":\"Flask\",\"icon\":\"FaFlask\"},{\"name\":\"APIs\",\"icon\":\"FaPlug\"}]},{\"title\":\"Tools\",\"icon\":\"FaTools\",\"skills\":[{\"name\":\"GitHub\",\"icon\":\"FaGithub\"},{\"name\":\"FaMobileAlt\",\"icon\":\"FaCheck\"},{\"name\":\"Google Apps Script\",\"icon\":\"FaCode\"}]},{\"title\":\"Other Skills\",\"icon\":\"FaLightbulb\",\"skills\":[{\"name\":\"DBMS\",\"icon\":\"FaDatabase\"},{\"name\":\"Canva\",\"icon\":\"FaPaintBrush\"},{\"name\":\"AI/Data Annotation\",\"icon\":\"FaBrain\"}]}]"
+    }
+  ],
+  "memories": [
+    {
+      "id": 6,
+      "title": "CSIR-NAL Internship Journey – National Aerospace Laboratories",
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778518470/portfolio/1778518469837-WhatsApp%20Image%202026-05-11%20at%2022.17.14.jpg",
+      "aspect_ratio": "landscape",
+      "upload_date": "2026-05-11T16:54:31.066+00:00",
+      "image_alt": "Prem Prasad Pradhan at CSIR-NAL National Aerospace Laboratories Bangalore internship program",
+      "image_description": "Beginning my internship journey at CSIR-NAL (National Aerospace Laboratories), Bangalore under the Council of Scientific and Industrial Research (CSIR). Excited to gain exposure to aerospace research, innovation, advanced technologies, and professional engineering environments.",
+      "slug": "csir-nal-internship-journey-national-aerospace-laboratories-1066"
+    },
+    {
+      "id": 5,
+      "title": "NATH 2025 Finalists",
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778087921/portfolio/1778087920862-NATH_2025.jpg",
+      "aspect_ratio": "landscape",
+      "upload_date": "2026-05-06T17:18:41.683+00:00",
+      "image_alt": null,
+      "image_description": null,
+      "slug": "nath-2025-finalists-7763"
+    },
+    {
+      "id": 4,
+      "title": "National Level Hackathon",
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778087883/portfolio/1778087882678-NATH.jpg",
+      "aspect_ratio": "landscape",
+      "upload_date": "2026-05-06T17:18:03.501+00:00",
+      "image_alt": null,
+      "image_description": null,
+      "slug": "national-level-hackathon-7544"
+    },
+    {
+      "id": 2,
+      "title": "SIH_2025 Presentation",
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778087789/portfolio/1778087778785-SIH_2025_presentation.jpg",
+      "aspect_ratio": "landscape",
+      "upload_date": "2026-05-06T17:16:31.29+00:00",
+      "image_alt": null,
+      "image_description": null,
+      "slug": "sih2025-presentation-9504"
+    },
+    {
+      "id": 1,
+      "title": "SIH_2k25",
+      "image_url": "https://res.cloudinary.com/dmy2piasa/image/upload/v1778085936/portfolio/1778085933113-SIH%202025.jpg",
+      "aspect_ratio": "landscape",
+      "upload_date": "2026-05-06T16:45:37.209+00:00",
+      "image_alt": null,
+      "image_description": null,
+      "slug": "sih2k25-4049"
+    }
+  ]
+}

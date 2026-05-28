@@ -1,5 +1,16 @@
 {
   "rewrites": [
+    { "source": "/api/projects", "destination": "/api/projects.js" },
+    { "source": "/api/projects/:idOrSlug", "destination": "/api/projects.js?idOrSlug=:idOrSlug" },
+    { "source": "/api/profile-image", "destination": "/api/profile.js?type=image" },
+    { "source": "/api/resume", "destination": "/api/profile.js?type=resume" },
+    { "source": "/api/favicon", "destination": "/api/profile.js?type=favicon" },
+    { "source": "/api/skills", "destination": "/api/skills.js" },
+    { "source": "/api/certificates", "destination": "/api/certificates.js" },
+    { "source": "/api/certificates/:idOrSlug", "destination": "/api/certificates.js?idOrSlug=:idOrSlug" },
+    { "source": "/api/memorable-images", "destination": "/api/memories.js" },
+    { "source": "/api/memorable-images/:idOrSlug", "destination": "/api/memories.js?idOrSlug=:idOrSlug" },
+    { "source": "/api/stats", "destination": "/api/stats.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

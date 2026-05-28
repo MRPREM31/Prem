@@ -4,9 +4,11 @@ import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import './Certificates.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackCertificates from '../data/fallbackCertificates';
 
 const Certificates = () => {
-  const [certificates, setCertificates] = useState([]);
   const navigate = useNavigate();
 
   const [displayLimit, setDisplayLimit] = useState(6);
@@ -20,18 +22,12 @@ const Certificates = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates?t=${Date.now()}`);
-        const data = await res.json();
-        setCertificates(data);
-      } catch (err) {
-        console.error('Error fetching certificates:', err);
-      }
-    };
-    fetchCertificates();
-  }, []);
+  const { data: certificates = [] } = useResilientData(
+    `/api/certificates`,
+    CACHE_KEYS.CERTIFICATES,
+    fallbackCertificates
+  );
+
 
   return (
     <section className="section certificates-section" id="certificates">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
@@ -8,29 +8,25 @@ import SEO from '../components/SEO';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import '../components/Certificates.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackCertificates from '../data/fallbackCertificates';
 
 const AllCertificates = () => {
-  const [certificates, setCertificates] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { scrollY, section } = location.state || {};
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchCertificates = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates?t=${Date.now()}`);
-        const data = await res.json();
-        setCertificates(data);
-      } catch (err) {
-        console.error('Error fetching certificates:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCertificates();
   }, []);
+
+  const { data: certificates = [], loading } = useResilientData(
+    `/api/certificates`,
+    CACHE_KEYS.CERTIFICATES,
+    fallbackCertificates
+  );
+
 
   const itemListSchema = certificates.length > 0 ? {
     "@context": "https://schema.org",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,19 +8,21 @@ import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import '../components/MemorableImages.css'; // Reuse CSS
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackMemories from '../data/fallbackMemories';
 
 const MemoriesPage = () => {
-  const [images, setImages] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { scrollY, section } = location.state || {};
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images`)
-      .then(res => res.json())
-      .then(data => setImages(data))
-      .catch(err => console.error('Error fetching memories:', err));
-  }, []);
+  const { data: images = [] } = useResilientData(
+    `/api/memorable-images`,
+    CACHE_KEYS.MEMORIES,
+    fallbackMemories
+  );
+
 
   const gallerySchema = {
     "@context": "http://schema.org",

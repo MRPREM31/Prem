@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import * as FaIcons from 'react-icons/fa';
 import * as SiIcons from 'react-icons/si';
 import './Skills.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackSkills from '../data/fallbackSkills';
 
 const IconRenderer = ({ iconName }) => {
   const IconComponent = FaIcons[iconName] || SiIcons[iconName];
@@ -10,25 +13,12 @@ const IconRenderer = ({ iconName }) => {
 };
 
 const Skills = () => {
-  const [skillCategories, setSkillCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: skillCategories, loading } = useResilientData(
+    `/api/skills`,
+    CACHE_KEYS.SKILLS,
+    fallbackSkills
+  );
 
-  useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/skills`);
-        const data = await res.json();
-        setSkillCategories(data);
-      } catch (err) {
-        console.error('Error fetching skills:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSkills();
-  }, []);
-
-  if (loading) return null;
 
   return (
     <section id="skills" className="section skills-section">

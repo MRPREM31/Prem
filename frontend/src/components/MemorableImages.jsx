@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import './MemorableImages.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackMemories from '../data/fallbackMemories';
 
 const MemorableImages = () => {
-  const [images, setImages] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images`)
-      .then(res => res.json())
-      .then(data => setImages(data.slice(0, 4))) // Show only top 4
-      .catch(err => console.error('Error fetching memories:', err));
-  }, []);
+  const { data: images = [] } = useResilientData(
+    `/api/memorable-images`,
+    CACHE_KEYS.MEMORIES,
+    fallbackMemories,
+    { transform: (data) => data.slice(0, 4) }
+  );
 
   if (images.length === 0) return null;
+
 
   return (
     <section id="memories" className="section memories-section">

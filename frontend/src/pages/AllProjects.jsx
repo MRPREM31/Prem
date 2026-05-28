@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -6,27 +6,25 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import '../components/Projects.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackProjects from '../data/fallbackProjects';
 
 const AllProjects = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { scrollY, section } = location.state || {};
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetch(`${import.meta.env.VITE_API_URL}/api/projects?t=${Date.now()}`)
-      .then(res => res.json())
-      .then(data => {
-        setProjects(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching projects:', err);
-        setLoading(false);
-      });
   }, []);
+
+  const { data: projects = [], loading } = useResilientData(
+    `/api/projects`,
+    CACHE_KEYS.PROJECTS,
+    fallbackProjects
+  );
+
 
   const itemListSchema = projects.length > 0 ? {
     "@context": "https://schema.org",

@@ -108,7 +108,7 @@ function App() {
 
     const fetchFavicon = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favicon`);
+        const res = await fetch(`/api/favicon`);
         const data = await res.json();
         let link = document.querySelector("link[rel~='icon']");
         if (!link) {

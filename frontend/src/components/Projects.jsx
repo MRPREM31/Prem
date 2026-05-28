@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub, FaStar } from 'react-icons/fa';
-
 import './Projects.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackProjects from '../data/fallbackProjects';
 
 const Projects = () => {
-  const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/projects?t=${Date.now()}`)
-      .then(res => res.json())
-      .then(data => setProjects(data))
-      .catch(err => console.error('Error fetching projects:', err));
-  }, []);
+  const { data: projects = [] } = useResilientData(
+    `/api/projects`,
+    CACHE_KEYS.PROJECTS,
+    fallbackProjects
+  );
+
   return (
     <section id="projects" className="section projects-section">
       <div className="container">

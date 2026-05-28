@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import './About.css';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackStats from '../data/fallbackStats';
 
 const About = () => {
-  const [stats, setStats] = useState({
-    years_exp: '2+',
-    projects_completed: '10+',
-    startups_leadership: '2'
-  });
+  const { data: stats } = useResilientData(
+    `/api/stats`,
+    CACHE_KEYS.STATS,
+    fallbackStats
+  );
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/stats`)
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(err => console.error('Error fetching stats:', err));
-  }, []);
 
   return (
     <section id="about" className="section about-section">

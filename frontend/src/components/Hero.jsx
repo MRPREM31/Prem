@@ -1,52 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { FaDownload, FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import './Hero.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RESUME_LINK } from '../config';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+import { useResilientData } from '../utils/fetchWithFallback';
+import CACHE_KEYS from '../utils/cacheKeys';
+import fallbackProfile from '../data/fallbackProfile';
 
 const Hero = () => {
-  const [profileImage, setProfileImage] = useState('/assets/profile.jpg');
-  const [resumeUrl, setResumeUrl] = useState('/resume.pdf');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch profile image
-    fetch(`${import.meta.env.VITE_API_URL}/api/profile-image`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.imageUrl) {
-          const timestamp = Date.now();
-          if (data.imageUrl.startsWith('/uploads')) {
-            setProfileImage(optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${data.imageUrl}`, 600) + `&t=${timestamp}`);
-          } else {
-            setProfileImage(optimizeCloudinaryUrl(data.imageUrl, 600) + `?t=${timestamp}`);
-          }
-        }
-      })
-      .catch(err => console.error('Error fetching profile image:', err));
+  // Resiliently fetch profile image
+  const profileRes = useResilientData(
+    `/api/profile-image`,
+    CACHE_KEYS.PROFILE_IMAGE,
+    { imageUrl: fallbackProfile.profileImageUrl }
+  );
 
-    // Fetch resume URL
-    if (RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf") {
-      setResumeUrl(RESUME_LINK);
-    } else {
-      fetch(`${import.meta.env.VITE_API_URL}/api/resume`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.resumeUrl) {
-            const timestamp = Date.now();
-            if (data.resumeUrl.startsWith('/uploads')) {
-              setResumeUrl(`${import.meta.env.VITE_API_URL}${data.resumeUrl}?t=${timestamp}`);
-            } else {
-              setResumeUrl(`${data.resumeUrl}?t=${timestamp}`);
-            }
-          }
-        })
-        .catch(err => console.error('Error fetching resume:', err));
-    }
-  }, []);
+  // Resiliently fetch resume URL (skipped if static resume link is set in config)
+  const isCustomResumeSet = RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf";
+  const resumeRes = useResilientData(
+    `/api/resume`,
+    CACHE_KEYS.RESUME_URL,
+    { resumeUrl: fallbackProfile.resumeUrl },
+    { enabled: !isCustomResumeSet }
+  );
+
+  // Parse and optimize profile image URL
+  const rawProfileImage = profileRes.data?.imageUrl || fallbackProfile.profileImageUrl;
+  const profileImage = rawProfileImage.startsWith('/uploads')
+    ? `${optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${rawProfileImage}`, 600)}`
+    : `${optimizeCloudinaryUrl(rawProfileImage, 600)}`;
+
+  // Parse resume URL
+  const rawResumeUrl = isCustomResumeSet
+    ? RESUME_LINK
+    : (resumeRes.data?.resumeUrl || fallbackProfile.resumeUrl || fallbackProfile.localResumeFallbackUrl);
+  const resumeUrl = rawResumeUrl.startsWith('/uploads')
+    ? `${import.meta.env.VITE_API_URL}${rawResumeUrl}`
+    : rawResumeUrl;
+
   return (
     <section id="home" className="section hero-section">
       <div className="container hero-container">
