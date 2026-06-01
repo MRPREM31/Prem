@@ -23,7 +23,11 @@ import AdminVault from './pages/AdminVault'
 import ScrollManager from './components/ScrollManager'
 import ChatBot from './components/ChatBot'
 import Maintenance from './pages/Maintenance'
-import maintenanceConfig from './config/maintenanceConfig'
+import {
+  fetchMaintenanceStatus,
+  getEmergencyMaintenanceState,
+  isEmergencyMaintenanceActive,
+} from './services/maintenanceService'
 import SubscriptionPopup from './components/SubscriptionPopup'
 import { Toaster } from 'react-hot-toast'
 import './App.css'
@@ -37,59 +41,25 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 function App() {
   const location = useLocation();
 
-  // Helper to determine if the frontend emergency maintenance is active and within bounds
-  const isEmergencyMaintenanceActive = () => {
-    if (!maintenanceConfig || !maintenanceConfig.enabled) return false;
-    const now = new Date();
-    const end = new Date(maintenanceConfig.endDate);
-    return now < end;
-  };
-
   // Initialize state instantly to support offline / fast load
   const [maintenance, setMaintenance] = useState(() => {
-    const active = isEmergencyMaintenanceActive();
+    if (isEmergencyMaintenanceActive()) {
+      return getEmergencyMaintenanceState();
+    }
     return {
-      active: active,
-      start_time: active ? new Date().toISOString() : null,
-      end_time: active ? maintenanceConfig.endDate : null,
-      message: active ? maintenanceConfig.message : ''
+      active: false,
+      start_time: null,
+      end_time: null,
+      message: '',
     };
   });
 
   const [loading, setLoading] = useState(true);
 
   const checkMaintenance = async () => {
-    const emergencyActive = isEmergencyMaintenanceActive();
-    
-    // If the frontend hardcoded emergency maintenance override is active, immediately use the frontend configuration
-    if (emergencyActive) {
-      setMaintenance({
-        active: true,
-        fallback: true,
-        start_time: new Date().toISOString(),
-        end_time: maintenanceConfig.endDate,
-        message: maintenanceConfig.message
-      });
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
-      if (!res.ok) throw new Error("Backend response error");
-      const data = await res.json();
-      
-      setMaintenance(data);
-    } catch (err) {
-      console.log("Backend unavailable. Checking frontend maintenance fallback.");
-      const isFallbackActive = isEmergencyMaintenanceActive();
-      setMaintenance({
-        active: isFallbackActive,
-        fallback: true,
-        start_time: isFallbackActive ? new Date().toISOString() : null,
-        end_time: isFallbackActive ? maintenanceConfig.endDate : null,
-        message: maintenanceConfig.message || "The portfolio is currently undergoing scheduled maintenance and upgrades. We will resume automatically once completed!"
-      });
+      const status = await fetchMaintenanceStatus();
+      setMaintenance(status);
     } finally {
       setLoading(false);
     }

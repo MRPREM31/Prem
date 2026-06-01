@@ -1,5 +1,5 @@
 const maintenanceConfig = {
-  enabled: true,
+  enabled: false,
   endDate: "2026-05-28T00:10:00+05:30",
   title: "Scheduled Maintenance",
   message:

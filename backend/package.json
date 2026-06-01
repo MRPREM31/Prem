@@ -1,0 +1,9 @@
+{
+  "name": "prem-maintenance-routes",
+  "private": true,
+  "description": "Drop-in maintenance routes for the Render Express backend",
+  "dependencies": {
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

@@ -34,6 +34,17 @@ The frontend for the professional portfolio of **Prem Prasad Pradhan**. Built wi
    ```env
    VITE_API_URL=your_backend_url
    ```
+
+   Optional (admin maintenance save on Vercel):
+
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   JWT_SECRET=same_secret_as_render_admin_login
+   ```
+
+   Run `supabase/migrations/001_maintenance_settings.sql` in Supabase, or add `backend/routes/maintenance.js` to your Render Express app (see `backend/README.md`).
+
 3. Run the development server:
    ```bash
    npm run dev

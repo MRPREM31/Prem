@@ -8,6 +8,10 @@ import Footer from '../components/Footer';
 import ChatBot from '../components/ChatBot';
 import ConfirmNotificationModal from '../components/ConfirmNotificationModal';
 import { RESUME_LINK } from '../config';
+import {
+  fetchMaintenanceSettingsForAdmin,
+  saveMaintenanceSettings,
+} from '../services/maintenanceService';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -338,8 +342,7 @@ const AdminDashboard = () => {
 
   const fetchMaintenance = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance-status`);
-      const data = await res.json();
+      const data = await fetchMaintenanceSettingsForAdmin();
       setMaintenanceEnabled(data.maintenance_enabled || false);
       setMaintenanceMessage(data.message || '');
 
@@ -396,19 +399,15 @@ const AdminDashboard = () => {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/maintenance`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      const res = await saveMaintenanceSettings(
+        {
           maintenance_enabled: maintenanceEnabled,
           start_time,
           end_time,
-          message: maintenanceMessage
-        })
-      });
+          message: maintenanceMessage,
+        },
+        token
+      );
 
       if (res.ok) {
         showToast('Maintenance settings updated successfully!');
