@@ -1,19 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import './About.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackStats from '../data/fallbackStats';
 
 const About = () => {
-  const { data: rawStats } = useResilientData(
-    `/api/stats`,
-    CACHE_KEYS.STATS,
-    fallbackStats
-  );
-
+  const { data: rawStats } = useFetch('/api/stats', fallbackStats);
   const stats = rawStats || fallbackStats || {};
-
 
   return (
     <section id="about" className="section about-section">

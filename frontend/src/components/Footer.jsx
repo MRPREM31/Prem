@@ -1,17 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaYoutube, FaMediumM, FaEnvelope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackProfile from '../data/fallbackProfile';
 import './Footer.css';
 
 const Footer = () => {
-  const { data: sigData } = useResilientData(
-    '/api/signature',
-    CACHE_KEYS.SIGNATURE_URL,
-    { signatureUrl: fallbackProfile.signatureUrl }
-  );
+  const { data: sigData } = useFetch('/api/signature', { signatureUrl: fallbackProfile.signatureUrl });
 
   const rawSignature = sigData?.signatureUrl || fallbackProfile.signatureUrl || '';
   const signature = (rawSignature && typeof rawSignature === 'string' && rawSignature.startsWith('/uploads'))
@@ -20,7 +15,7 @@ const Footer = () => {
 
   const [visitorCount, setVisitorCount] = useState(() => {
     const saved = localStorage.getItem('mrprem_visitor_count');
-    return saved ? parseInt(saved, 10) : 12450; // Sensible offline default
+    return saved ? parseInt(saved, 10) : 12450;
   });
 
   useEffect(() => {
@@ -35,15 +30,12 @@ const Footer = () => {
           }
         }
       } catch (err) {
-        console.warn('[Resilience] Failed to fetch visitor stats from Render backend:', err.message || err);
+        console.warn('[Footer] Failed to fetch visitor stats from backend:', err.message || err);
       }
     };
 
     fetchVisitorStats();
-
-    // Real-time update polling (Every 30 seconds)
     const interval = setInterval(fetchVisitorStats, 30000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -95,8 +87,6 @@ const Footer = () => {
             <div className="footer-links-section">
               <h4>Quick Links</h4>
               <ul>
-                
-                {/* External Professional Links */}
                 <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noopener noreferrer">QCDS</a></li>
                 <li><a href="https://www.quantumcoderstechlab.codes/qcds_items/profile.html?uid=9827775230" target="_blank" rel="noopener noreferrer">QCDS ID Card</a></li>
                 <li><Link to="/secure-portal">Secure Access</Link></li>

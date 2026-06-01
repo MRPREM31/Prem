@@ -14,19 +14,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackGithub from '../data/fallbackGithub';
 import './GithubInsights.css';
 
 const GithubInsights = () => {
   const navigate = useNavigate();
 
-  const { data: rawData, loading } = useResilientData(
-    `${import.meta.env.VITE_API_URL}/api/github-stats`,
-    CACHE_KEYS.GITHUB_STATS,
-    fallbackGithub
-  );
+  const { data: rawData, loading } = useFetch('/api/github-stats', fallbackGithub);
 
   const data = rawData || fallbackGithub;
   const error = null; // Failsafe never exposes a blocking error screen

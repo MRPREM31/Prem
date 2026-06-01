@@ -3,22 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import './MemorableImages.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackMemories from '../data/fallbackMemories';
 
 const MemorableImages = () => {
   const navigate = useNavigate();
-
-  const { data: images = [] } = useResilientData(
-    `/api/memorable-images`,
-    CACHE_KEYS.MEMORIES,
-    fallbackMemories,
-    { transform: (data) => data.slice(0, 4) }
-  );
+  const { data: rawImages = [] } = useFetch('/api/memorable-images', fallbackMemories);
+  const images = Array.isArray(rawImages) ? rawImages.slice(0, 4) : [];
 
   if (images.length === 0) return null;
-
 
   return (
     <section id="memories" className="section memories-section">

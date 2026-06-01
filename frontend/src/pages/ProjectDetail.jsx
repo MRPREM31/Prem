@@ -14,9 +14,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import './ProjectDetail.css';
-import cacheManager from '../utils/cacheManager';
-import CACHE_KEYS from '../utils/cacheKeys';
-import fallbackProjects from '../data/fallbackProjects';
 
 const ProjectDetail = () => {
   const { idOrSlug } = useParams();
@@ -34,36 +31,15 @@ const ProjectDetail = () => {
 
   const fetchProject = async () => {
     try {
-      const res = await fetch(`/api/projects/${idOrSlug}?t=${Date.now()}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${idOrSlug}?t=${Date.now()}`);
       if (!res.ok) {
         throw new Error(`HTTP error ${res.status}`);
       }
       const data = await res.json();
       setProject(data);
     } catch (err) {
-      console.warn('Error fetching project detail, trying resilient fallbacks:', err);
-      
-      // Resilient Fallback Lookup
-      const cachedProjects = cacheManager.getFromCache(CACHE_KEYS.PROJECTS, true) || fallbackProjects;
-      const matchedProject = cachedProjects.find(
-        p => String(p.id) === String(idOrSlug) || p.slug === idOrSlug
-      );
-
-      if (matchedProject) {
-        console.log(`[Resilience] Successfully resolved project detail offline for: ${idOrSlug}`);
-        
-        // Ensure images and reviews arrays exist to prevent template crashes
-        const resolvedProject = {
-          ...matchedProject,
-          images: matchedProject.images || [],
-          reviews: matchedProject.reviews || [],
-          avgRating: matchedProject.avgRating || '0.0'
-        };
-        setProject(resolvedProject);
-      } else {
-        console.error(`[Resilience] Project not found in fallback dataset: ${idOrSlug}`);
-        navigate('/');
-      }
+      console.warn('Error fetching project detail:', err);
+      navigate('/');
     } finally {
       setLoading(false);
     }

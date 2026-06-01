@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaBars, FaTimes, FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import NotificationBell from './NotificationBell';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackProfile from '../data/fallbackProfile';
 import './Navbar.css';
 
@@ -15,11 +14,7 @@ const Navbar = () => {
   // Theme logic
   const [theme, setTheme] = useState('dark');
 
-  const { data: navbarData } = useResilientData(
-    '/api/navbar-image',
-    CACHE_KEYS.NAVBAR_IMAGE,
-    { imageUrl: fallbackProfile.navbarImageUrl }
-  );
+  const { data: navbarData } = useFetch('/api/navbar-image', { imageUrl: fallbackProfile.navbarImageUrl });
 
   const rawNavbarImage = navbarData?.imageUrl || fallbackProfile.navbarImageUrl || '';
   const profileImage = (rawNavbarImage && typeof rawNavbarImage === 'string' && rawNavbarImage.startsWith('/uploads'))

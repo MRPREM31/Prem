@@ -6,31 +6,22 @@ import './Hero.css';
 import { useNavigate } from 'react-router-dom';
 import { RESUME_LINK } from '../config';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackProfile from '../data/fallbackProfile';
 
 const Hero = () => {
   const navigate = useNavigate();
 
-  // Resiliently fetch profile image
-  const profileRes = useResilientData(
-    `/api/profile-image`,
-    CACHE_KEYS.PROFILE_IMAGE,
-    { imageUrl: fallbackProfile.profileImageUrl }
-  );
+  const { data: profileData } = useFetch('/api/profile-image', { imageUrl: fallbackProfile.profileImageUrl });
 
-  // Resiliently fetch resume URL (skipped if static resume link is set in config)
   const isCustomResumeSet = RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf";
-  const resumeRes = useResilientData(
-    `/api/resume`,
-    CACHE_KEYS.RESUME_URL,
-    { resumeUrl: fallbackProfile.resumeUrl },
-    { enabled: !isCustomResumeSet }
+  const { data: resumeData } = useFetch(
+    isCustomResumeSet ? null : '/api/resume',
+    { resumeUrl: fallbackProfile.resumeUrl }
   );
 
   // Parse and optimize profile image URL
-  const rawProfileImage = profileRes.data?.imageUrl || fallbackProfile.profileImageUrl || '';
+  const rawProfileImage = profileData?.imageUrl || fallbackProfile.profileImageUrl || '';
   const profileImage = (rawProfileImage && typeof rawProfileImage === 'string' && rawProfileImage.startsWith('/uploads'))
     ? `${optimizeCloudinaryUrl(`${import.meta.env.VITE_API_URL}${rawProfileImage}`, 600)}`
     : `${optimizeCloudinaryUrl(rawProfileImage || fallbackProfile.profileImageUrl, 600)}`;
@@ -38,7 +29,7 @@ const Hero = () => {
   // Parse resume URL
   const rawResumeUrl = isCustomResumeSet
     ? RESUME_LINK
-    : (resumeRes.data?.resumeUrl || fallbackProfile.resumeUrl || fallbackProfile.localResumeFallbackUrl || '');
+    : (resumeData?.resumeUrl || fallbackProfile.resumeUrl || fallbackProfile.localResumeFallbackUrl || '');
   const resumeUrl = (rawResumeUrl && typeof rawResumeUrl === 'string' && rawResumeUrl.startsWith('/uploads'))
     ? `${import.meta.env.VITE_API_URL}${rawResumeUrl}`
     : rawResumeUrl || fallbackProfile.localResumeFallbackUrl;

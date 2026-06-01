@@ -4,9 +4,6 @@ import { FaStar, FaRegStar, FaChevronLeft, FaCheckCircle, FaInfoCircle } from 'r
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import cacheManager from '../utils/cacheManager';
-import CACHE_KEYS from '../utils/cacheKeys';
-import fallbackProjects from '../data/fallbackProjects';
 import './ProjectDetail.css'; // Reuse glass styles
 
 const ReviewPage = () => {
@@ -29,7 +26,7 @@ const ReviewPage = () => {
 
   const fetchProject = async () => {
     try {
-      const res = await fetch(`/api/projects/${slug}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/${slug}`);
       if (!res.ok) {
         throw new Error(`HTTP error ${res.status}`);
       }
@@ -37,20 +34,7 @@ const ReviewPage = () => {
       setProject(data);
       setLoading(false);
     } catch (err) {
-      console.warn('Error fetching project detail for review, trying resilient fallbacks:', err);
-      
-      // Resilient Fallback Lookup
-      const cachedProjects = cacheManager.getFromCache(CACHE_KEYS.PROJECTS, true) || fallbackProjects;
-      const matchedProject = cachedProjects.find(
-        p => String(p.id) === String(slug) || p.slug === slug
-      );
-
-      if (matchedProject) {
-        console.log(`[Resilience] Successfully resolved project for review offline: ${slug}`);
-        setProject(matchedProject);
-      } else {
-        console.error(`[Resilience] Project not found in fallback dataset for review: ${slug}`);
-      }
+      console.warn('Error fetching project detail for review:', err);
       setLoading(false);
     }
   };

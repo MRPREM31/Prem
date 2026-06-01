@@ -8,8 +8,7 @@ import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import '../components/MemorableImages.css'; // Reuse CSS
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackMemories from '../data/fallbackMemories';
 
 const MemoriesPage = () => {
@@ -17,11 +16,7 @@ const MemoriesPage = () => {
   const location = useLocation();
   const { scrollY, section } = location.state || {};
 
-  const { data: images = [] } = useResilientData(
-    `/api/memorable-images`,
-    CACHE_KEYS.MEMORIES,
-    fallbackMemories
-  );
+  const { data: images = [] } = useFetch('/api/memorable-images', fallbackMemories);
 
 
   const gallerySchema = {

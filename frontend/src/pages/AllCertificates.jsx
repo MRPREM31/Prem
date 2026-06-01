@@ -8,8 +8,7 @@ import SEO from '../components/SEO';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import '../components/Certificates.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackCertificates from '../data/fallbackCertificates';
 
 const AllCertificates = () => {
@@ -21,11 +20,7 @@ const AllCertificates = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { data: certificates = [], loading } = useResilientData(
-    `/api/certificates`,
-    CACHE_KEYS.CERTIFICATES,
-    fallbackCertificates
-  );
+  const { data: certificates = [], loading } = useFetch('/api/certificates', fallbackCertificates);
 
 
   const itemListSchema = certificates.length > 0 ? {

@@ -5,9 +5,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FaArrowLeft, FaShareAlt } from 'react-icons/fa';
 import './CertificateDetail.css';
-import cacheManager from '../utils/cacheManager';
-import CACHE_KEYS from '../utils/cacheKeys';
-import fallbackCertificates from '../data/fallbackCertificates';
 
 const CertificateDetail = () => {
   const { idOrSlug } = useParams();
@@ -18,28 +15,15 @@ const CertificateDetail = () => {
   useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        const res = await fetch(`/api/certificates/${idOrSlug}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/certificates/${idOrSlug}`);
         if (!res.ok) {
           throw new Error(`HTTP error ${res.status}`);
         }
         const data = await res.json();
         setCertificate(data);
       } catch (err) {
-        console.warn('Error fetching certificate detail, trying resilient fallbacks:', err);
-
-        // Resilient Fallback Lookup
-        const cachedCerts = cacheManager.getFromCache(CACHE_KEYS.CERTIFICATES, true) || fallbackCertificates;
-        const matchedCert = cachedCerts.find(
-          c => String(c.id) === String(idOrSlug) || c.slug === idOrSlug
-        );
-
-        if (matchedCert) {
-          console.log(`[Resilience] Successfully resolved certificate detail offline for: ${idOrSlug}`);
-          setCertificate(matchedCert);
-        } else {
-          console.error(`[Resilience] Certificate not found in fallback dataset: ${idOrSlug}`);
-          navigate('/');
-        }
+        console.warn('Error fetching certificate detail:', err);
+        navigate('/');
       } finally {
         setLoading(false);
       }

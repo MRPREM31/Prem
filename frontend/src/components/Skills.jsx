@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import * as FaIcons from 'react-icons/fa';
 import * as SiIcons from 'react-icons/si';
 import './Skills.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackSkills from '../data/fallbackSkills';
 
 const IconRenderer = ({ iconName }) => {
@@ -13,14 +12,8 @@ const IconRenderer = ({ iconName }) => {
 };
 
 const Skills = () => {
-  const { data: rawSkillCategories, loading } = useResilientData(
-    `/api/skills`,
-    CACHE_KEYS.SKILLS,
-    fallbackSkills
-  );
-
+  const { data: rawSkillCategories, loading } = useFetch('/api/skills', fallbackSkills);
   const skillCategories = Array.isArray(rawSkillCategories) ? rawSkillCategories : fallbackSkills || [];
-
 
   return (
     <section id="skills" className="section skills-section">

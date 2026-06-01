@@ -7,9 +7,6 @@ import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaShareAlt } from 'react-icons/fa';
 import './CertificateDetail.css'; // Reuse container styles
-import cacheManager from '../utils/cacheManager';
-import CACHE_KEYS from '../utils/cacheKeys';
-import fallbackMemories from '../data/fallbackMemories';
 
 const MemoryDetail = () => {
   const { idOrSlug } = useParams();
@@ -20,28 +17,15 @@ const MemoryDetail = () => {
   useEffect(() => {
     const fetchMemory = async () => {
       try {
-        const res = await fetch(`/api/memorable-images/${idOrSlug}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/memorable-images/${idOrSlug}`);
         if (!res.ok) {
           throw new Error(`HTTP error ${res.status}`);
         }
         const data = await res.json();
         setMemory(data);
       } catch (err) {
-        console.warn('Error fetching memory detail, trying resilient fallbacks:', err);
-
-        // Resilient Fallback Lookup
-        const cachedMemories = cacheManager.getFromCache(CACHE_KEYS.MEMORIES, true) || fallbackMemories;
-        const matchedMemory = cachedMemories.find(
-          m => String(m.id) === String(idOrSlug) || m.slug === idOrSlug
-        );
-
-        if (matchedMemory) {
-          console.log(`[Resilience] Successfully resolved memory detail offline for: ${idOrSlug}`);
-          setMemory(matchedMemory);
-        } else {
-          console.error(`[Resilience] Memory not found in fallback dataset: ${idOrSlug}`);
-          navigate('/memories');
-        }
+        console.warn('Error fetching memory detail:', err);
+        navigate('/memories');
       } finally {
         setLoading(false);
       }

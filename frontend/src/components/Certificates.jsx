@@ -4,30 +4,23 @@ import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { downloadImage } from '../utils/download';
 import { FaEye, FaShareAlt, FaDownload } from 'react-icons/fa';
 import './Certificates.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackCertificates from '../data/fallbackCertificates';
 
 const Certificates = () => {
   const navigate = useNavigate();
-
   const [displayLimit, setDisplayLimit] = useState(6);
 
   useEffect(() => {
     const handleResize = () => {
       setDisplayLimit(window.innerWidth < 768 ? 3 : 6);
     };
-    handleResize(); // Initial check
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const { data: certificates = [] } = useResilientData(
-    `/api/certificates`,
-    CACHE_KEYS.CERTIFICATES,
-    fallbackCertificates
-  );
-
+  const { data: certificates = [] } = useFetch('/api/certificates', fallbackCertificates);
 
   return (
     <section className="section certificates-section" id="certificates">

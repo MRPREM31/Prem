@@ -6,8 +6,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import '../components/Projects.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackProjects from '../data/fallbackProjects';
 
 const AllProjects = () => {
@@ -19,11 +18,7 @@ const AllProjects = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { data: projects = [], loading } = useResilientData(
-    `/api/projects`,
-    CACHE_KEYS.PROJECTS,
-    fallbackProjects
-  );
+  const { data: projects = [], loading } = useFetch('/api/projects', fallbackProjects);
 
 
   const itemListSchema = projects.length > 0 ? {

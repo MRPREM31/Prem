@@ -3,18 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub, FaStar } from 'react-icons/fa';
 import './Projects.css';
-import { useResilientData } from '../utils/fetchWithFallback';
-import CACHE_KEYS from '../utils/cacheKeys';
+import useFetch from '../hooks/useFetch';
 import fallbackProjects from '../data/fallbackProjects';
 
 const Projects = () => {
   const navigate = useNavigate();
-
-  const { data: projects = [] } = useResilientData(
-    `/api/projects`,
-    CACHE_KEYS.PROJECTS,
-    fallbackProjects
-  );
+  const { data: projects = [] } = useFetch('/api/projects', fallbackProjects);
 
   return (
     <section id="projects" className="section projects-section">
