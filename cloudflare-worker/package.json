@@ -1,0 +1,14 @@
+{
+  "name": "prem-portfolio-backup",
+  "version": "1.0.0",
+  "description": "Failover secondary backend for Prem Prasad Pradhan Portfolio",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.32.0"
+  }
+}

@@ -1,0 +1,17 @@
+name = "prem-portfolio-backup"
+main = "src/index.js"
+compatibility_date = "2024-03-01"
+
+[vars]
+PRIMARY_BACKEND_URL = "https://prem-backend-9icx.onrender.com"
+
+# Note: The following secrets must be uploaded securely using:
+# wrangler secret put SUPABASE_URL
+# wrangler secret put SUPABASE_KEY
+# wrangler secret put CLOUDINARY_CLOUD_NAME
+# wrangler secret put CLOUDINARY_API_KEY
+# wrangler secret put CLOUDINARY_API_SECRET
+# wrangler secret put JWT_SECRET
+
+[ai]
+binding = "AI"
