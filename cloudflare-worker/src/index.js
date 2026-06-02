@@ -5,7 +5,13 @@ import {
   handleGetReviews, 
   handlePostContact, 
   handlePostVisitor,
-  handlePostChat
+  handlePostChat,
+  handleCloudinarySign,
+  handleSaveSetting,
+  handleSaveCertificate,
+  handleSaveMemorableImage,
+  handleSaveProjectImages,
+  handleSaveMediaLibrary
 } from './handlers.js';
 import { dbTestConnection } from './db.js';
 
@@ -33,6 +39,23 @@ export default {
       } catch (err) {
         log('error', 'Failed to buffer request body', { error: err.message });
       }
+    }
+
+    // 3.5. Bypass proxy for JSON metadata uploads (Active-Active)
+    const contentType = request.headers.get('Content-Type') || '';
+    const isJson = contentType.includes('application/json');
+    const isUploadOrMetadataWrite = (
+      path.startsWith('/api/admin/upload-') || 
+      path.startsWith('/api/admin/certificates') || 
+      path.startsWith('/api/admin/memorable-images') || 
+      (path.startsWith('/api/admin/projects/') && path.endsWith('/images')) ||
+      path === '/api/media/upload' ||
+      path === '/api/admin/cloudinary-sign'
+    ) && ['POST', 'PUT', 'PATCH'].includes(request.method);
+
+    if (isUploadOrMetadataWrite && isJson) {
+      log('info', `Bypassing proxy to execute direct metadata write on Worker`, { path });
+      return handleFallback(request, env, ctx, path, bodyText);
     }
 
     // 4. Try Proxying to Render Backend
@@ -129,6 +152,56 @@ async function handleFallback(request, env, ctx, path, bodyText) {
     });
     return handlePostChat(mockRequest, env);
   }
+
+  // Reusable helper for JSON fallback handlers
+  const getMockRequest = () => new Request(request.url, {
+    method: request.method,
+    headers: request.headers,
+    body: bodyText
+  });
+
+  // POST /api/admin/cloudinary-sign
+  if (path === '/api/admin/cloudinary-sign' && request.method === 'POST') {
+    return handleCloudinarySign(getMockRequest(), env);
+  }
+
+  // Settings fallbacks
+  if (path === '/api/admin/upload-profile' && request.method === 'POST') {
+    return handleSaveSetting(getMockRequest(), env, 'profileImage');
+  }
+  if (path === '/api/admin/upload-navbar' && request.method === 'POST') {
+    return handleSaveSetting(getMockRequest(), env, 'navbarImage');
+  }
+  if (path === '/api/admin/upload-resume' && request.method === 'POST') {
+    return handleSaveSetting(getMockRequest(), env, 'resumeUrl');
+  }
+  if (path === '/api/admin/upload-favicon' && request.method === 'POST') {
+    return handleSaveSetting(getMockRequest(), env, 'faviconUrl');
+  }
+  if (path === '/api/admin/upload-signature' && request.method === 'POST') {
+    return handleSaveSetting(getMockRequest(), env, 'signatureUrl');
+  }
+
+  // Certificates fallbacks
+  if (path.startsWith('/api/admin/certificates') && (request.method === 'POST' || request.method === 'PUT')) {
+    return handleSaveCertificate(getMockRequest(), env);
+  }
+
+  // Memorable images fallback
+  if (path === '/api/admin/memorable-images' && request.method === 'POST') {
+    return handleSaveMemorableImage(getMockRequest(), env);
+  }
+
+  // Project images fallback
+  if (path.startsWith('/api/admin/projects/') && path.endsWith('/images') && request.method === 'POST') {
+    return handleSaveProjectImages(getMockRequest(), env);
+  }
+
+  // Media Library fallback
+  if (path === '/api/media/upload' && request.method === 'POST') {
+    return handleSaveMediaLibrary(getMockRequest(), env);
+  }
+
 
   // Degraded response for unimplemented fallback routes (e.g. AI chatbot or admin edits)
   log('info', `Fallback not implemented for route: ${request.method} ${path}`);

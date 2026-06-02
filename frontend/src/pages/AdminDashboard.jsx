@@ -651,22 +651,63 @@ const AdminDashboard = () => {
   // --- UPLOADS ---
   const handleUpload = async (file, type, setStatusCallback, fetchCallback) => {
     if (!file) return showToast('Please select a file first.', 'error');
-    const formData = new FormData();
-    formData.append(type, file);
     try {
       setStatusCallback('Uploading...');
+      
       let endpoint = '';
       if (type === 'image') endpoint = 'upload-profile';
       else if (type === 'resume') endpoint = 'upload-resume';
       else if (type === 'favicon') endpoint = 'upload-favicon';
       else if (type === 'signature') endpoint = 'upload-signature';
       else if (type === 'navbar') endpoint = 'upload-navbar';
+
+      // 1. Get secure signature from Worker
+      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ folder: 'portfolio' })
+      });
       
+      if (!signRes.ok) {
+        throw new Error('Failed to obtain upload signature from server.');
+      }
+      
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
+
+      // 2. Post file directly to Cloudinary CDN
+      const cloudinaryForm = new FormData();
+      cloudinaryForm.append('file', file);
+      cloudinaryForm.append('api_key', apiKey);
+      cloudinaryForm.append('timestamp', timestamp);
+      cloudinaryForm.append('signature', signature);
+      if (folder) cloudinaryForm.append('folder', folder);
+
+      const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        method: 'POST',
+        body: cloudinaryForm
+      });
+
+      if (!uploadRes.ok) {
+        const errData = await uploadRes.json();
+        throw new Error(errData.error?.message || 'Direct CDN upload failed.');
+      }
+
+      const uploadData = await uploadRes.json();
+      const secureUrl = uploadData.secure_url;
+
+      // 3. Save the resulting URL to Supabase via Worker/Render
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ imageUrl: secureUrl })
       });
+      
       const data = await res.json();
       if (res.ok) {
         setStatusCallback('Upload successful!');
@@ -677,8 +718,9 @@ const AdminDashboard = () => {
         showToast(data.error || 'Upload failed', 'error');
       }
     } catch (err) {
+      console.error(err);
       setStatusCallback('Error');
-      showToast('Network error during upload', 'error');
+      showToast(err.message || 'Error during upload', 'error');
     }
   };
 
@@ -734,18 +776,61 @@ const AdminDashboard = () => {
     if (!files || files.length === 0 || !editingProject) return;
 
     setUploadingProjectImages(true);
-    const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formData.append('images', files[i]);
-    }
-    formData.append('alt_text', projectForm.image_alt || editingProject.title);
-
     try {
+      // 1. Get secure signature from Worker
+      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ folder: 'portfolio' })
+      });
+      
+      if (!signRes.ok) {
+        throw new Error('Failed to obtain upload signature from server.');
+      }
+      
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
+
+      const uploadedImages = [];
+
+      // 2. Upload each file directly to Cloudinary
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const cloudinaryForm = new FormData();
+        cloudinaryForm.append('file', file);
+        cloudinaryForm.append('api_key', apiKey);
+        cloudinaryForm.append('timestamp', timestamp);
+        cloudinaryForm.append('signature', signature);
+        if (folder) cloudinaryForm.append('folder', folder);
+
+        const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: 'POST',
+          body: cloudinaryForm
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error(`Direct CDN upload failed for image: ${file.name}`);
+        }
+
+        const uploadData = await uploadRes.json();
+        uploadedImages.push({
+          image_url: uploadData.secure_url,
+          alt_text: projectForm.image_alt || editingProject.title
+        });
+      }
+
+      // 3. Save the resulting image URLs to the database
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${editingProject.id}/images`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ images: uploadedImages })
       });
+
       if (res.ok) {
         showToast('Images uploaded successfully');
         fetchProjectImages(editingProject.id);
@@ -754,7 +839,8 @@ const AdminDashboard = () => {
         showToast(data.error || 'Upload failed', 'error');
       }
     } catch (err) {
-      showToast('Network error during upload', 'error');
+      console.error(err);
+      showToast(err.message || 'Error during upload', 'error');
     } finally {
       setUploadingProjectImages(false);
       e.target.value = ''; // Reset file input
@@ -843,17 +929,48 @@ const AdminDashboard = () => {
   const handleCertSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append('title', certForm.title);
-      formData.append('description', certForm.description);
-      formData.append('date', certForm.date);
-      if (certForm.image_alt) formData.append('image_alt', certForm.image_alt);
+      let imageUrl = editingCert ? editingCert.image : null;
+
+      // 1. If a new image is selected, upload directly to Cloudinary first
       if (certForm.image) {
-        formData.append('certificate_image', certForm.image);
+        const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify({ folder: 'portfolio' })
+        });
+        
+        if (!signRes.ok) {
+          throw new Error('Failed to obtain upload signature from server.');
+        }
+        
+        const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
+
+        const cloudinaryForm = new FormData();
+        cloudinaryForm.append('file', certForm.image);
+        cloudinaryForm.append('api_key', apiKey);
+        cloudinaryForm.append('timestamp', timestamp);
+        cloudinaryForm.append('signature', signature);
+        if (folder) cloudinaryForm.append('folder', folder);
+
+        const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+          method: 'POST',
+          body: cloudinaryForm
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error('Direct CDN upload failed for certificate image.');
+        }
+
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.secure_url;
       } else if (!editingCert) {
-        return alert("Please select an image");
+        return showToast("Please select a certificate image first.", "error");
       }
 
+      // 2. Submit certificate metadata as JSON
       const method = editingCert ? 'PUT' : 'POST';
       const url = editingCert 
         ? `${import.meta.env.VITE_API_URL}/api/admin/certificates/${editingCert.id}` 
@@ -861,9 +978,19 @@ const AdminDashboard = () => {
       
       const res = await fetch(url, {
         method,
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          title: certForm.title,
+          description: certForm.description,
+          date: certForm.date,
+          image_alt: certForm.image_alt,
+          image: imageUrl
+        })
       });
+
       if (res.ok) {
         fetchCertificates();
         setShowCertForm(false);
@@ -876,7 +1003,7 @@ const AdminDashboard = () => {
       }
     } catch (err) { 
       console.error(err);
-      showToast('Network error: Could not connect to the backend.', 'error');
+      showToast(err.message || 'Error saving certificate', 'error');
     }
   };
 
@@ -904,17 +1031,57 @@ const AdminDashboard = () => {
     if (!memImageForm.image) return showToast('Please select an image', 'error');
     setMemImageLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('title', memImageForm.title);
-      formData.append('image_alt', memImageForm.image_alt);
-      formData.append('image_description', memImageForm.image_description);
-      formData.append('image', memImageForm.image);
+      // 1. Get secure signature from Worker
+      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ folder: 'portfolio' })
+      });
+      
+      if (!signRes.ok) {
+        throw new Error('Failed to obtain upload signature from server.');
+      }
+      
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
 
+      // 2. Upload image directly to Cloudinary
+      const cloudinaryForm = new FormData();
+      cloudinaryForm.append('file', memImageForm.image);
+      cloudinaryForm.append('api_key', apiKey);
+      cloudinaryForm.append('timestamp', timestamp);
+      cloudinaryForm.append('signature', signature);
+      if (folder) cloudinaryForm.append('folder', folder);
+
+      const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+        method: 'POST',
+        body: cloudinaryForm
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error('Direct CDN upload failed for memorable image.');
+      }
+
+      const uploadData = await uploadRes.json();
+      const secureUrl = uploadData.secure_url;
+
+      // 3. Save memory details as JSON
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/memorable-images`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          title: memImageForm.title,
+          image_alt: memImageForm.image_alt,
+          image_description: memImageForm.image_description,
+          imageUrl: secureUrl
+        })
       });
+
       if (res.ok) {
         fetchMemorableImages();
         setShowMemImageForm(false);
@@ -926,7 +1093,7 @@ const AdminDashboard = () => {
       }
     } catch (err) { 
       console.error(err);
-      showToast('Network error', 'error');
+      showToast(err.message || 'Error uploading memorable image', 'error');
     } finally {
       setMemImageLoading(false);
     }

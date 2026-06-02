@@ -81,33 +81,78 @@ const MediaLibrary = () => {
   const uploadAll = async () => {
     setUploading(true);
     
-    for (let i = 0; i < pendingUploads.length; i++) {
-      if (pendingUploads[i].status === 'success') continue;
+    try {
+      // 1. Get secure signature from Worker
+      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ folder: 'portfolio' })
+      });
+      
+      if (!signRes.ok) {
+        throw new Error('Failed to obtain upload signature.');
+      }
+      
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
 
-      const updated = [...pendingUploads];
-      updated[i].status = 'uploading';
-      setPendingUploads([...updated]);
+      for (let i = 0; i < pendingUploads.length; i++) {
+        if (pendingUploads[i].status === 'success') continue;
 
-      const formData = new FormData();
-      formData.append('image', pendingUploads[i].file);
-      formData.append('name', pendingUploads[i].name);
+        const updated = [...pendingUploads];
+        updated[i].status = 'uploading';
+        setPendingUploads([...updated]);
 
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
-        });
-        
-        if (res.ok) {
-          updated[i].status = 'success';
-        } else {
+        try {
+          // 2. Post file directly to Cloudinary CDN
+          const cloudinaryForm = new FormData();
+          cloudinaryForm.append('file', pendingUploads[i].file);
+          cloudinaryForm.append('api_key', apiKey);
+          cloudinaryForm.append('timestamp', timestamp);
+          cloudinaryForm.append('signature', signature);
+          if (folder) cloudinaryForm.append('folder', folder);
+
+          const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+            method: 'POST',
+            body: cloudinaryForm
+          });
+
+          if (!uploadRes.ok) {
+            throw new Error('CDN upload failed');
+          }
+
+          const uploadData = await uploadRes.json();
+
+          // 3. Save metadata to database as JSON
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({
+              name: pendingUploads[i].name,
+              url: uploadData.secure_url,
+              size: pendingUploads[i].file.size
+            })
+          });
+          
+          if (res.ok) {
+            updated[i].status = 'success';
+          } else {
+            updated[i].status = 'error';
+          }
+        } catch (err) {
+          console.error(err);
           updated[i].status = 'error';
         }
-      } catch (err) {
-        updated[i].status = 'error';
+        setPendingUploads([...updated]);
       }
-      setPendingUploads([...updated]);
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'Upload process failed', 'error');
     }
 
     setUploading(false);

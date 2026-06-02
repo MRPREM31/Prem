@@ -171,3 +171,88 @@ export async function dbTestConnection(env) {
   await callSupabase(env, 'projects?select=id&limit=1');
   return true;
 }
+
+/**
+ * Upsert dynamic setting in Supabase
+ */
+export async function dbSaveSetting(env, key, value) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Prefer': 'resolution=merge-duplicates,return=representation'
+    },
+    body: { key, value }
+  };
+  return callSupabase(env, 'settings', options);
+}
+
+/**
+ * Insert dynamic certificate in Supabase
+ */
+export async function dbInsertCertificate(env, certData) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Prefer': 'return=representation'
+    },
+    body: certData
+  };
+  return callSupabase(env, 'certificates', options);
+}
+
+/**
+ * Update dynamic certificate in Supabase
+ */
+export async function dbUpdateCertificate(env, id, certData) {
+  const options = {
+    method: 'PATCH',
+    headers: {
+      'Prefer': 'return=representation'
+    },
+    body: certData
+  };
+  return callSupabase(env, `certificates?id=eq.${id}`, options);
+}
+
+/**
+ * Insert dynamic memorable image in Supabase
+ */
+export async function dbInsertMemorableImage(env, imgData) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Prefer': 'return=representation'
+    },
+    body: imgData
+  };
+  return callSupabase(env, 'memorable_images', options);
+}
+
+/**
+ * Insert multiple project images in Supabase
+ */
+export async function dbInsertProjectImages(env, images) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Prefer': 'return=representation'
+    },
+    body: images // Array of images
+  };
+  return callSupabase(env, 'project_images', options);
+}
+
+/**
+ * Insert dynamic media library CDN item in Supabase
+ */
+export async function dbInsertMediaLibrary(env, mediaData) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Prefer': 'return=representation'
+    },
+    body: mediaData
+  };
+  return callSupabase(env, 'media_library', options);
+}
+

@@ -3,9 +3,16 @@ import {
   dbGetProjectByIdOrSlug, 
   dbGetPublicReviews,
   dbInsertMessage,
-  dbUpsertVisitor
+  dbUpsertVisitor,
+  dbSaveSetting,
+  dbInsertCertificate,
+  dbUpdateCertificate,
+  dbInsertMemorableImage,
+  dbInsertProjectImages,
+  dbInsertMediaLibrary
 } from './db.js';
 import { jsonResponse, errorResponse, log } from './utils.js';
+import { authenticateRequest } from './auth.js';
 
 /**
  * Handle GET /api/projects
@@ -232,4 +239,240 @@ export async function handlePostChat(request, env) {
     return errorResponse('AI neural link fallback failed', 500, request);
   }
 }
+
+// Simple slugify function for generating slugs in fallback
+function slugify(text) {
+  if (!text) return '';
+  return text.toString().toLowerCase().trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-');        // Replace multiple - with single -
+}
+
+// Helper for SHA-1 hashing used by Cloudinary signature
+async function sha1Hex(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Handle POST /api/admin/cloudinary-sign
+ * Returns secure upload signatures
+ */
+export async function handleCloudinarySign(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const body = await request.json() || {};
+    const { folder } = body;
+    const timestamp = Math.floor(Date.now() / 1000);
+    
+    let signatureStr = '';
+    if (folder) {
+      signatureStr = `folder=${folder}&timestamp=${timestamp}`;
+    } else {
+      signatureStr = `timestamp=${timestamp}`;
+    }
+    
+    const signatureBase = signatureStr + env.CLOUDINARY_API_SECRET;
+    const signature = await sha1Hex(signatureBase);
+    
+    return jsonResponse({
+      signature,
+      timestamp,
+      apiKey: env.CLOUDINARY_API_KEY,
+      cloudName: env.CLOUDINARY_CLOUD_NAME,
+      folder: folder || ''
+    }, 200, request);
+  } catch (err) {
+    log('error', 'Cloudinary signing failed', { error: err.message });
+    return errorResponse('Failed to sign upload parameters', 500, request);
+  }
+}
+
+/**
+ * Handle settings URL updates (profile, navbar, resume, favicon, signature)
+ */
+export async function handleSaveSetting(request, env, settingKey) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const body = await request.json();
+    let value = '';
+    if (settingKey === 'profileImage') value = body.imageUrl || body.image;
+    else if (settingKey === 'resumeUrl') value = body.resumeUrl || body.resume;
+    else if (settingKey === 'faviconUrl') value = body.faviconUrl || body.favicon;
+    else if (settingKey === 'signatureUrl') value = body.signatureUrl || body.signature;
+    else if (settingKey === 'navbarImage') value = body.navbarImageUrl || body.navbar;
+
+    if (!value) {
+      return errorResponse(`Value is required for setting key: ${settingKey}`, 400, request);
+    }
+
+    await dbSaveSetting(env, settingKey, value);
+    return jsonResponse({ success: true, message: `Setting ${settingKey} saved successfully` }, 200, request);
+  } catch (err) {
+    log('error', `Failed to save setting ${settingKey}`, { error: err.message });
+    return errorResponse('Failed to save settings data', 500, request);
+  }
+}
+
+/**
+ * Handle POST/PUT /api/admin/certificates
+ */
+export async function handleSaveCertificate(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const id = pathParts[pathParts.length - 1];
+    const isUpdate = request.method === 'PUT' || (id && id !== 'certificates');
+
+    const body = await request.json();
+    const { title, description, date, image, image_alt } = body;
+
+    const slug = title ? slugify(title) : '';
+    const certData = { title, description, date, image, image_alt, slug };
+
+    if (isUpdate) {
+      await dbUpdateCertificate(env, id, certData);
+      return jsonResponse({ success: true, message: 'Certificate updated' }, 200, request);
+    } else {
+      const result = await dbInsertCertificate(env, certData);
+      return jsonResponse({ success: true, id: result ? result.id : null, message: 'Certificate created' }, 201, request);
+    }
+  } catch (err) {
+    log('error', 'Failed to save certificate in fallback', { error: err.message });
+    return errorResponse('Failed to save certificate details', 500, request);
+  }
+}
+
+/**
+ * Handle POST /api/admin/memorable-images
+ */
+export async function handleSaveMemorableImage(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const body = await request.json();
+    const { title, imageUrl, image_alt, image_description, aspect_ratio } = body;
+
+    if (!imageUrl) {
+      return errorResponse('Image URL is required', 400, request);
+    }
+
+    const slug = (title ? slugify(title) : 'memory') + '-' + Date.now().toString().slice(-4);
+    const imgData = { 
+      title: title || 'Untitled Memory', 
+      image_url: imageUrl, 
+      aspect_ratio: aspect_ratio || 'landscape', 
+      upload_date: new Date().toISOString(),
+      image_alt: image_alt || 'Memory Image', 
+      image_description: image_description || '', 
+      slug 
+    };
+
+    const result = await dbInsertMemorableImage(env, imgData);
+    return jsonResponse({ success: true, id: result ? result.id : null, message: 'Memory created' }, 201, request);
+  } catch (err) {
+    log('error', 'Failed to save memorable image in fallback', { error: err.message });
+    return errorResponse('Failed to save memory details', 500, request);
+  }
+}
+
+/**
+ * Handle POST /api/admin/projects/:id/images
+ */
+export async function handleSaveProjectImages(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const projectId = pathParts[pathParts.length - 2];
+
+    const body = await request.json();
+    let images = [];
+    
+    if (body.images && Array.isArray(body.images)) {
+      images = body.images.map(img => ({
+        project_id: parseInt(projectId),
+        image_url: img.image_url || img.url || img,
+        alt_text: img.alt_text || 'Project Screenshot'
+      }));
+    } else if (body.image_url || body.url || body.image) {
+      images = [{
+        project_id: parseInt(projectId),
+        image_url: body.image_url || body.url || body.image,
+        alt_text: body.alt_text || 'Project Screenshot'
+      }];
+    }
+
+    if (images.length === 0) {
+      return errorResponse('No images provided to save', 400, request);
+    }
+
+    await dbInsertProjectImages(env, images);
+    return jsonResponse({ success: true, message: 'Project images added successfully' }, 201, request);
+  } catch (err) {
+    log('error', 'Failed to save project images in fallback', { error: err.message });
+    return errorResponse('Failed to save project images', 500, request);
+  }
+}
+
+/**
+ * Handle POST /api/media/upload (Media Library CDN upload)
+ */
+export async function handleSaveMediaLibrary(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const body = await request.json();
+    const { name, url, size } = body;
+
+    if (!url) {
+      return errorResponse('URL is required', 400, request);
+    }
+
+    const slug = slugify(name || 'media') + '-' + Math.random().toString(36).substr(2, 5);
+    const mediaData = {
+      name: name || 'Media Asset',
+      slug,
+      url,
+      direct_image_url: url,
+      imagekit_file_id: 'cloudinary-' + Date.now(),
+      size: size || 0,
+      uploaded_by: 'Admin',
+      upload_date: new Date().toISOString()
+    };
+
+    const result = await dbInsertMediaLibrary(env, mediaData);
+    return jsonResponse(result, 201, request);
+  } catch (err) {
+    log('error', 'Failed to save media asset in fallback', { error: err.message });
+    return errorResponse('Failed to save media asset', 500, request);
+  }
+}
+
 
