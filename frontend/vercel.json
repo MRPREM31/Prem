@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://prem-portfolio-backup.mr-prem2006.workers.dev/api/:path*" },
+    { "source": "/sitemap-index.xml", "destination": "https://prem-portfolio-backup.mr-prem2006.workers.dev/sitemap-index.xml" },
+    { "source": "/sitemap.xml", "destination": "https://prem-portfolio-backup.mr-prem2006.workers.dev/sitemap.xml" },
+    { "source": "/image-sitemap.xml", "destination": "https://prem-portfolio-backup.mr-prem2006.workers.dev/image-sitemap.xml" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
