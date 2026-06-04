@@ -2397,6 +2397,34 @@ app.get('/api/media/slug/:slug', async (req, res) => {
   }
 });
 
+app.post('/api/admin/cloudinary-sign', verifyToken, async (req, res) => {
+  try {
+    const { folder } = req.body || {};
+    const timestamp = Math.floor(Date.now() / 1000);
+    
+    let signatureStr = '';
+    if (folder) {
+      signatureStr = `folder=${folder}&timestamp=${timestamp}`;
+    } else {
+      signatureStr = `timestamp=${timestamp}`;
+    }
+    
+    const signatureBase = signatureStr + process.env.CLOUDINARY_API_SECRET;
+    const signature = crypto.createHash('sha1').update(signatureBase).digest('hex');
+    
+    res.json({
+      signature,
+      timestamp,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      folder: folder || ''
+    });
+  } catch (err) {
+    console.error('Cloudinary signing error:', err);
+    res.status(500).json({ error: 'Failed to sign upload parameters' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
