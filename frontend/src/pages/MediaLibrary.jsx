@@ -389,10 +389,10 @@ const MediaLibrary = () => {
                           </div>
 
                           <div className="action-group highlight" title="Direct CDN Link">
-                            <button className="media-action-btn" onClick={() => copyDirectLink(item.id, item.direct_image_url)} title="Copy Direct Image URL">
+                            <button className="media-action-btn" onClick={() => copyDirectLink(item.id, item.url)} title="Copy Branded Image URL">
                               {copiedId === `direct-${item.id}` ? <FaCheck style={{ color: '#10b981' }} /> : <FaCopy />}
                             </button>
-                            <button className="media-action-btn" onClick={() => window.open(item.direct_image_url || item.url, '_blank')} title="Open Raw Image">
+                            <button className="media-action-btn" onClick={() => window.open(item.url, '_blank')} title="Open Branded Image">
                               <FaImage />
                             </button>
                           </div>

@@ -21,7 +21,8 @@ import {
   handleGetAdminVisitors,
   handleGetSitemapIndex,
   handleGetSitemap,
-  handleGetImageSitemap
+  handleGetImageSitemap,
+  handleGetCdnImage
 } from './handlers.js';
 import { dbTestConnection } from './db.js';
 
@@ -49,6 +50,9 @@ export default {
     }
     if (path === '/image-sitemap.xml' && request.method === 'GET') {
       return handleGetImageSitemap(request, env, ctx);
+    }
+    if (path.startsWith('/cdn/') && request.method === 'GET') {
+      return handleGetCdnImage(request, env, ctx);
     }
 
     // 3. Pre-buffer request body if this is a mutating request.

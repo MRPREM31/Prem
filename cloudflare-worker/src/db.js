@@ -4,6 +4,8 @@
  * for optimal performance, lower memory usage, and zero cold starts.
  */
 
+import { parseImageUrl } from './utils.js';
+
 async function callSupabase(env, path, options = {}, retries = 3, delay = 100) {
   const url = `${env.SUPABASE_URL}/rest/v1/${path}`;
   const headers = {
@@ -339,7 +341,52 @@ export async function dbGetMemorableImages(env) {
  * Fetch all media library records
  */
 export async function dbGetMediaLibrary(env) {
-  return callSupabase(env, 'media_library?select=*&order=upload_date.desc');
+  const records = await callSupabase(env, 'media_library?select=*&order=upload_date.desc');
+  if (!records || records.length === 0) return [];
+
+  // Filter records that need migration: either url doesn't match the new extension branded scheme OR direct_image_url is empty
+  const unmigrated = records.filter(r => {
+    const originalUrl = r.direct_image_url || r.url || '';
+    if (!originalUrl || originalUrl.startsWith('https://mrprem.in/cdn/')) return false;
+    const { slug, ext } = parseImageUrl(originalUrl);
+    const targetBrandedUrl = `https://mrprem.in/cdn/${slug}.${ext}`;
+    return r.slug !== slug || r.url !== targetBrandedUrl || !r.direct_image_url;
+  });
+
+  if (unmigrated.length > 0) {
+    for (const r of unmigrated) {
+      const originalUrl = r.direct_image_url || r.url || '';
+      if (!originalUrl || originalUrl.startsWith('https://mrprem.in/cdn/')) continue;
+      const { slug, ext } = parseImageUrl(originalUrl);
+      const targetBrandedUrl = `https://mrprem.in/cdn/${slug}.${ext}`;
+
+      try {
+        await callSupabase(env, `media_library?id=eq.${r.id}`, {
+          method: 'PATCH',
+          body: {
+            slug,
+            url: targetBrandedUrl,
+            direct_image_url: originalUrl
+          }
+        });
+        // Update local object in-place so returned value matches database
+        r.slug = slug;
+        r.url = targetBrandedUrl;
+        r.direct_image_url = originalUrl;
+      } catch (err) {
+        console.error(`Failed to migrate media record ${r.id}:`, err.message);
+      }
+    }
+  }
+  return records;
+}
+
+/**
+ * Fetch a single media record by slug
+ */
+export async function dbGetMediaBySlug(env, slug) {
+  const results = await callSupabase(env, `media_library?select=*&slug=eq.${slug}`);
+  return results && results.length > 0 ? results[0] : null;
 }
 
 /**

@@ -61,3 +61,51 @@ export function log(level, message, meta = {}) {
   const metaStr = Object.keys(meta).length ? ` | Meta: ${JSON.stringify(meta)}` : '';
   console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`);
 }
+
+export function parseImageUrl(imageUrl) {
+  if (!imageUrl) return { slug: '', ext: 'png' };
+
+  let slug = '';
+  let ext = 'png';
+
+  // Extract extension if any
+  const extMatch = imageUrl.match(/\.([a-z0-9]+)(?:[?#]|$)/i);
+  if (extMatch) {
+    ext = extMatch[1].toLowerCase();
+  }
+
+  // Check if Cloudinary URL
+  if (imageUrl.includes('cloudinary.com')) {
+    // Cloudinary format: .../image/upload/v12345678/public_id.ext
+    // or .../image/upload/public_id.ext
+    const match = imageUrl.match(/\/image\/upload\/(?:v\d+\/)?([^?#]+)/);
+    if (match && match[1]) {
+      slug = match[1];
+      // strip extension from slug
+      if (slug.endsWith('.' + ext)) {
+        slug = slug.substring(0, slug.length - ext.length - 1);
+      }
+    }
+  }
+
+  // Fallback for other URLs (e.g. img.mrprem.in or others)
+  if (!slug) {
+    try {
+      const parsedUrl = new URL(imageUrl);
+      // Remove leading slash and extension
+      let pathname = parsedUrl.pathname;
+      if (pathname.startsWith('/')) {
+        pathname = pathname.substring(1);
+      }
+      if (pathname.endsWith('.' + ext)) {
+        pathname = pathname.substring(0, pathname.length - ext.length - 1);
+      }
+      slug = pathname || 'media-' + Math.random().toString(36).substr(2, 5);
+    } catch (e) {
+      slug = 'media-' + Math.random().toString(36).substr(2, 5);
+    }
+  }
+
+  return { slug, ext };
+}
+

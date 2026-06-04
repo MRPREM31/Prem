@@ -18,9 +18,10 @@ import {
   dbGetAllSettings,
   dbGetMemorableImages,
   dbGetMediaLibrary,
+  dbGetMediaBySlug,
   dbDeleteMediaLibrary
 } from './db.js';
-import { jsonResponse, errorResponse, log } from './utils.js';
+import { jsonResponse, errorResponse, log, parseImageUrl } from './utils.js';
 import { authenticateRequest } from './auth.js';
 
 /**
@@ -464,11 +465,12 @@ export async function handleSaveMediaLibrary(request, env) {
       return errorResponse('URL is required', 400, request);
     }
 
-    const slug = slugify(name || 'media') + '-' + Math.random().toString(36).substr(2, 5);
+    const { slug, ext } = parseImageUrl(url);
+    const brandedUrl = `https://mrprem.in/cdn/${slug}.${ext}`;
     const mediaData = {
       name: name || 'Media Asset',
       slug,
-      url,
+      url: brandedUrl,
       direct_image_url: url,
       imagekit_file_id: 'cloudinary-' + Date.now(),
       size: size || 0,
@@ -883,8 +885,11 @@ export async function handleGetImageSitemap(request, env, ctx) {
     // Dynamic CDN Images
     media.forEach(img => {
       if (img.url || img.direct_image_url) {
+        const brandedUrl = img.url && img.url.startsWith('https://mrprem.in/cdn/') 
+          ? img.url 
+          : `${siteUrl}/cdn/${img.slug}`;
         const cdnImageXml = imageBlock(
-          img.direct_image_url || img.url,
+          brandedUrl,
           `${img.name} - Premium CDN Asset`,
           `Branded CDN hosted asset representing ${img.name}.`
         );
@@ -936,6 +941,77 @@ export async function handleDeleteMediaLibrary(request, env) {
   } catch (err) {
     log('error', 'Failed to delete media asset in fallback', { error: err.message });
     return errorResponse('Failed to delete media asset', 500, request);
+  }
+}
+
+/**
+ * Handle GET /cdn/:slug (Branded CDN Image Proxy)
+ */
+export async function handleGetCdnImage(request, env, ctx) {
+  const cache = caches.default;
+  const cacheKey = new Request(request.url, request);
+
+  try {
+    // 1. Try serving from Cloudflare Edge Cache first
+    let cachedResponse = await cache.match(cacheKey);
+    if (cachedResponse) {
+      const headers = new Headers(cachedResponse.headers);
+      headers.set('X-CDN-Cache', 'HIT');
+      return new Response(cachedResponse.body, {
+        status: cachedResponse.status,
+        statusText: cachedResponse.statusText,
+        headers
+      });
+    }
+
+    // 2. Parse the slug from path, removing standard extensions
+    const url = new URL(request.url);
+    let fullSlug = url.pathname;
+    if (fullSlug.startsWith('/cdn/')) {
+      fullSlug = fullSlug.substring(5);
+    }
+    
+    if (!fullSlug) {
+      return errorResponse('Image slug is required', 400, request);
+    }
+
+    const slug = fullSlug.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
+
+    // 3. Query Supabase for matching record
+    const media = await dbGetMediaBySlug(env, slug);
+    if (!media) {
+      return errorResponse('Image not found', 404, request);
+    }
+
+    // Use direct_image_url or fallback to url if direct_image_url is not migrated
+    const originalUrl = media.direct_image_url || media.url;
+    if (!originalUrl || originalUrl.startsWith('https://mrprem.in/cdn/')) {
+      return errorResponse('Original image source is invalid', 400, request);
+    }
+
+    // 4. Fetch the image from Cloudinary/ImageKit
+    const response = await fetch(originalUrl);
+    if (!response.ok) {
+      return errorResponse('Failed to fetch original image from source', response.status, request);
+    }
+
+    // 5. Construct client response with proper content headers
+    const contentType = response.headers.get('Content-Type') || 'image/jpeg';
+    const clientResponse = new Response(response.body, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, s-maxage=2592000', // Cache for 30 days
+        'X-CDN-Cache': 'MISS'
+      }
+    });
+
+    // 6. Put in default cache in background
+    ctx.waitUntil(cache.put(cacheKey, clientResponse.clone()));
+    return clientResponse;
+  } catch (err) {
+    log('error', 'CDN image routing failed', { error: err.message });
+    return errorResponse('Internal server error', 500, request);
   }
 }
 
