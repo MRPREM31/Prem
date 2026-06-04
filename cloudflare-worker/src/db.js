@@ -23,7 +23,19 @@ async function callSupabase(env, path, options = {}, retries = 3, delay = 100) {
 
       if (response.ok) {
         if (response.status === 204) return null;
-        return await response.json();
+        const data = await response.json();
+        if (options.returnWithCount) {
+          const contentRange = response.headers.get('content-range');
+          let count = 0;
+          if (contentRange) {
+            const parts = contentRange.split('/');
+            if (parts.length > 1) {
+              count = parseInt(parts[1], 10);
+            }
+          }
+          return { data, count };
+        }
+        return data;
       }
 
       if (response.status >= 500 && i < retries - 1) {
@@ -255,4 +267,80 @@ export async function dbInsertMediaLibrary(env, mediaData) {
   };
   return callSupabase(env, 'media_library', options);
 }
+
+/**
+ * Fetch all certificates sorted by id descending
+ */
+export async function dbGetCertificates(env) {
+  return callSupabase(env, 'certificates?select=*&order=id.desc');
+}
+
+/**
+ * Fetch a single certificate by id or slug
+ */
+export async function dbGetCertificateByIdOrSlug(env, idOrSlug) {
+  const isId = /^\d+$/.test(idOrSlug);
+  const filterQuery = isId ? `id=eq.${idOrSlug}` : `slug=eq.${idOrSlug}`;
+  const certificates = await callSupabase(env, `certificates?select=*&${filterQuery}`);
+  return certificates && certificates.length > 0 ? certificates[0] : null;
+}
+
+/**
+ * Fetch a setting record by key
+ */
+export async function dbGetSetting(env, key) {
+  const results = await callSupabase(env, `settings?select=*&key=eq.${key}`);
+  return results && results.length > 0 ? results[0] : null;
+}
+
+/**
+ * Fetch messages paginated and return total count
+ */
+export async function dbGetMessagesPaginated(env, page, limit) {
+  const offset = (page - 1) * limit;
+  const options = {
+    headers: {
+      'Prefer': 'count=exact'
+    },
+    returnWithCount: true
+  };
+  return callSupabase(env, `messages?select=*&order=id.desc&limit=${limit}&offset=${offset}`, options);
+}
+
+/**
+ * Fetch visitors paginated and return total count
+ */
+export async function dbGetVisitorsPaginated(env, page, limit) {
+  const offset = (page - 1) * limit;
+  const options = {
+    headers: {
+      'Prefer': 'count=exact'
+    },
+    returnWithCount: true
+  };
+  return callSupabase(env, `visitors?select=*&order=visited_at.desc&limit=${limit}&offset=${offset}`, options);
+}
+
+/**
+ * Fetch all setting records
+ */
+export async function dbGetAllSettings(env) {
+  return callSupabase(env, 'settings?select=*');
+}
+
+/**
+ * Fetch all memorable images
+ */
+export async function dbGetMemorableImages(env) {
+  return callSupabase(env, 'memorable_images?select=*&order=id.desc');
+}
+
+/**
+ * Fetch all media library records
+ */
+export async function dbGetMediaLibrary(env) {
+  return callSupabase(env, 'media_library?select=*&order=upload_date.desc');
+}
+
+
 

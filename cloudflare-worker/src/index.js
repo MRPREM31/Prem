@@ -11,7 +11,16 @@ import {
   handleSaveCertificate,
   handleSaveMemorableImage,
   handleSaveProjectImages,
-  handleSaveMediaLibrary
+  handleSaveMediaLibrary,
+  handleGetCertificates,
+  handleGetCertificateDetail,
+  handleGetResume,
+  handleGetProfileImage,
+  handleGetAdminMessages,
+  handleGetAdminVisitors,
+  handleGetSitemapIndex,
+  handleGetSitemap,
+  handleGetImageSitemap
 } from './handlers.js';
 import { dbTestConnection } from './db.js';
 
@@ -28,6 +37,17 @@ export default {
     // 2. Handle Custom Health Check Route (Bypasses proxy)
     if (path === '/api/health') {
       return handleHealthCheck(request, env);
+    }
+
+    // 2.5. Handle Sitemap Index & Image Sitemap (Bypasses proxy)
+    if (path === '/sitemap-index.xml' && request.method === 'GET') {
+      return handleGetSitemapIndex(request, env, ctx);
+    }
+    if (path === '/sitemap.xml' && request.method === 'GET') {
+      return handleGetSitemap(request, env, ctx);
+    }
+    if (path === '/image-sitemap.xml' && request.method === 'GET') {
+      return handleGetImageSitemap(request, env, ctx);
     }
 
     // 3. Pre-buffer request body if this is a mutating request.
@@ -120,6 +140,36 @@ async function handleFallback(request, env, ctx, path, bodyText) {
   // GET /api/reviews or GET /api/admin/reviews
   if ((path === '/api/reviews' || path === '/api/admin/reviews') && request.method === 'GET') {
     return handleGetReviews(request, env, ctx);
+  }
+
+  // GET /api/certificates
+  if (path === '/api/certificates' && request.method === 'GET') {
+    return handleGetCertificates(request, env, ctx);
+  }
+
+  // GET /api/certificates/:idOrSlug
+  if (path.startsWith('/api/certificates/') && request.method === 'GET') {
+    return handleGetCertificateDetail(request, env, ctx);
+  }
+
+  // GET /api/resume
+  if (path === '/api/resume' && request.method === 'GET') {
+    return handleGetResume(request, env);
+  }
+
+  // GET /api/profile-image
+  if (path === '/api/profile-image' && request.method === 'GET') {
+    return handleGetProfileImage(request, env);
+  }
+
+  // GET /api/admin/messages
+  if (path === '/api/admin/messages' && request.method === 'GET') {
+    return handleGetAdminMessages(request, env);
+  }
+
+  // GET /api/admin/visitors
+  if (path === '/api/admin/visitors' && request.method === 'GET') {
+    return handleGetAdminVisitors(request, env);
   }
 
   // POST /api/contact

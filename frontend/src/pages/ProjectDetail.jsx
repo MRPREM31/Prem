@@ -120,6 +120,7 @@ const ProjectDetail = () => {
             "@type": "SoftwareApplication",
             "name": project.title,
             "description": project.image_description || (project.description || '').substring(0, 160),
+            "image": project.images?.map(img => img.image_url && typeof img.image_url === 'string' && img.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${img.image_url}` : (img.image_url || '')) || [],
             "applicationCategory": "DeveloperApplication",
             "operatingSystem": "Web",
             "author": {
