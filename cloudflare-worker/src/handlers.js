@@ -17,7 +17,8 @@ import {
   dbGetVisitorsPaginated,
   dbGetAllSettings,
   dbGetMemorableImages,
-  dbGetMediaLibrary
+  dbGetMediaLibrary,
+  dbDeleteMediaLibrary
 } from './db.js';
 import { jsonResponse, errorResponse, log } from './utils.js';
 import { authenticateRequest } from './auth.js';
@@ -911,6 +912,33 @@ export async function handleGetImageSitemap(request, env, ctx) {
     return errorResponse('Failed to generate image sitemap', 500, request);
   }
 }
+
+/**
+ * Handle DELETE /api/media/:id (Media Library Fallback)
+ */
+export async function handleDeleteMediaLibrary(request, env) {
+  const admin = await authenticateRequest(request, env);
+  if (!admin) {
+    return errorResponse('Unauthorized access', 401, request);
+  }
+
+  try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    const id = pathParts[pathParts.length - 1];
+
+    if (!id) {
+      return errorResponse('Media ID is required', 400, request);
+    }
+
+    await dbDeleteMediaLibrary(env, id);
+    return jsonResponse({ success: true, message: 'Media deleted successfully' }, 200, request);
+  } catch (err) {
+    log('error', 'Failed to delete media asset in fallback', { error: err.message });
+    return errorResponse('Failed to delete media asset', 500, request);
+  }
+}
+
 
 
 

@@ -12,6 +12,7 @@ import {
   handleSaveMemorableImage,
   handleSaveProjectImages,
   handleSaveMediaLibrary,
+  handleDeleteMediaLibrary,
   handleGetCertificates,
   handleGetCertificateDetail,
   handleGetResume,
@@ -73,8 +74,10 @@ export default {
       path === '/api/admin/cloudinary-sign'
     ) && ['POST', 'PUT', 'PATCH'].includes(request.method);
 
-    if (isUploadOrMetadataWrite && isJson) {
-      log('info', `Bypassing proxy to execute direct metadata write on Worker`, { path });
+    const isMediaDelete = path.startsWith('/api/media/') && request.method === 'DELETE';
+
+    if ((isUploadOrMetadataWrite && isJson) || isMediaDelete) {
+      log('info', `Bypassing proxy to execute direct metadata write/delete on Worker`, { path });
       return handleFallback(request, env, ctx, path, bodyText);
     }
 
@@ -250,6 +253,9 @@ async function handleFallback(request, env, ctx, path, bodyText) {
   // Media Library fallback
   if (path === '/api/media/upload' && request.method === 'POST') {
     return handleSaveMediaLibrary(getMockRequest(), env);
+  }
+  if (path.startsWith('/api/media/') && request.method === 'DELETE') {
+    return handleDeleteMediaLibrary(getMockRequest(), env);
   }
 
 

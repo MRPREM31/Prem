@@ -2359,8 +2359,14 @@ app.delete('/api/media/:id', verifyToken, async (req, res) => {
 
     if (fetchError) throw fetchError;
 
-    // Delete from ImageKit
-    await imagekit.deleteFile(media.imagekit_file_id);
+    // Delete from ImageKit if it's a valid ImageKit ID (doesn't start with 'cloudinary')
+    if (media && media.imagekit_file_id && !media.imagekit_file_id.startsWith('cloudinary')) {
+      try {
+        await imagekit.deleteFile(media.imagekit_file_id);
+      } catch (ikErr) {
+        console.warn('Failed to delete from ImageKit:', ikErr.message);
+      }
+    }
 
     // Delete from Supabase
     const { error: deleteError } = await supabase

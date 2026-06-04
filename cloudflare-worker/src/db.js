@@ -342,5 +342,12 @@ export async function dbGetMediaLibrary(env) {
   return callSupabase(env, 'media_library?select=*&order=upload_date.desc');
 }
 
+/**
+ * Delete a media library record by ID
+ */
+export async function dbDeleteMediaLibrary(env, id) {
+  return callSupabase(env, `media_library?id=eq.${id}`, { method: 'DELETE' });
+}
+
 
 
