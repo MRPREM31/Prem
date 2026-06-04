@@ -316,12 +316,13 @@ export async function handleSaveSetting(request, env, settingKey) {
 
   try {
     const body = await request.json();
-    let value = '';
-    if (settingKey === 'profileImage') value = body.imageUrl || body.image;
-    else if (settingKey === 'resumeUrl') value = body.resumeUrl || body.resume;
-    else if (settingKey === 'faviconUrl') value = body.faviconUrl || body.favicon;
-    else if (settingKey === 'signatureUrl') value = body.signatureUrl || body.signature;
-    else if (settingKey === 'navbarImage') value = body.navbarImageUrl || body.navbar;
+    let value = body.imageUrl || body.url || body.image;
+    if (!value) {
+      if (settingKey === 'resumeUrl') value = body.resumeUrl || body.resume;
+      else if (settingKey === 'faviconUrl') value = body.faviconUrl || body.favicon;
+      else if (settingKey === 'signatureUrl') value = body.signatureUrl || body.signature;
+      else if (settingKey === 'navbarImage') value = body.navbarImageUrl || body.navbar;
+    }
 
     if (!value) {
       return errorResponse(`Value is required for setting key: ${settingKey}`, 400, request);
