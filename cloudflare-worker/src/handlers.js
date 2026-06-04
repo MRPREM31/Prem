@@ -737,7 +737,12 @@ export async function handleGetSitemap(request, env, ctx) {
 
     // Dynamic CDN Images
     media.forEach(img => {
-      addUrl(`/cdn/${img.slug}`, '0.6', 'yearly');
+      let path = `/cdn/${img.slug}`;
+      if (img.url && img.url.startsWith('https://mrprem.in/cdn/')) {
+        path = img.url.substring('https://mrprem.in'.length);
+      }
+      const isPriority = img.slug === 'portfolio/gakamqfzt0khjj76tg3h';
+      addUrl(path, isPriority ? '1.0' : '0.6', isPriority ? 'daily' : 'yearly');
     });
 
     xml += `</urlset>`;
