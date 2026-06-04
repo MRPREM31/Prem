@@ -83,6 +83,7 @@ const MediaLibrary = () => {
     
     try {
       // 1. Get secure signature from Worker
+      console.log('token exists =', !!token);
       const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 

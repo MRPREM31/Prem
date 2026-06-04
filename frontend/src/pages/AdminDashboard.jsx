@@ -662,6 +662,7 @@ const AdminDashboard = () => {
       else if (type === 'navbar') endpoint = 'upload-navbar';
 
       // 1. Get secure signature from Worker
+      console.log('token exists =', !!token);
       const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
@@ -778,6 +779,7 @@ const AdminDashboard = () => {
     setUploadingProjectImages(true);
     try {
       // 1. Get secure signature from Worker
+      console.log('token exists =', !!token);
       const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
@@ -933,6 +935,7 @@ const AdminDashboard = () => {
 
       // 1. If a new image is selected, upload directly to Cloudinary first
       if (certForm.image) {
+        console.log('token exists =', !!token);
         const signRes = await fetch(`/api/admin/cloudinary-sign`, {
           method: 'POST',
           headers: { 
@@ -1032,6 +1035,7 @@ const AdminDashboard = () => {
     setMemImageLoading(true);
     try {
       // 1. Get secure signature from Worker
+      console.log('token exists =', !!token);
       const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
