@@ -3,7 +3,7 @@ import SEO from '../components/SEO';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUpload, FaSearch, FaLink, FaShareAlt, FaDownload, FaTrash, FaPlus, FaImage, FaCopy, FaCheck } from 'react-icons/fa';
+import { FaUpload, FaSearch, FaLink, FaShareAlt, FaDownload, FaTrash, FaPlus, FaImage, FaCopy, FaCheck, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import '../components/MediaLibrary.css';
 
