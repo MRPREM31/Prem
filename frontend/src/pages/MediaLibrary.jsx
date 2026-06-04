@@ -83,7 +83,7 @@ const MediaLibrary = () => {
     
     try {
       // 1. Get secure signature from Worker
-      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+      const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const MediaLibrary = () => {
           const uploadData = await uploadRes.json();
 
           // 3. Save metadata to database as JSON
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
+          const res = await fetch(`/api/media/upload`, {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ const MediaLibrary = () => {
       'This will permanently remove this asset from ImageKit CDN and your library. This action cannot be undone.',
       async () => {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}`, {
+          const res = await fetch(`/api/media/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
           });

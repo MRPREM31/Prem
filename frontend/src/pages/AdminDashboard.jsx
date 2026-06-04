@@ -662,7 +662,7 @@ const AdminDashboard = () => {
       else if (type === 'navbar') endpoint = 'upload-navbar';
 
       // 1. Get secure signature from Worker
-      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+      const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -699,7 +699,7 @@ const AdminDashboard = () => {
       const secureUrl = uploadData.secure_url;
 
       // 3. Save the resulting URL to Supabase via Worker/Render
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/${endpoint}`, {
+      const res = await fetch(`/api/admin/${endpoint}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -778,7 +778,7 @@ const AdminDashboard = () => {
     setUploadingProjectImages(true);
     try {
       // 1. Get secure signature from Worker
-      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+      const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -822,7 +822,7 @@ const AdminDashboard = () => {
       }
 
       // 3. Save the resulting image URLs to the database
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/projects/${editingProject.id}/images`, {
+      const res = await fetch(`/api/admin/projects/${editingProject.id}/images`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -933,7 +933,7 @@ const AdminDashboard = () => {
 
       // 1. If a new image is selected, upload directly to Cloudinary first
       if (certForm.image) {
-        const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+        const signRes = await fetch(`/api/admin/cloudinary-sign`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -973,8 +973,8 @@ const AdminDashboard = () => {
       // 2. Submit certificate metadata as JSON
       const method = editingCert ? 'PUT' : 'POST';
       const url = editingCert 
-        ? `${import.meta.env.VITE_API_URL}/api/admin/certificates/${editingCert.id}` 
-        : `${import.meta.env.VITE_API_URL}/api/admin/certificates`;
+        ? `/api/admin/certificates/${editingCert.id}` 
+        : `/api/admin/certificates`;
       
       const res = await fetch(url, {
         method,
@@ -1032,7 +1032,7 @@ const AdminDashboard = () => {
     setMemImageLoading(true);
     try {
       // 1. Get secure signature from Worker
-      const signRes = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/cloudinary-sign`, {
+      const signRes = await fetch(`/api/admin/cloudinary-sign`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -1068,7 +1068,7 @@ const AdminDashboard = () => {
       const secureUrl = uploadData.secure_url;
 
       // 3. Save memory details as JSON
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/memorable-images`, {
+      const res = await fetch(`/api/admin/memorable-images`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
