@@ -75,9 +75,10 @@ export default {
     ) && ['POST', 'PUT', 'PATCH'].includes(request.method);
 
     const isMediaDelete = path.startsWith('/api/media/') && request.method === 'DELETE';
+    const isCloudinarySignGet = path === '/api/admin/cloudinary-sign' && request.method === 'GET';
 
-    if ((isUploadOrMetadataWrite && isJson) || isMediaDelete) {
-      log('info', `Bypassing proxy to execute direct metadata write/delete on Worker`, { path });
+    if ((isUploadOrMetadataWrite && isJson) || isMediaDelete || isCloudinarySignGet) {
+      log('info', `Bypassing proxy to execute direct metadata write/delete/GET on Worker`, { path });
       return handleFallback(request, env, ctx, path, bodyText);
     }
 
@@ -216,6 +217,11 @@ async function handleFallback(request, env, ctx, path, bodyText) {
   // POST /api/admin/cloudinary-sign
   if (path === '/api/admin/cloudinary-sign' && request.method === 'POST') {
     return handleCloudinarySign(getMockRequest(), env);
+  }
+
+  // GET /api/admin/cloudinary-sign
+  if (path === '/api/admin/cloudinary-sign' && request.method === 'GET') {
+    return jsonResponse({ error: 'Method Not Allowed. Cloudinary signature requests must use POST.' }, 405, request);
   }
 
   // Settings fallbacks
