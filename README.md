@@ -54,9 +54,18 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 - 🚀 **Performance**: Ultra-fast loading with Vite, smooth scroll restoration, and SEO optimization.
 - 🎨 **Premium UI**: Modern glassmorphism design with professional micro-animations.
 
+## 🛠️ Recent Updates (June 5, 2026)
+
+- 🌐 **Automatic Branded Image CDN URLs**: Built a custom image proxy route `/cdn/:slug` using a Cloudflare Worker to serve uploaded assets directly under the main domain `https://mrprem.in/cdn/...` with 30-day edge caching (`Cache-Control: public, s-maxage=2592000`) for near-zero latency.
+- 🗄️ **Supabase Auto-Migration Layer**: Programmed a background data migration inside database query utilities to automatically scan, migrate, and structure flat slugs to folder-scoped Cloudinary public IDs (e.g. `portfolio/...`) in Supabase.
+- 🗺️ **Dynamic Google Image Sitemap Indexing**: Implemented an automated Google Image Sitemap `/image-sitemap.xml` mapping media assets to their new branded URLs for search indexing.
+- 🚀 **Priority Crawler Indexing**: Integrated high-priority crawling (`1.0` priority, `daily` refresh rate) inside sitemaps for priority portfolio images.
+- 📂 **Media Library UI Enhancements**: Overhauled the Admin Media Library actions to copy and preview the branded CDN URLs (`item.url`) natively instead of raw Cloudinary secure URLs.
+- 🔀 **Vercel Reverse Proxying**: Integrated reverse-proxy rules in Vercel to seamlessly forward all `/cdn/*` traffic to the Cloudflare Worker edge.
+
 ---
 
-## 🛠️ Recent Updates (May 23, 2026)
+## 🛠️ Previous Updates (May 23, 2026)
 
 - 🖥️ **Premium Desktop Split-Dashboard**: Transformed the maintenance page layout on laptop and PC screens (width $\ge 1024$px) into an immersive, wide glassmorphic split dashboard (left status pane, right interactive action pane) with dynamic separators, while leaving mobile/tablet layouts 100% untouched.
 - 🎨 **High-Contrast Tab Favicon**: Replaced the blurry, thin-outlined favicon with a solid vibrant brand gradient circle containing an ultra-bold modern geometric white `"P"` monogram to guarantee flawless, razor-sharp legibility (down to 16x16 pixels) in both dark and light browser theme tabs.
