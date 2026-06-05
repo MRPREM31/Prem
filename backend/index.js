@@ -2343,6 +2343,7 @@ app.get('/sitemap.xml', async (req, res) => {
     addUrl('/all-certificates', '0.9', 'monthly');
     addUrl('/memories', '0.9', 'monthly');
     addUrl('/github-insights', '0.8', 'daily');
+    addUrl('/articles', '0.9', 'daily');
     addUrl('/prem-media-library', '0.7', 'monthly');
 
     // Dynamic Project Pages
@@ -2584,6 +2585,99 @@ app.post('/api/admin/cloudinary-sign', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('Cloudinary signing error:', err);
     res.status(500).json({ error: 'Failed to sign upload parameters' });
+  }
+});
+
+// --- MEDIUM RSS FEED INTEGRATION ---
+function parseMediumRSS(xmlText) {
+  const items = [];
+  const itemParts = xmlText.split('<item>');
+  
+  for (let i = 1; i < itemParts.length; i++) {
+    const itemXml = itemParts[i];
+    
+    const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) || itemXml.match(/<title>([\s\S]*?)<\/title>/i);
+    const linkMatch = itemXml.match(/<link><!\[CDATA\[([\s\S]*?)\]\]><\/link>/i) || itemXml.match(/<link>([\s\S]*?)<\/link>/i);
+    const pubDateMatch = itemXml.match(/<pubDate><!\[CDATA\[([\s\S]*?)\]\]><\/pubDate>/i) || itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
+    const contentMatch = itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i) || itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/i);
+    
+    const title = titleMatch ? titleMatch[1].trim() : '';
+    const link = linkMatch ? linkMatch[1].trim() : '';
+    const pubDate = pubDateMatch ? pubDateMatch[1].trim() : '';
+    const content = contentMatch ? contentMatch[1].trim() : '';
+    
+    const categories = [];
+    const categoryMatches = itemXml.matchAll(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/gi);
+    for (const match of categoryMatches) {
+      categories.push(match[1].trim());
+    }
+    if (categories.length === 0) {
+      const categoryMatchesRaw = itemXml.matchAll(/<category>([\s\S]*?)<\/category>/gi);
+      for (const match of categoryMatchesRaw) {
+        categories.push(match[1].trim());
+      }
+    }
+    
+    let imageUrl = '';
+    const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (imgMatch) {
+      imageUrl = imgMatch[1];
+    }
+    
+    const cleanText = content
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim();
+      
+    const excerpt = cleanText.length > 180 ? cleanText.substring(0, 180) + '...' : cleanText;
+    const wordCount = cleanText.split(/\s+/).filter(Boolean).length;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+    
+    items.push({
+      title,
+      link,
+      pubDate,
+      categories,
+      imageUrl,
+      excerpt,
+      readingTime
+    });
+  }
+  return items;
+}
+
+let cachedArticles = null;
+let articlesCacheTimestamp = 0;
+const ARTICLES_CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+
+app.get('/api/articles', async (req, res) => {
+  const now = Date.now();
+  if (cachedArticles && (now - articlesCacheTimestamp < ARTICLES_CACHE_DURATION)) {
+    return res.json(cachedArticles);
+  }
+  
+  try {
+    const feedRes = await fetch('https://medium.com/feed/@mr.prem');
+    if (!feedRes.ok) {
+      throw new Error(`Failed to fetch RSS feed, status: ${feedRes.status}`);
+    }
+    const xmlText = await feedRes.text();
+    const articles = parseMediumRSS(xmlText);
+    
+    cachedArticles = articles;
+    articlesCacheTimestamp = now;
+    res.json(articles);
+  } catch (err) {
+    console.error('Error fetching/parsing Medium RSS feed:', err);
+    if (cachedArticles) {
+      return res.json(cachedArticles);
+    }
+    res.status(500).json({ error: 'Failed to retrieve articles' });
   }
 });
 

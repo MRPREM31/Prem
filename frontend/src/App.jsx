@@ -205,6 +205,7 @@ function App() {
         <Route path="/cdn/:slug" element={<PublicImageDetail />} />
         <Route path="/secure-portal" element={<SecurePortal />} />
         <Route path="/admin/manage-vault" element={<AdminVault />} />
+        <Route path="/articles" element={<Articles />} />
         
         {/* Catch-all redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1021,6 +1021,108 @@ export async function handleGetCdnImage(request, env, ctx) {
   }
 }
 
+// Helper: Parse Medium RSS Feed XML to JSON
+function parseMediumRSS(xmlText) {
+  const items = [];
+  const itemParts = xmlText.split('<item>');
+  
+  for (let i = 1; i < itemParts.length; i++) {
+    const itemXml = itemParts[i];
+    
+    const titleMatch = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/i) || itemXml.match(/<title>([\s\S]*?)<\/title>/i);
+    const linkMatch = itemXml.match(/<link><!\[CDATA\[([\s\S]*?)\]\]><\/link>/i) || itemXml.match(/<link>([\s\S]*?)<\/link>/i);
+    const pubDateMatch = itemXml.match(/<pubDate><!\[CDATA\[([\s\S]*?)\]\]><\/pubDate>/i) || itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
+    const contentMatch = itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/i) || itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/i);
+    
+    const title = titleMatch ? titleMatch[1].trim() : '';
+    const link = linkMatch ? linkMatch[1].trim() : '';
+    const pubDate = pubDateMatch ? pubDateMatch[1].trim() : '';
+    const content = contentMatch ? contentMatch[1].trim() : '';
+    
+    const categories = [];
+    const categoryMatches = itemXml.matchAll(/<category><!\[CDATA\[([\s\S]*?)\]\]><\/category>/gi);
+    for (const match of categoryMatches) {
+      categories.push(match[1].trim());
+    }
+    if (categories.length === 0) {
+      const categoryMatchesRaw = itemXml.matchAll(/<category>([\s\S]*?)<\/category>/gi);
+      for (const match of categoryMatchesRaw) {
+        categories.push(match[1].trim());
+      }
+    }
+    
+    let imageUrl = '';
+    const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (imgMatch) {
+      imageUrl = imgMatch[1];
+    }
+    
+    const cleanText = content
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim();
+      
+    const excerpt = cleanText.length > 180 ? cleanText.substring(0, 180) + '...' : cleanText;
+    const wordCount = cleanText.split(/\s+/).filter(Boolean).length;
+    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+    
+    items.push({
+      title,
+      link,
+      pubDate,
+      categories,
+      imageUrl,
+      excerpt,
+      readingTime
+    });
+  }
+  return items;
+}
+
+/**
+ * Handle GET /api/articles (Medium RSS articles feed proxy and parser)
+ */
+export async function handleGetArticles(request, env, ctx) {
+  const cache = caches.default;
+  const cacheKey = new Request(request.url, request);
+
+  try {
+    let cachedResponse = await cache.match(cacheKey);
+    if (cachedResponse) {
+      const headers = new Headers(cachedResponse.headers);
+      headers.set('X-Articles-Cache', 'HIT');
+      return new Response(cachedResponse.body, {
+        status: 200,
+        headers
+      });
+    }
+
+    const feedRes = await fetch('https://medium.com/feed/@mr.prem');
+    if (!feedRes.ok) {
+      return errorResponse(`Failed to fetch RSS feed, status: ${feedRes.status}`, 502, request);
+    }
+
+    const xmlText = await feedRes.text();
+    const articles = parseMediumRSS(xmlText);
+
+    const articlesResponse = jsonResponse(articles, 200, request);
+    articlesResponse.headers.set('Cache-Control', 'public, s-maxage=3600'); // Cache for 1 hour
+    articlesResponse.headers.set('X-Articles-Cache', 'MISS');
+
+    ctx.waitUntil(cache.put(cacheKey, articlesResponse.clone()));
+
+    return articlesResponse;
+  } catch (err) {
+    log('error', 'Failed to retrieve articles in Worker', { error: err.message });
+    return errorResponse('Failed to retrieve articles', 500, request);
+  }
+}
+
 
 
 

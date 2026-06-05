@@ -22,7 +22,8 @@ import {
   handleGetSitemapIndex,
   handleGetSitemap,
   handleGetImageSitemap,
-  handleGetCdnImage
+  handleGetCdnImage,
+  handleGetArticles
 } from './handlers.js';
 import { dbTestConnection } from './db.js';
 
@@ -53,6 +54,9 @@ export default {
     }
     if (path.startsWith('/cdn/') && request.method === 'GET') {
       return handleGetCdnImage(request, env, ctx);
+    }
+    if (path === '/api/articles' && request.method === 'GET') {
+      return handleGetArticles(request, env, ctx);
     }
 
     // 3. Pre-buffer request body if this is a mutating request.
