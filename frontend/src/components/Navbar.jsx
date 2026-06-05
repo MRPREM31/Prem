@@ -148,8 +148,7 @@ const Navbar = () => {
                 <li style={{ "--i": 5 }} className={activeSection === 'certificates' ? 'activeSection' : ''}><a href={isHome ? "#certificates" : "/#certificates"} onClick={() => setIsMobileMenuOpen(false)}>Certificates</a></li>
                 <li style={{ "--i": 6 }} className={activeSection === 'journey' ? 'activeSection' : ''}><a href={isHome ? "#journey" : "/#journey"} onClick={() => setIsMobileMenuOpen(false)}>My Journey</a></li>
                 <li style={{ "--i": 7 }} className={activeSection === 'memories' ? 'activeSection' : ''}><a href={isHome ? "#memories" : "/#memories"} onClick={() => setIsMobileMenuOpen(false)}>Memories</a></li>
-                <li style={{ "--i": 8 }} className={currentPath === '/articles' ? 'activeSection' : ''}><a href="/articles" onClick={() => setIsMobileMenuOpen(false)}>Articles</a></li>
-                <li style={{ "--i": 9 }}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
+                <li style={{ "--i": 8 }}><a href={isHome ? "#contact" : "/#contact"} className="contact-btn" onClick={() => setIsMobileMenuOpen(false)}>Contact Me</a></li>
               </>
             )}
             <div className="nav-indicator-line"></div>
