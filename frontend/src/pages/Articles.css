@@ -450,6 +450,7 @@
 .medium-cta-section {
   text-align: center;
   margin-top: 80px;
+  margin-bottom: 60px;
 }
 
 .cta-box {
@@ -572,5 +573,10 @@
   
   .cta-box {
     padding: 24px;
+  }
+
+  .medium-cta-section {
+    margin-top: 50px;
+    margin-bottom: 40px;
   }
 }
