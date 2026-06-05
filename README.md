@@ -56,6 +56,8 @@ This repository hosts my **Full-Stack Professional Portfolio**, a premium system
 
 ## 🛠️ Recent Updates (June 5, 2026)
 
+- 🔐 **Google Authenticator (TOTP) Integration**: Implemented Google Authenticator (TOTP) as a fail-safe secondary password reset method. Generated secure base32 secrets and QR codes, added full endpoint validation using `speakeasy`, set up client-side rate-limiting, and enabled admin to scan/verify TOTP codes directly via Google Authenticator.
+- 💬 **Telegram Bot OTP & Notifications**: Replaced Gmail SMTP with a Telegram Bot OTP system to bypass Render IPv6 SMTP failures. Added Telegram-based security alert notifications triggered automatically upon any administrator password reset.
 - 🌐 **Automatic Branded Image CDN URLs**: Built a custom image proxy route `/cdn/:slug` using a Cloudflare Worker to serve uploaded assets directly under the main domain `https://mrprem.in/cdn/...` with 30-day edge caching (`Cache-Control: public, s-maxage=2592000`) for near-zero latency.
 - 🗄️ **Supabase Auto-Migration Layer**: Programmed a background data migration inside database query utilities to automatically scan, migrate, and structure flat slugs to folder-scoped Cloudinary public IDs (e.g. `portfolio/...`) in Supabase.
 - 🗺️ **Dynamic Google Image Sitemap Indexing**: Implemented an automated Google Image Sitemap `/image-sitemap.xml` mapping media assets to their new branded URLs for search indexing.

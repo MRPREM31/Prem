@@ -15,6 +15,8 @@ const crypto = require('crypto');
 const Groq = require('groq-sdk');
 const slugify = require('slugify');
 const ImageKit = require('imagekit');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 const app = express();
 
 const imagekit = new ImageKit({
@@ -858,6 +860,109 @@ app.post('/api/admin/vault-credentials', verifyToken, verifySuperAdmin, async (r
   }
 });
 
+// --- GOOGLE AUTHENTICATOR (TOTP) SYSTEM ---
+
+const authenticatorAttempts = {}; // simple in-memory rate limiting store
+
+// API: Setup Google Authenticator QR Code
+app.get('/api/admin/setup-authenticator', verifyToken, async (req, res) => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'mr.prem2006@gmail.com';
+    const secret = speakeasy.generateSecret({
+      name: `Prem Portfolio (${adminEmail})`
+    });
+
+    const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
+
+    // Try saving to database as a backup
+    try {
+      await supabase.from('admins').update({ totp_secret: secret.base32 }).eq('email', adminEmail);
+    } catch (e) {
+      console.log('totp_secret column might be missing, rely on TOTP_SECRET environment variable.');
+    }
+
+    res.json({
+      success: true,
+      secret: secret.base32,
+      qrCodeUrl
+    });
+  } catch (err) {
+    console.error('Failed to setup authenticator:', err);
+    res.status(500).json({ error: 'Failed to generate authenticator configuration' });
+  }
+});
+
+// API: Verify Google Authenticator Code
+app.post('/api/admin/verify-authenticator', async (req, res) => {
+  const { email, code } = req.body;
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'mr.prem2006@gmail.com';
+    if (!email || email.toLowerCase() !== adminEmail.toLowerCase()) {
+      return res.status(404).json({ error: 'Admin email not found' });
+    }
+
+    const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
+    if (error || !admin) {
+      return res.status(404).json({ error: 'Admin email not found' });
+    }
+
+    const ip = (req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '').split(',')[0].trim();
+    const attemptKey = `${ip}:${email}`;
+    const now = Date.now();
+
+    // Rate limiting check
+    if (authenticatorAttempts[attemptKey]) {
+      const attempt = authenticatorAttempts[attemptKey];
+      if (attempt.count >= 5 && now - attempt.lastAttempt < 15 * 60 * 1000) {
+        const timeLeft = Math.ceil((15 * 60 * 1000 - (now - attempt.lastAttempt)) / 1000 / 60);
+        return res.status(429).json({ error: `Too many failed attempts. Try again in ${timeLeft} minutes.` });
+      }
+    }
+
+    const totpSecret = process.env.TOTP_SECRET || admin.totp_secret;
+    if (!totpSecret) {
+      return res.status(400).json({ error: 'Authenticator has not been configured. Setup via dashboard first.' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: totpSecret,
+      encoding: 'base32',
+      token: code,
+      window: 1
+    });
+
+    if (!verified) {
+      if (!authenticatorAttempts[attemptKey]) {
+        authenticatorAttempts[attemptKey] = { count: 0, lastAttempt: 0 };
+      }
+      authenticatorAttempts[attemptKey].count += 1;
+      authenticatorAttempts[attemptKey].lastAttempt = now;
+      return res.status(400).json({ success: false, error: 'Invalid authenticator code' });
+    }
+
+    // Reset rate limiter on success
+    delete authenticatorAttempts[attemptKey];
+
+    // Generate a temporary reset OTP code for standard password reset API compatibility
+    const tempOtp = 'TOTP-' + Math.floor(100000 + Math.random() * 900000);
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    const { error: updateError } = await supabase
+      .from('admins')
+      .update({ reset_otp: tempOtp, otp_expiry: expiry })
+      .eq('email', email);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    res.json({ success: true, tempOtp });
+  } catch (err) {
+    console.error('Authenticator verification error:', err);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
+
 // --- FORGOT PASSWORD & OTP SYSTEM ---
 
 function parseUserAgent(ua) {
@@ -1002,7 +1107,7 @@ app.post('/api/admin/reset-password', async (req, res) => {
           },
           body: JSON.stringify({
             chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: `✅ MRPREM Portfolio Security Alert\n\nYour administrator account password has been changed successfully.\n\n━━━━━━━━━━━━━━━━━━\n📧 Email: ${email}\n🕒 Time: ${currentTime}\n🌐 IP Address: ${ip}\n🖥️ Device: ${device}\n━━━━━━━━━━━━━━━━━━\n\nIf you made this change, no further action is required.\n\n⚠️ If you did NOT change your password:\n\n• Reset your password immediately.\n• Review account activity.\n• Secure your devices and browser sessions.\n• Contact support if unauthorized access is suspected.\n\nMRPREM Security System\nhttps://mrprem.in/prem-login-2026`
+            text: `✅ MRPREM Portfolio Security Alert\n\nYour administrator account password has been changed successfully.\n\n📧 Email: ${email}\n🕒 Time: ${currentTime}\n🌐 IP Address: ${ip}\n\nIf you did NOT make this change, secure your account immediately.\n\nMRPREM Security System\nhttps://mrprem.in/prem-login-2026`
           })
         }
       );
