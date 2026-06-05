@@ -860,6 +860,26 @@ app.post('/api/admin/vault-credentials', verifyToken, verifySuperAdmin, async (r
 
 // --- FORGOT PASSWORD & OTP SYSTEM ---
 
+function parseUserAgent(ua) {
+  if (!ua) return 'Unknown Device';
+  let os = 'Unknown OS';
+  let browser = 'Unknown Browser';
+
+  if (ua.includes('Windows')) os = 'Windows';
+  else if (ua.includes('Macintosh') || ua.includes('Mac OS')) os = 'macOS';
+  else if (ua.includes('Linux')) os = 'Linux';
+  else if (ua.includes('Android')) os = 'Android';
+  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+  if (ua.includes('Chrome')) browser = 'Chrome';
+  else if (ua.includes('Safari')) browser = 'Safari';
+  else if (ua.includes('Firefox')) browser = 'Firefox';
+  else if (ua.includes('Edg')) browser = 'Edge';
+  else if (ua.includes('OPR') || ua.includes('Opera')) browser = 'Opera';
+
+  return `${os} / ${browser}`;
+}
+
 // API: Request Password Reset OTP
 app.post('/api/admin/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -892,6 +912,11 @@ app.post('/api/admin/forgot-password', async (req, res) => {
     }
 
     try {
+      const ip = (req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '').split(',')[0].trim();
+      const ua = req.headers['user-agent'] || '';
+      const device = parseUserAgent(ua);
+      const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'medium' }) + ' (IST)';
+
       const response = await fetch(
         `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
         {
@@ -901,7 +926,7 @@ app.post('/api/admin/forgot-password', async (req, res) => {
           },
           body: JSON.stringify({
             chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: `🔐 Portfolio Admin OTP\n\nOTP: ${otp}\n\nValid for 10 minutes.`
+            text: `🔐 MRPREM Portfolio Security Alert\n\nA password reset request has been initiated for your administrator account.\n\n━━━━━━━━━━━━━━━━━━\n📧 Email: ${email}\n🕒 Time: ${currentTime}\n🌐 IP Address: ${ip}\n🖥️ Device: ${device}\n━━━━━━━━━━━━━━━━━━\n\n🔑 One-Time Password (OTP)\n\nOTP: ${otp}\n\nThis OTP is valid for 10 minutes and can only be used once.\n\n⚠️ If you did not request this password reset, do not share this OTP with anyone and review your account security immediately.\n\nMRPREM Security System\nhttps://mrprem.in/prem-login-2026`
           })
         }
       );
@@ -961,6 +986,30 @@ app.post('/api/admin/reset-password', async (req, res) => {
       otp_expiry: null 
     }).eq('email', email);
 
+    // Send Telegram Notification
+    try {
+      const ip = (req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '').split(',')[0].trim();
+      const ua = req.headers['user-agent'] || '';
+      const device = parseUserAgent(ua);
+      const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'medium' }) + ' (IST)';
+
+      await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: `✅ MRPREM Portfolio Security Alert\n\nYour administrator account password has been changed successfully.\n\n━━━━━━━━━━━━━━━━━━\n📧 Email: ${email}\n🕒 Time: ${currentTime}\n🌐 IP Address: ${ip}\n🖥️ Device: ${device}\n━━━━━━━━━━━━━━━━━━\n\nIf you made this change, no further action is required.\n\n⚠️ If you did NOT change your password:\n\n• Reset your password immediately.\n• Review account activity.\n• Secure your devices and browser sessions.\n• Contact support if unauthorized access is suspected.\n\nMRPREM Security System\nhttps://mrprem.in/prem-login-2026`
+          })
+        }
+      );
+    } catch (telegramErr) {
+      console.error('Failed to send password reset Telegram notification:', telegramErr);
+    }
+
     res.json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -979,6 +1028,30 @@ app.post('/api/admin/change-password', verifyToken, async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await supabase.from('admins').update({ password: hashedPassword }).eq('email', email);
+
+    // Send Telegram Notification
+    try {
+      const ip = (req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '').split(',')[0].trim();
+      const ua = req.headers['user-agent'] || '';
+      const device = parseUserAgent(ua);
+      const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'medium' }) + ' (IST)';
+
+      await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: `✅ MRPREM Portfolio Security Alert\n\nYour administrator account password has been changed successfully.\n\n━━━━━━━━━━━━━━━━━━\n📧 Email: ${email}\n🕒 Time: ${currentTime}\n🌐 IP Address: ${ip}\n🖥️ Device: ${device}\n━━━━━━━━━━━━━━━━━━\n\nIf you made this change, no further action is required.\n\n⚠️ If you did NOT change your password:\n\n• Reset your password immediately.\n• Review account activity.\n• Secure your devices and browser sessions.\n• Contact support if unauthorized access is suspected.\n\nMRPREM Security System\nhttps://mrprem.in/prem-login-2026`
+          })
+        }
+      );
+    } catch (telegramErr) {
+      console.error('Failed to send password change Telegram notification:', telegramErr);
+    }
 
     res.json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
