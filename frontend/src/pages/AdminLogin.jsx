@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import './Admin.css';
 
 const AdminLogin = () => {
-  const [mode, setMode] = useState('login'); // login, forgot, otp, reset
   const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [otp, setOtp] = useState('');
-  const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [method, setMethod] = useState('telegram'); // telegram or authenticator
-  const [authCode, setAuthCode] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -23,6 +25,7 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setMessage('');
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/login`, {
         method: 'POST',
@@ -37,180 +40,48 @@ const AdminLogin = () => {
       } else {
         setError(data.error || 'Invalid login');
       }
-    } catch (err) { setError('Server error'); }
-    setLoading(false);
-  };
-
-  const handleForgot = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: credentials.email })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage('OTP sent to Telegram!');
-        setMode('otp');
-      } else { setError(data.error); }
-    } catch (err) { setError('Server error'); }
-    setLoading(false);
-  };
-
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: credentials.email, otp })
-      });
-      if (res.ok) {
-        setMode('reset');
-      } else {
-        const data = await res.json();
-        setError(data.error);
-      }
-    } catch (err) { setError('Server error'); }
-    setLoading(false);
-  };
-
-  const handleVerifyAuthenticator = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/verify-authenticator`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: credentials.email, code: authCode })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setOtp(data.tempOtp);
-        setMode('reset');
-      } else {
-        setError(data.error || 'Invalid authenticator code');
-      }
-    } catch (err) { setError('Server error'); }
-    setLoading(false);
-  };
-
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: credentials.email, otp, newPassword })
-      });
-      if (res.ok) {
-        setMessage('Password reset successful! Please login.');
-        setMode('login');
-      } else {
-        const data = await res.json();
-        setError(data.error);
-      }
-    } catch (err) { setError('Server error'); }
+    } catch (err) { 
+      setError('Server error'); 
+    }
     setLoading(false);
   };
 
   return (
     <div className="admin-page">
       <SEO title="Admin Portal" noindex={true} />
-      <div className="admin-login-box glass-panel">
-        <h2 className="gradient-text text-center">
-          {mode === 'login' && 'Admin Login'}
-          {mode === 'forgot' && 'Reset Password'}
-          {mode === 'otp' && 'Verify OTP'}
-          {mode === 'reset' && 'New Password'}
-        </h2>
+      <div className="admin-login-box glass-panel text-center">
+        <div className="security-icon-header mb-4">
+          <span style={{ fontSize: '3rem' }}>🔒</span>
+        </div>
+        <h2 className="gradient-text text-center">Admin Login</h2>
 
-        {message && <p className="success-text text-center">{message}</p>}
-        {error && <p className="error-text text-center">{error}</p>}
+        {message && <p className="success-text text-center mb-4">{message}</p>}
+        {error && <p className="error-text text-center mb-4">{error}</p>}
 
-        {mode === 'login' && (
-          <form onSubmit={handleLogin} className="admin-form">
-            <input type="email" name="email" placeholder="Authorized Email" value={credentials.email} onChange={handleChange} required />
-            <input type="password" name="password" placeholder="Password" value={credentials.password} onChange={handleChange} required />
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-            <p className="text-center mt-3">
-              <span className="link-text" onClick={() => setMode('forgot')}>Forgot Password?</span>
-            </p>
-          </form>
-        )}
-
-        {mode === 'forgot' && (
-          <div className="admin-form">
-            <p className="text-muted text-center mb-4">
-              Select verification method to reset your password.
-            </p>
-
-            <div className="verification-method-group mb-4" style={{ display: 'flex', gap: '20px', justifyContent: 'center', color: '#f1f5f9' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="radio" name="verificationMethod" value="telegram" checked={method === 'telegram'} onChange={() => setMethod('telegram')} />
-                Telegram OTP
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="radio" name="verificationMethod" value="authenticator" checked={method === 'authenticator'} onChange={() => setMethod('authenticator')} />
-                Authenticator
-              </label>
-            </div>
-
-            {method === 'telegram' ? (
-              <form onSubmit={handleForgot}>
-                <input type="email" name="email" placeholder="Email Address" value={credentials.email} onChange={handleChange} required />
-                <button type="submit" className="btn btn-outline w-full" disabled={loading}>
-                  {loading ? 'Sending OTP...' : 'Send Telegram OTP'}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyAuthenticator}>
-                <input type="email" name="email" placeholder="Email Address" value={credentials.email} onChange={handleChange} required />
-                <input type="text" placeholder="6-Digit Authenticator Code" value={authCode} onChange={(e) => setAuthCode(e.target.value)} required maxLength="6" className="text-center letter-spacing-lg" />
-                <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-                  {loading ? 'Verifying...' : 'Verify & Proceed'}
-                </button>
-              </form>
-            )}
-
-            <p className="text-center mt-4">
-              <span className="link-text" onClick={() => setMode('login')}>Back to Login</span>
-            </p>
-          </div>
-        )}
-
-        {mode === 'otp' && (
-          <form onSubmit={handleVerifyOtp} className="admin-form">
-            <p className="text-muted text-center mb-3">Enter the code sent to your Telegram bot.</p>
-            <input type="text" placeholder="6-Digit OTP" value={otp} onChange={(e) => setOtp(e.target.value)} required maxLength="6" className="text-center letter-spacing-lg" />
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? 'Verifying...' : 'Verify OTP'}
-            </button>
-            <p className="text-center mt-3">
-              <span className="link-text" onClick={() => setMode('forgot')}>Resend OTP</span>
-            </p>
-          </form>
-        )}
-
-        {mode === 'reset' && (
-          <form onSubmit={handleResetPassword} className="admin-form">
-            <p className="text-muted text-center mb-3">Create a strong new password.</p>
-            <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? 'Resetting...' : 'Update Password'}
-            </button>
-          </form>
-        )}
+        <form onSubmit={handleLogin} className="admin-form">
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Authorized Email" 
+            value={credentials.email} 
+            onChange={handleChange} 
+            required 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            value={credentials.password} 
+            onChange={handleChange} 
+            required 
+          />
+          <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+          <p className="text-center mt-3">
+            <Link to="/prem-login-2026/forgot-password" className="link-text">Forgot Password?</Link>
+          </p>
+        </form>
       </div>
     </div>
   );

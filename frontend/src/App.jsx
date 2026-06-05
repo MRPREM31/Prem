@@ -3,6 +3,8 @@ import { HelmetProvider } from 'react-helmet-async'
 import { useEffect, useState } from 'react'
 import Portfolio from './pages/Portfolio'
 import AdminLogin from './pages/AdminLogin'
+import AdminForgotPassword from './pages/AdminForgotPassword'
+import AdminResetPassword from './pages/AdminResetPassword'
 import AdminDashboard from './pages/AdminDashboard'
 import CertificateDetail from './pages/CertificateDetail'
 import ProjectDetail from './pages/ProjectDetail'
@@ -183,6 +185,9 @@ function App() {
         
         {/* Secure Admin Routes */}
         <Route path="/prem-login-2026" element={<AdminLogin />} />
+        <Route path="/prem-login-2026/forgot-password" element={<AdminForgotPassword />} />
+        <Route path="/prem-login-2026/reset-password" element={<AdminResetPassword />} />
+        <Route path="/prem-login-2026/dashboard" element={<AdminDashboard />} />
         <Route path="/prem-dashboard-2026" element={<AdminDashboard />} />
         <Route path="/personal-vault" element={<PersonalVault />} />
         <Route path="/all-messages" element={<AllMessages />} />
