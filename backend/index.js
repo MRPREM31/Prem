@@ -11,7 +11,6 @@ const multer = require('multer');
 const path = require('path');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const Groq = require('groq-sdk');
 const slugify = require('slugify');
@@ -91,30 +90,7 @@ function decrypt(text) {
   }
 }
 
-console.log("Email user loaded:", process.env.EMAIL_USER ? "YES" : "NO");
-
-// Nodemailer Transporter Configuration (Forced IPv4 for Render)
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // TLS
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { ...options, family: 4 }, callback);
-  },
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-// Verify SMTP Connection on Startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP Connection Error:', error);
-  } else {
-    console.log('SMTP Server is ready to take our messages');
-  }
-});
+// Nodemailer/Gmail system removed and replaced with Telegram Bot OTP delivery
 
 app.use(cors());
 app.use(express.json());
@@ -888,9 +864,14 @@ app.post('/api/admin/vault-credentials', verifyToken, verifySuperAdmin, async (r
 app.post('/api/admin/forgot-password', async (req, res) => {
   const { email } = req.body;
   try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'mr.prem2006@gmail.com';
+    if (!email || email.toLowerCase() !== adminEmail.toLowerCase()) {
+      return res.status(404).json({ error: 'Admin email not found' });
+    }
+
     const { data: admin, error } = await supabase.from('admins').select('*').eq('email', email).single();
     if (error || !admin) {
-      return res.status(404).json({ error: 'Email not found in whitelist' });
+      return res.status(404).json({ error: 'Admin email not found' });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -910,32 +891,33 @@ app.post('/api/admin/forgot-password', async (req, res) => {
       throw updateError;
     }
 
-    const mailOptions = {
-      from: `"Prem Portfolio Admin" <${process.env.EMAIL_USER || 'mr.prem2006@gmail.com'}>`,
-      to: email,
-      subject: 'Your Password Reset OTP',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-          <h2 style="color: #6366f1; text-align: center;">Password Reset Request</h2>
-          <p>Hello,</p>
-          <p>We received a request to reset your password. Use the code below to proceed. This code is valid for <strong>10 minutes</strong>.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e1b4b; background: #f3f4f6; padding: 10px 20px; border-radius: 5px;">${otp}</span>
-          </div>
-          <p>If you did not request this, please ignore this email.</p>
-          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="font-size: 12px; color: #666; text-align: center;">This is an automated message from your Portfolio Admin System.</p>
-        </div>
-      `
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
-      res.json({ success: true, message: 'OTP sent to your email' });
-    } catch (mailError) {
-      console.error('Nodemailer Error:', mailError);
+      const response = await fetch(
+        `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: `🔐 Portfolio Admin OTP\n\nOTP: ${otp}\n\nValid for 10 minutes.`
+          })
+        }
+      );
+
+      const resData = await response.json();
+      console.log('Telegram API Response:', resData);
+
+      if (!response.ok) {
+        throw new Error(resData.description || 'Failed to send Telegram message');
+      }
+
+      res.json({ success: true, message: 'OTP sent to Telegram successfully' });
+    } catch (telegramError) {
+      console.error('Telegram API Error:', telegramError);
       res.status(500).json({ 
-        error: `Email Error: Failed to send OTP. Please check if EMAIL_USER and EMAIL_PASS are correct in your environment variables. Details: ${mailError.message}` 
+        error: `Telegram Error: Failed to send OTP. Please check your TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID. Details: ${telegramError.message}` 
       });
     }
   } catch (error) {
