@@ -57,6 +57,8 @@ const Hero = () => {
                 'Founder @ QCDS',
                 2000,
                 'Intern @CSIR-NAL',
+                2000,
+                'Finalist @ National AgriTech Hackathon 2025',
                 2000
               ]}
               wrapper="span"
