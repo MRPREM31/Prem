@@ -1574,7 +1574,7 @@ const AdminDashboard = () => {
             <div className="section-header">
               <h3>Projects</h3>
               <div className="header-actions">
-                <Link to="/admin/reviews" className="btn btn-outline btn-sm mr-2">
+                <Link to="/prem-manage-reviews" className="btn btn-outline btn-sm mr-2">
                   <FaStar /> Manage Reviews
                 </Link>
                 <button className="btn btn-primary btn-sm" onClick={() => { setShowProjectForm(!showProjectForm); setEditingProject(null); setProjectForm({ title: '', description: '', tags: '', link: '', github: '', pptLink: '', image_alt: '', image_description: '' }); }}>
