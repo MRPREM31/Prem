@@ -13,13 +13,13 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 3,
     images: [
-      { id: 7, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339536/portfolio/1778339536500-WhatsApp%20Image%202026-05-09%20at%2020.20.55.jpg', alt_text: 'Dashboard Preview 1' },
-      { id: 8, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339536/portfolio/1778339536741-WhatsApp%20Image%202026-05-09%20at%2020.18.47.jpg', alt_text: 'Dashboard Preview 2' },
-      { id: 9, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339536920-WhatsApp%20Image%202026-05-09%20at%2020.17.58.jpg', alt_text: 'Dashboard Preview 3' },
-      { id: 10, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537033-WhatsApp%20Image%202026-05-09%20at%2020.16.56.jpg', alt_text: 'Dashboard Preview 4' },
-      { id: 11, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537112-WhatsApp%20Image%202026-05-09%20at%2020.16.16.jpg', alt_text: 'Dashboard Preview 5' },
-      { id: 12, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537145-WhatsApp%20Image%202026-05-09%20at%2020.14.40.jpg', alt_text: 'Dashboard Preview 6' },
-      { id: 13, project_id: 8, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778339537/portfolio/1778339537193-WhatsApp%20Image%202026-05-09%20at%2020.14.00.jpg', alt_text: 'Dashboard Preview 7' }
+      { id: 7, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339536500-WhatsApp%20Image%202026-05-09%20at%2020.20.55.jpg', alt_text: 'Dashboard Preview 1' },
+      { id: 8, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339536741-WhatsApp%20Image%202026-05-09%20at%2020.18.47.jpg', alt_text: 'Dashboard Preview 2' },
+      { id: 9, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339536920-WhatsApp%20Image%202026-05-09%20at%2020.17.58.jpg', alt_text: 'Dashboard Preview 3' },
+      { id: 10, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339537033-WhatsApp%20Image%202026-05-09%20at%2020.16.56.jpg', alt_text: 'Dashboard Preview 4' },
+      { id: 11, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339537112-WhatsApp%20Image%202026-05-09%20at%2020.16.16.jpg', alt_text: 'Dashboard Preview 5' },
+      { id: 12, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339537145-WhatsApp%20Image%202026-05-09%20at%2020.14.40.jpg', alt_text: 'Dashboard Preview 6' },
+      { id: 13, project_id: 8, image_url: 'https://mrprem.in/cdn/portfolio/1778339537193-WhatsApp%20Image%202026-05-09%20at%2020.14.00.jpg', alt_text: 'Dashboard Preview 7' }
     ],
     reviews: [
       { id: 4, name: 'chandan', email: 'sb631101@gmail.com', message: 'good', rating: 5, created_at: '2026-05-09T15:27:50.627Z' },
@@ -41,7 +41,7 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 3,
     images: [
-      { id: 2, project_id: 6, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778333928/portfolio/1778333924736-logo.png', alt_text: 'Smart Attendance System Logo' }
+      { id: 2, project_id: 6, image_url: 'https://mrprem.in/cdn/portfolio/1778333924736-logo.png', alt_text: 'Smart Attendance System Logo' }
     ],
     reviews: [
       { id: 5, name: 'CHANDAN', email: 'sb631101@gmail.com', message: 'Excellent', rating: 5, created_at: '2026-05-09T15:29:11.337Z' },
@@ -63,7 +63,7 @@ export const fallbackProjects = [
     avgRating: '4.7',
     reviewCount: 3,
     images: [
-      { id: 1, project_id: 5, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778328844/portfolio/1778328842783-DiagnoseHub-AI.png', alt_text: 'DiagnoseHub AI Main UI' }
+      { id: 1, project_id: 5, image_url: 'https://mrprem.in/cdn/portfolio/1778328842783-DiagnoseHub-AI.png', alt_text: 'DiagnoseHub AI Main UI' }
     ],
     reviews: [
       { id: 2, name: 'Prem Prasad Pradhan', email: 'mr.prem2006@gmail.com', message: 'good', rating: 5, created_at: '2026-05-09T12:57:44.717Z' },
@@ -85,7 +85,7 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 2,
     images: [
-      { id: 3, project_id: 4, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778333969/portfolio/1778333967251-Gamified%20STEM%20Learning%20Platform%20for%20Rural%20Schools.jpg', alt_text: 'Rural STEM Learning platform screenshots' }
+      { id: 3, project_id: 4, image_url: 'https://mrprem.in/cdn/portfolio/1778333967251-Gamified%20STEM%20Learning%20Platform%20for%20Rural%20Schools.jpg', alt_text: 'Rural STEM Learning platform screenshots' }
     ],
     reviews: [
       { id: 7, name: 'chandan', email: '', message: 'nice', rating: 5, created_at: '2026-05-09T15:30:22.036Z' },
@@ -106,7 +106,7 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 1,
     images: [
-      { id: 4, project_id: 3, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778333987/portfolio/1778333983447-adarsha%20pathasala%20home%20page.png', alt_text: 'Adarsha Pathasala homepage preview' }
+      { id: 4, project_id: 3, image_url: 'https://mrprem.in/cdn/portfolio/1778333983447-adarsha%20pathasala%20home%20page.png', alt_text: 'Adarsha Pathasala homepage preview' }
     ],
     reviews: [
       { id: 9, name: 'chandan', email: '', message: 'good', rating: 5, created_at: '2026-05-09T15:31:27.527Z' }
@@ -126,7 +126,7 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 1,
     images: [
-      { id: 5, project_id: 2, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778334010/portfolio/1778334007511-Study-Focus-Dashboard.webp', alt_text: 'Productivity dashboard preview' }
+      { id: 5, project_id: 2, image_url: 'https://mrprem.in/cdn/portfolio/1778334007511-Study-Focus-Dashboard.webp', alt_text: 'Productivity dashboard preview' }
     ],
     reviews: [
       { id: 10, name: 'chandan', email: '', message: 'nice', rating: 5, created_at: '2026-05-09T15:32:12.117Z' }
@@ -146,7 +146,7 @@ export const fallbackProjects = [
     avgRating: '5.0',
     reviewCount: 1,
     images: [
-      { id: 6, project_id: 1, image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778334033/portfolio/1778334030366-Gamified%20Digital%20Platform%20for%20Sustainable%20Farming.jpg', alt_text: 'Gamified Farming Interface Screenshots' }
+      { id: 6, project_id: 1, image_url: 'https://mrprem.in/cdn/portfolio/1778334030366-Gamified%20Digital%20Platform%20for%20Sustainable%20Farming.jpg', alt_text: 'Gamified Farming Interface Screenshots' }
     ],
     reviews: [
       { id: 11, name: 'cb', email: '', message: 'nice', rating: 5, created_at: '2026-05-09T15:33:58.383Z' }

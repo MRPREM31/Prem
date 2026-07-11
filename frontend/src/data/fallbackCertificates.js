@@ -4,7 +4,7 @@ export const fallbackCertificates = [
     title: 'Backend Development & Python Internship – Asirudh Software Pvt. Ltd.',
     description: 'Successfully completed a 45-day industry-oriented internship in Backend Development and Python at Asirudh Software Pvt. Ltd. Worked on real-world projects including a personal portfolio and a team-based Water Supply & Service Website. Gained hands-on experience in backend technologies, project collaboration, and professional development while maintaining consistency and high-quality work.',
     date: '2025-07-01',
-    image: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778081242/portfolio/1778081242101-AS-INT-094_page-0001.jpg',
+    image: 'https://mrprem.in/cdn/portfolio/1778081242101-AS-INT-094_page-0001.jpg',
     image_alt: 'Asirudh Software Python Backend Internship Certificate awarded to Prem Prasad Pradhan',
     slug: 'backend-development-and-python-internship-asirudh-software-pvt-ltd'
   },
@@ -13,7 +13,7 @@ export const fallbackCertificates = [
     title: 'National Agritech Hackathon 2025',
     description: 'FarmQuest is an innovative, gamified digital platform designed to make sustainable farming engaging, accessible, and impactful. It transforms traditional agricultural practices into interactive missions, enabling farmers to learn, adopt, and track eco-friendly techniques through a reward-driven system. Built with a focus on rural accessibility, the platform supports offline-first functionality and multilingual content, ensuring usability even in low-connectivity regions. By combining technology with behavioral motivation, FarmQuest empowers farmers to improve productivity while promoting long-term environmental sustainability.\n\nKey Features:\n- Personalized Farmer Profiles: Tailored challenges based on crop type and geographical location\n- Interactive Dashboard: Real-time sustainability scores, progress tracking, and achievement badges\n- Missions & Challenges: Gamified tasks encouraging adoption of sustainable farming practices\n- Leaderboard System: Community-based rankings to foster motivation and healthy competition\n- Rewards & Recognition: Digital badges and incentives for consistent performance\n- Community Engagement: Farmers can share experiences and inspire others\n- Offline-First Architecture: Seamless functionality in low or no internet conditions\n- Multilingual Support: Available in Odia, Hindi, and English for wider accessibility\n\nTechnologies Used:\n- Frontend: React, TypeScript, Vite\n- Backend: Node.js, JavaScript\n- Database: SQLite\n- Additional: Offline-first data synchronization, mobile-responsive design optimized for rural users',
     date: '2025-12-23',
-    image: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1777989615/portfolio/1777989614894-Prem%20Prasad%20Pradhan.jpg',
+    image: 'https://mrprem.in/cdn/portfolio/1777989614894-Prem%20Prasad%20Pradhan.jpg',
     image_alt: 'National Agritech Hackathon 2025 First Place Winner Certificate Prem Prasad Pradhan',
     slug: 'national-agritech-hackathon-2025'
   },
@@ -22,7 +22,7 @@ export const fallbackCertificates = [
     title: 'CubeX Hackathon 2025',
     description: 'An advanced AI-powered medical diagnostic platform that simulates a real-world multidisciplinary healthcare team to analyze patient reports and generate accurate, consolidated diagnoses. The system leverages multiple specialized AI agents—each representing a different medical domain—to perform parallel analysis and produce a unified medical insight. Designed with a clean and responsive web interface, it also includes automated PDF report generation with QR-based verification for authenticity and easy sharing.\n\nKey Features:\n- Multi-Agent AI System: Five specialized agents (Cardiology, Psychology, Pulmonology, Neurology, and General Medicine) working collaboratively\n- Parallel Medical Analysis: Simultaneous evaluation of patient reports for faster and more accurate results\n- Unified Diagnosis Engine: Combines outputs from all agents into a single, comprehensive medical summary\n- Automated PDF Reports: Professionally structured reports with embedded QR verification\n- Smart Data Extraction: Extracts and processes patient details from uploaded medical documents\n- Secure & Scalable Design: Handles multiple requests efficiently using concurrent processing\n- Modern Web Interface: Clean, responsive UI built for accessibility and ease of use\n\nTechnologies Used:\n- Python, Flask, LangChain, Groq AI API (LLaMA-3 / Mixtral), ReportLab (PDF Generation), HTML5, CSS3, JavaScript, QR Code Generator, Concurrent Processing, Jinja Templates',
     date: '2025-12-19',
-    image: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1777988816/portfolio/1777988816018-prem%20prasad%20pradhan.jpg',
+    image: 'https://mrprem.in/cdn/portfolio/1777988816018-prem%20prasad%20pradhan.jpg',
     image_alt: 'CubeX Hackathon 2025 Certificate awarded to Prem Prasad Pradhan',
     slug: 'cubex-hackathon-2025'
   }
