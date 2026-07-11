@@ -2,7 +2,7 @@ export const fallbackMemories = [
   {
     id: 6,
     title: 'CSIR-NAL Internship Journey – National Aerospace Laboratories',
-    image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778518470/portfolio/1778518469837-WhatsApp%20Image%202026-05-11%20at%2022.17.14.jpg',
+    image_url: 'https://mrprem.in/cdn/portfolio/1778518469837-WhatsApp%20Image%202026-05-11%20at%2022.17.14.jpg',
     aspect_ratio: 'landscape',
     upload_date: '2026-05-11T16:54:31.066Z',
     image_alt: 'Prem Prasad Pradhan at CSIR-NAL National Aerospace Laboratories Bangalore internship program',
@@ -12,7 +12,7 @@ export const fallbackMemories = [
   {
     id: 5,
     title: 'NATH 2025 Finalists',
-    image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778087921/portfolio/1778087920862-NATH_2025.jpg',
+    image_url: 'https://mrprem.in/cdn/portfolio/1778087920862-NATH_2025.jpg',
     aspect_ratio: 'landscape',
     upload_date: '2026-05-06T17:18:41.683Z',
     image_alt: 'Prem Prasad Pradhan and team standing as finalists in NATH 2025 Hackathon',
@@ -22,7 +22,7 @@ export const fallbackMemories = [
   {
     id: 4,
     title: 'National Level Hackathon',
-    image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778087883/portfolio/1778087882678-NATH.jpg',
+    image_url: 'https://mrprem.in/cdn/portfolio/1778087882678-NATH.jpg',
     aspect_ratio: 'landscape',
     upload_date: '2026-05-06T17:18:03.501Z',
     image_alt: 'National Level Hackathon presenting pitch deck',
@@ -32,7 +32,7 @@ export const fallbackMemories = [
   {
     id: 2,
     title: 'SIH_2025 Presentation',
-    image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778087789/portfolio/1778087778785-SIH_2025_presentation.jpg',
+    image_url: 'https://mrprem.in/cdn/portfolio/1778087778785-SIH_2025_presentation.jpg',
     aspect_ratio: 'landscape',
     upload_date: '2026-05-06T17:16:31.290Z',
     image_alt: 'SIH 2025 Presentation pitch deck team photo',
@@ -42,7 +42,7 @@ export const fallbackMemories = [
   {
     id: 1,
     title: 'SIH_2k25',
-    image_url: 'https://res.cloudinary.com/dmy2piasa/image/upload/v1778085936/portfolio/1778085933113-SIH%202025.jpg',
+    image_url: 'https://mrprem.in/cdn/portfolio/1778085933113-SIH%202025.jpg',
     aspect_ratio: 'landscape',
     upload_date: '2026-05-06T16:45:37.209Z',
     image_alt: 'SIH 2k25 hackathon team coding session',

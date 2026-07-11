@@ -984,7 +984,13 @@ export async function handleGetCdnImage(request, env, ctx) {
     const slug = fullSlug.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
 
     // 3. Query Supabase for matching record
-    const media = await dbGetMediaBySlug(env, slug);
+    let media = await dbGetMediaBySlug(env, slug);
+    if (!media) {
+      const encodedSlug = encodeURI(slug);
+      if (encodedSlug !== slug) {
+        media = await dbGetMediaBySlug(env, encodedSlug);
+      }
+    }
     if (!media) {
       return errorResponse('Image not found', 404, request);
     }
@@ -996,7 +1002,11 @@ export async function handleGetCdnImage(request, env, ctx) {
     }
 
     // 4. Fetch the image from Cloudinary/ImageKit
-    const response = await fetch(originalUrl);
+    let fetchUrl = originalUrl;
+    if (fetchUrl.includes('cloudinary.com') && fetchUrl.includes('/upload/') && !fetchUrl.includes('/upload/f_auto,q_auto')) {
+      fetchUrl = fetchUrl.replace('/upload/', '/upload/f_auto,q_auto/');
+    }
+    const response = await fetch(fetchUrl);
     if (!response.ok) {
       return errorResponse('Failed to fetch original image from source', response.status, request);
     }

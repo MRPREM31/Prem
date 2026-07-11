@@ -73,13 +73,13 @@ const MemoriesPage = () => {
                     />
 
                     {/* Top Right Share Icon */}
-                    <div className="top-share-icon" onClick={(e) => {
+                    <div className="top-share-icon" title="Share Memory Page" onClick={(e) => {
                       e.stopPropagation();
                       if (navigator.share) {
                         navigator.share({ title: img.title, url: `${window.location.origin}/memory/${img.slug || img.id}` });
                       } else {
                         navigator.clipboard.writeText(`${window.location.origin}/memory/${img.slug || img.id}`);
-                        alert('Link copied!');
+                        alert('Memory page link copied!');
                       }
                     }}>
                       <FaShareAlt />
@@ -90,13 +90,13 @@ const MemoriesPage = () => {
                         <div className="action-icon" title="View Detail" onClick={() => navigate(`/memory/${img.slug || img.id}`)}>
                           <FaEye />
                         </div>
-                        <div className="action-icon" title="Share" onClick={(e) => {
+                        <div className="action-icon" title="Share CDN Image Link" onClick={(e) => {
                           e.stopPropagation();
                           if (navigator.share) {
-                            navigator.share({ title: img.title, url: `${window.location.origin}/memory/${img.slug || img.id}` });
+                            navigator.share({ title: img.title, url: img.image_url });
                           } else {
-                            navigator.clipboard.writeText(`${window.location.origin}/memory/${img.slug || img.id}`);
-                            alert('Link copied!');
+                            navigator.clipboard.writeText(img.image_url);
+                            alert('Image CDN link copied!');
                           }
                         }}>
                           <FaShareAlt />
