@@ -2384,7 +2384,7 @@ app.post('/api/chat', async (req, res) => {
 // --- DYNAMIC SITEMAP ---
 app.get('/sitemap-index.xml', (req, res) => {
   const lastmod = new Date().toISOString().split('T')[0];
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">\n  <sitemap>\n    <loc>https://mrprem.in/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n  <sitemap>\n    <loc>https://mrprem.in/image-sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n</sitemapindex>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap>\n    <loc>https://mrprem.in/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n  <sitemap>\n    <loc>https://mrprem.in/image-sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n</sitemapindex>`;
   res.header('Content-Type', 'application/xml');
   res.send(xml);
 });
