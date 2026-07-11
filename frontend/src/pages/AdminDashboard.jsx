@@ -79,6 +79,12 @@ const AdminDashboard = () => {
   const [notifyProfile, setNotifyProfile] = useState(false);
   const [notifyStats, setNotifyStats] = useState(false);
 
+  // Custom Standalone Broadcast states
+  const [customNotifyTitle, setCustomNotifyTitle] = useState('');
+  const [customNotifyMessage, setCustomNotifyMessage] = useState('');
+  const [customNotifyUrl, setCustomNotifyUrl] = useState('');
+  const [broadcastLoading, setBroadcastLoading] = useState(false);
+
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     titleText: "Send Push Notification",
@@ -107,6 +113,36 @@ const AdminDashboard = () => {
       console.error('Error sending push notification:', error);
       showToast('Network error while sending notification.', 'error');
     }
+  };
+
+  const handleSendCustomBroadcast = async () => {
+    if (!customNotifyTitle || !customNotifyMessage) {
+      showToast('Title and Message are required to send a notification.', 'error');
+      return;
+    }
+    
+    setConfirmModal({
+      isOpen: true,
+      titleText: "🚀 Send Standalone Broadcast",
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        setBroadcastLoading(true);
+        try {
+          await sendPushNotificationAPI({
+            title: customNotifyTitle,
+            message: customNotifyMessage,
+            url: customNotifyUrl || "https://mrprem.in"
+          });
+          setCustomNotifyTitle('');
+          setCustomNotifyMessage('');
+          setCustomNotifyUrl('');
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setBroadcastLoading(false);
+        }
+      }
+    });
   };
 
   // Push Notification Interceptor Handlers for all Admin Actions
@@ -1968,7 +2004,7 @@ const AdminDashboard = () => {
             <div className="section-header contact-header">
               <div>
                 <h3 className="section-title-small" style={{ margin: 0 }}>Recent Visitor Traffic</h3>
-                <p className="text-muted small">Showing latest 5 of {totalVisitors} tracked sessions</p>
+                <p className="text-muted small">Showing latest 5 of {totalVisitors} sessions. (Active subscribers: {recentVisitors.filter(v => v.subscription_status === 'subscribed').length || 0} in this list)</p>
               </div>
               <div>
                 <Link to="/all-visitors" className="btn btn-outline btn-sm">Full View</Link>
@@ -1977,18 +2013,86 @@ const AdminDashboard = () => {
             <div className="table-responsive">
               <table className="admin-table">
                 <thead>
-                  <tr><th>Time</th><th>IP Address</th><th>Device Info</th></tr>
+                  <tr>
+                    <th>Time</th>
+                    <th>IP Address</th>
+                    <th>Device Info</th>
+                    <th>Push Status</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {recentVisitors.length > 0 ? recentVisitors.map((v, idx) => (
                     <tr key={idx}>
                       <td>{new Date(v.visited_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                       <td><code>{v.ip}</code></td>
-                      <td className="msg-cell">{v.user_agent ? (v.user_agent.length > 40 ? v.user_agent.substring(0, 40) + '...' : v.user_agent) : 'Unknown'}</td>
+                      <td className="msg-cell" title={v.user_agent}>{v.user_agent ? (v.user_agent.length > 40 ? v.user_agent.substring(0, 40) + '...' : v.user_agent) : 'Unknown'}</td>
+                      <td>
+                        {v.subscription_status === 'subscribed' ? (
+                          <span className="tag" style={{ background: '#10B981', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>Subscribed</span>
+                        ) : v.subscription_status === 'dismissed' ? (
+                          <span className="tag" style={{ background: '#F59E0B', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>Dismissed</span>
+                        ) : (
+                          <span className="tag" style={{ background: '#6B7280', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>Not Subscribed</span>
+                        )}
+                      </td>
                     </tr>
-                  )) : <tr><td colSpan="3" className="text-center">No recent visits recorded.</td></tr>}
+                  )) : <tr><td colSpan="4" className="text-center">No recent visits recorded.</td></tr>}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* BROADCAST PUSH NOTIFICATION SECTION */}
+          <div id="admin-broadcast" className="dashboard-content glass-panel mb-4">
+            <div className="section-header">
+              <div>
+                <h3 className="section-title-small" style={{ margin: 0 }}>Broadcast Custom Push Notification</h3>
+                <p className="text-muted small">Send a manual custom message notification to all subscribed users immediately.</p>
+              </div>
+            </div>
+            
+            <div className="project-form mt-3" style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+              <div className="form-group mb-3">
+                <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Notification Title</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. Check out my new project!" 
+                  value={customNotifyTitle} 
+                  onChange={(e) => setCustomNotifyTitle(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div className="form-group mb-3">
+                <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Notification Message</label>
+                <textarea 
+                  className="form-input" 
+                  placeholder="Enter the body of your message..." 
+                  value={customNotifyMessage} 
+                  onChange={(e) => setCustomNotifyMessage(e.target.value)}
+                  style={{ width: '100%', minHeight: '80px', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div className="form-group mb-3">
+                <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>Destination URL</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. https://mrprem.in/#projects (Defaults to home page)" 
+                  value={customNotifyUrl} 
+                  onChange={(e) => setCustomNotifyUrl(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div className="form-actions" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
+                <button 
+                  onClick={handleSendCustomBroadcast} 
+                  className="btn btn-primary" 
+                  disabled={broadcastLoading}
+                >
+                  {broadcastLoading ? 'Sending...' : 'Send Broadcast Notification 🚀'}
+                </button>
+              </div>
             </div>
           </div>
 

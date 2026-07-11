@@ -97,6 +97,7 @@ const AllVisitors = () => {
                         <th><FaClock /> Date & Time</th>
                         <th><FaGlobe /> IP Address</th>
                         <th><FaLaptop /> Device / User Agent</th>
+                        <th>Push Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -109,9 +110,18 @@ const AllVisitors = () => {
                           <td className="msg-cell" title={v.user_agent}>
                             {v.user_agent ? (v.user_agent.length > 60 ? v.user_agent.substring(0, 60) + '...' : v.user_agent) : 'Unknown'}
                           </td>
+                          <td>
+                            {v.subscription_status === 'subscribed' ? (
+                              <span className="tag" style={{ background: '#10B981', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}>Subscribed</span>
+                            ) : v.subscription_status === 'dismissed' ? (
+                              <span className="tag" style={{ background: '#F59E0B', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}>Dismissed</span>
+                            ) : (
+                              <span className="tag" style={{ background: '#6B7280', color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '12px' }}>Not Subscribed</span>
+                            )}
+                          </td>
                         </tr>
                       )) : (
-                        <tr><td colSpan="3" className="text-center">No visitor data available.</td></tr>
+                        <tr><td colSpan="4" className="text-center">No visitor data available.</td></tr>
                       )}
                     </tbody>
                   </table>
