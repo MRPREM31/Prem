@@ -21,6 +21,16 @@ export const useNotifications = () => {
     setPermission(state.permission);
     setSubscriptionId(state.subscriptionId);
 
+    // Immediately sync with backend database if active subscription exists
+    if (state.isSubscribed && state.subscriptionId) {
+      console.log("[useNotifications] Syncing active subscriber details with ID:", state.subscriptionId);
+      syncPushSubscription({
+        subscriptionStatus: "subscribed",
+        subscriptionId: state.subscriptionId,
+        deviceBrowser: navigator.userAgent,
+      }).catch(err => console.error("[useNotifications] Sync error:", err));
+    }
+
     // If auto-popup prompt is disabled globally, never show the subscription popup automatically
     if (!notificationConfig.enableAutoPopup) {
       setShowPopup(false);

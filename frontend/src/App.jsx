@@ -106,17 +106,46 @@ function App() {
     }
     sessionStorage.setItem('visitor_session_id', sessionId);
 
-    // Read stored push subscription status to prevent overwrites on refresh
+    // Read stored push subscription status
     const isSubscribedLocal = localStorage.getItem('mrprem_notification_subscribed') === 'true' ||
       localStorage.getItem('notification_subscribed') === 'true';
     const subscriptionStatus = isSubscribedLocal ? 'subscribed' : 'none';
 
+    // Initial immediate visitor tracking call
     fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, subscriptionStatus })
     })
       .catch(err => console.warn('[Resilience] Visitor tracking backend is currently sleeping.'));
+
+    // Deferred OneSignal check to retrieve and sync actual Push Subscription ID if active
+    const syncOneSignalId = () => {
+      try {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async (OneSignal) => {
+          const isSubscribed = OneSignal.User?.PushSubscription?.optedIn || false;
+          const subId = OneSignal.User?.PushSubscription?.id || null;
+
+          if (isSubscribed && subId) {
+            console.log("[App.jsx] OneSignal detected active subscription ID on load:", subId);
+            fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId,
+                subscriptionStatus: 'subscribed',
+                subscriptionId: subId
+              })
+            }).catch(err => console.warn('[OneSignal Sync] Background track sync failed:', err));
+          }
+        });
+      } catch (err) {
+        console.warn('[OneSignal Sync] Deferred check failed:', err);
+      }
+    };
+
+    syncOneSignalId();
   }, [loading, maintenance.active]);
 
   const isAdminPath = (path) => {

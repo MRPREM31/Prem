@@ -2076,6 +2076,8 @@ app.post('/api/track-visitor', async (req, res) => {
   const { sessionId, subscriptionStatus, subscriptionId, lastPromptTime, deviceBrowser } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const userAgent = req.headers['user-agent'];
+
+  console.log(`[Track Visitor API] Received subscriptionStatus: '${subscriptionStatus}', subscriptionId: '${subscriptionId}' for sessionId: '${sessionId}' from IP: ${ip}`);
   
   try {
     // Unique ID: Use sessionId from frontend if available, else fallback to IP+UA hash
