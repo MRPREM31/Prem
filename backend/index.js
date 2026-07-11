@@ -110,6 +110,31 @@ async function sendPushNotification({ title, message, url }) {
     return { simulated: true, success: true, id: 'simulated-push-id-' + Date.now() };
   }
 
+  let targetField = {};
+  try {
+    const { data: subscribers, error: dbErr } = await supabase
+      .from('visitors')
+      .select('subscription_id')
+      .eq('subscription_status', 'subscribed')
+      .not('subscription_id', 'is', null);
+
+    if (dbErr) {
+      console.error('[OneSignal REST API] Failed to fetch subscribers from Supabase:', dbErr.message);
+    }
+
+    const subscriptionIds = subscribers ? subscribers.map(s => s.subscription_id).filter(Boolean) : [];
+    if (subscriptionIds.length > 0) {
+      console.log(`[OneSignal REST API] Targeting ${subscriptionIds.length} subscribed devices directly...`);
+      targetField = { include_subscription_ids: subscriptionIds };
+    } else {
+      console.log('[OneSignal REST API] No subscriber IDs in database. Falling back to segment targeting...');
+      targetField = { included_segments: ['Subscribed Users'] };
+    }
+  } catch (dbEx) {
+    console.error('[OneSignal REST API] Exception while fetching subscribers:', dbEx.message);
+    targetField = { included_segments: ['Subscribed Users'] };
+  }
+
   try {
     const response = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -121,16 +146,19 @@ async function sendPushNotification({ title, message, url }) {
         app_id: appId,
         contents: { en: message },
         headings: { en: title },
-        included_segments: ['Subscribed Users'],
-        url: url || 'https://mrprem.in'
+        url: url || 'https://mrprem.in',
+        ...targetField
       })
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    console.log('[OneSignal REST API] Status:', response.status);
+    console.log('[OneSignal REST API] Response:', text);
+
+    const data = JSON.parse(text);
     if (!response.ok) {
-      throw new Error(data.errors ? data.errors.join(', ') : 'OneSignal API Error');
+      throw new Error(text);
     }
-    console.log('[OneSignal REST API] Push notification sent successfully:', data);
     return data;
   } catch (err) {
     console.error('[OneSignal REST API] Failed to send push notification:', err.message);
