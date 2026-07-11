@@ -11,6 +11,7 @@ const AllVisitors = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('');
   const limit = 20; // User requested 20 items per page
 
   const navigate = useNavigate();
@@ -22,12 +23,13 @@ const AllVisitors = () => {
       return;
     }
     fetchVisitors();
-  }, [currentPage, token, navigate]);
+  }, [currentPage, statusFilter, token, navigate]);
 
   const fetchVisitors = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/visitors?page=${currentPage}&limit=${limit}`, {
+      const statusParam = statusFilter ? `&status=${statusFilter}` : '';
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/visitors?page=${currentPage}&limit=${limit}${statusParam}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.status === 401 || res.status === 403) {
@@ -80,8 +82,25 @@ const AllVisitors = () => {
           </div>
 
           <div className="dashboard-content glass-panel">
-            <div className="section-header">
-              <p className="text-muted">Total {totalCount} unique visitor sessions tracked</p>
+            <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
+              <p className="text-muted" style={{ margin: 0 }}>Total {totalCount} unique visitor sessions tracked</p>
+              
+              <div className="filter-tabs" style={{ display: 'flex', gap: '10px', background: 'rgba(255, 255, 255, 0.03)', padding: '4px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <button 
+                  className={`btn btn-sm ${statusFilter === '' ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => { setStatusFilter(''); setCurrentPage(1); }}
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  All Traffic
+                </button>
+                <button 
+                  className={`btn btn-sm ${statusFilter === 'subscribed' ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => { setStatusFilter('subscribed'); setCurrentPage(1); }}
+                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  Subscribers Only 🔔
+                </button>
+              </div>
             </div>
 
             {loading ? (

@@ -2123,13 +2123,19 @@ app.get('/api/visitor-stats', async (req, res) => {
 
 // API: Get All Visitors (Protected, Paginated)
 app.get('/api/admin/visitors', verifyToken, async (req, res) => {
-  const { page = 1, limit = 5 } = req.query;
+  const { page = 1, limit = 5, status } = req.query;
   const offset = (page - 1) * limit;
 
   try {
-    const { data, error, count } = await supabase
+    let query = supabase
       .from('visitors')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'exact' });
+
+    if (status) {
+      query = query.eq('subscription_status', status);
+    }
+
+    const { data, error, count } = await query
       .order('visited_at', { ascending: false })
       .range(offset, offset + parseInt(limit) - 1);
 
