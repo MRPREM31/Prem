@@ -2059,42 +2059,73 @@ app.post('/api/track-visitor', async (req, res) => {
       uniqueId = crypto.createHash('md5').update(`${ip}-${userAgent}-${today}`).digest('hex');
     }
 
-    const upsertPayload = { 
-      unique_id: uniqueId, 
-      ip, 
-      user_agent: userAgent, 
-      visited_at: new Date().toISOString() 
-    };
-
-    if (subscriptionStatus !== undefined) upsertPayload.subscription_status = subscriptionStatus;
-    if (subscriptionId !== undefined) upsertPayload.subscription_id = subscriptionId;
-    if (lastPromptTime !== undefined) upsertPayload.last_prompt_time = lastPromptTime;
-    if (deviceBrowser !== undefined) upsertPayload.device_browser = deviceBrowser;
-
-    let { error } = await supabase
+    // Check if visitor already exists
+    const { data: existingVisitor, error: checkError } = await supabase
       .from('visitors')
-      .upsert(upsertPayload, { onConflict: 'unique_id' });
+      .select('subscription_status, subscription_id, last_prompt_time, device_browser')
+      .eq('unique_id', uniqueId)
+      .maybeSingle();
 
-    if (error) {
-      if (error.code === '42703') {
-        console.warn('Subscription tracking columns not yet in Supabase table. Falling back to default visitor details.');
-        // Graceful fallback to default visitor fields
-        const fallbackPayload = { 
-          unique_id: uniqueId, 
-          ip, 
-          user_agent: userAgent, 
-          visited_at: new Date().toISOString() 
-        };
-        const fallbackResult = await supabase
-          .from('visitors')
-          .upsert(fallbackPayload, { onConflict: 'unique_id' });
-        
-        if (fallbackResult.error) throw fallbackResult.error;
-      } else if (error.code === '42P01') {
+    if (checkError) {
+      if (checkError.code === '42P01') {
         console.warn('Visitors table missing in Supabase. Analytics disabled.');
         return res.status(200).json({ success: false, message: 'Table missing' });
-      } else {
-        throw error;
+      }
+      throw checkError;
+    }
+
+    if (existingVisitor) {
+      // Visitor exists: update their details, preserving existing subscription info if not supplied
+      const updatePayload = {
+        ip,
+        user_agent: userAgent,
+        visited_at: new Date().toISOString()
+      };
+      
+      if (subscriptionStatus !== undefined) updatePayload.subscription_status = subscriptionStatus;
+      if (subscriptionId !== undefined) updatePayload.subscription_id = subscriptionId;
+      if (lastPromptTime !== undefined) updatePayload.last_prompt_time = lastPromptTime;
+      if (deviceBrowser !== undefined) updatePayload.device_browser = deviceBrowser;
+
+      const { error: updateError } = await supabase
+        .from('visitors')
+        .update(updatePayload)
+        .eq('unique_id', uniqueId);
+
+      if (updateError) throw updateError;
+    } else {
+      // Visitor does not exist: insert fresh record
+      const insertPayload = {
+        unique_id: uniqueId,
+        ip,
+        user_agent: userAgent,
+        visited_at: new Date().toISOString(),
+        subscription_status: subscriptionStatus !== undefined ? subscriptionStatus : 'none',
+        subscription_id: subscriptionId !== undefined ? subscriptionId : null,
+        last_prompt_time: lastPromptTime !== undefined ? lastPromptTime : null,
+        device_browser: deviceBrowser !== undefined ? deviceBrowser : null
+      };
+
+      const { error: insertError } = await supabase
+        .from('visitors')
+        .insert(insertPayload);
+
+      if (insertError) {
+        if (insertError.code === '42703') {
+          console.warn('Subscription tracking columns not yet in Supabase table. Falling back to default visitor details.');
+          const fallbackPayload = { 
+            unique_id: uniqueId, 
+            ip, 
+            user_agent: userAgent, 
+            visited_at: new Date().toISOString() 
+          };
+          const fallbackResult = await supabase
+            .from('visitors')
+            .insert(fallbackPayload);
+          if (fallbackResult.error) throw fallbackResult.error;
+        } else {
+          throw insertError;
+        }
       }
     }
     res.json({ success: true });

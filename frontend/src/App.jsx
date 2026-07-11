@@ -106,10 +106,15 @@ function App() {
     }
     sessionStorage.setItem('visitor_session_id', sessionId);
 
+    // Read stored push subscription status to prevent overwrites on refresh
+    const isSubscribedLocal = localStorage.getItem('mrprem_notification_subscribed') === 'true' ||
+      localStorage.getItem('notification_subscribed') === 'true';
+    const subscriptionStatus = isSubscribedLocal ? 'subscribed' : 'none';
+
     fetch(`${import.meta.env.VITE_API_URL}/api/track-visitor`, { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId })
+      body: JSON.stringify({ sessionId, subscriptionStatus })
     })
       .catch(err => console.warn('[Resilience] Visitor tracking backend is currently sleeping.'));
   }, [loading, maintenance.active]);
