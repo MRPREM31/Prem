@@ -963,6 +963,7 @@ export async function handleGetCdnImage(request, env, ctx) {
     if (cachedResponse) {
       const headers = new Headers(cachedResponse.headers);
       headers.set('X-CDN-Cache', 'HIT');
+      headers.set('Access-Control-Allow-Origin', '*');
       return new Response(cachedResponse.body, {
         status: cachedResponse.status,
         statusText: cachedResponse.statusText,
@@ -1018,7 +1019,8 @@ export async function handleGetCdnImage(request, env, ctx) {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, s-maxage=2592000', // Cache for 30 days
-        'X-CDN-Cache': 'MISS'
+        'X-CDN-Cache': 'MISS',
+        'Access-Control-Allow-Origin': '*'
       }
     });
 

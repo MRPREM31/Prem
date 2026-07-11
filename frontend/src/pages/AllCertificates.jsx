@@ -83,13 +83,13 @@ const AllCertificates = () => {
                       />
                       
                       {/* Top Right Share Icon */}
-                      <div className="top-share-icon" onClick={(e) => {
+                      <div className="top-share-icon" title="Share Certificate Page" onClick={(e) => {
                         e.stopPropagation();
                         if (navigator.share) {
                           navigator.share({ title: cert.title, url: `${window.location.origin}/certificate/${cert.slug || cert.id}` });
                         } else {
                           navigator.clipboard.writeText(`${window.location.origin}/certificate/${cert.slug || cert.id}`);
-                          alert('Link copied!');
+                          alert('Certificate page link copied!');
                         }
                       }}>
                         <FaShareAlt />
@@ -100,20 +100,21 @@ const AllCertificates = () => {
                           <div className="action-icon" title="View Detail" onClick={() => navigate(`/certificate/${cert.slug || cert.id}`)}>
                             <FaEye />
                           </div>
-                          <div className="action-icon" title="Share" onClick={(e) => {
+                          <div className="action-icon" title="Share CDN Image Link" onClick={(e) => {
                             e.stopPropagation();
+                            const certImgUrl = cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || '');
                             if (navigator.share) {
-                              navigator.share({ title: cert.title, url: `${window.location.origin}/certificate/${cert.slug || cert.id}` });
+                              navigator.share({ title: cert.title, url: certImgUrl });
                             } else {
-                              navigator.clipboard.writeText(`${window.location.origin}/certificate/${cert.slug || cert.id}`);
-                              alert('Link copied!');
+                              navigator.clipboard.writeText(certImgUrl);
+                              alert('Certificate CDN link copied!');
                             }
                           }}>
                             <FaShareAlt />
                           </div>
                           <div className="action-icon" title="Download" onClick={(e) => {
                             e.stopPropagation();
-                             const downloadUrl = cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || '');
+                            const downloadUrl = cert.image && typeof cert.image === 'string' && cert.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${cert.image}` : (cert.image || '');
                             downloadImage(downloadUrl, `${cert.title}.jpg`);
                           }}>
                             <FaDownload />

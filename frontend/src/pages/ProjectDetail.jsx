@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FaGithub, FaExternalLinkAlt, FaFilePdf, FaChevronLeft, FaStar, FaRegStar, FaShareAlt, FaWhatsapp, FaLinkedin, FaTwitter, FaFilePowerpoint, FaTimes, FaCommentDots, FaInfoCircle } from 'react-icons/fa';
+import { FaGithub, FaExternalLinkAlt, FaFilePdf, FaChevronLeft, FaStar, FaRegStar, FaShareAlt, FaWhatsapp, FaLinkedin, FaTwitter, FaFilePowerpoint, FaTimes, FaCommentDots, FaInfoCircle, FaEye, FaDownload } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
 import {
   WhatsappShareButton,
@@ -13,6 +13,8 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+import { downloadImage } from '../utils/download';
+import '../components/Certificates.css';
 import './ProjectDetail.css';
 
 const ProjectDetail = () => {
@@ -214,7 +216,34 @@ const ProjectDetail = () => {
                         <div key={img.id} className="proj-gallery-item" title={img.alt_text}>
                           <img src={img.image_url && typeof img.image_url === 'string' && img.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${img.image_url}` : (img.image_url || '')} alt={img.alt_text} loading="lazy" />
                           <div className="img-badge">Image {idx + 1}</div>
-                          <div className="img-hover-info">{img.alt_text}</div>
+                          
+                          <div className="cert-overlay">
+                            <div className="card-actions">
+                              <div className="action-icon" title="View Full Image" onClick={() => window.open(img.image_url, '_blank')}>
+                                <FaEye />
+                              </div>
+                              <div className="action-icon" title="Share CDN Image Link" onClick={(e) => {
+                                e.stopPropagation();
+                                const imgLink = img.image_url && typeof img.image_url === 'string' && img.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${img.image_url}` : (img.image_url || '');
+                                if (navigator.share) {
+                                  navigator.share({ title: project.title, url: imgLink });
+                                } else {
+                                  navigator.clipboard.writeText(imgLink);
+                                  alert('Project image CDN link copied!');
+                                }
+                              }}>
+                                <FaShareAlt />
+                              </div>
+                              <div className="action-icon" title="Download Image" onClick={(e) => {
+                                e.stopPropagation();
+                                const downloadUrl = img.image_url && typeof img.image_url === 'string' && img.image_url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${img.image_url}` : (img.image_url || '');
+                                downloadImage(downloadUrl, `${project.title}_image_${idx + 1}.jpg`);
+                              }}>
+                                <FaDownload />
+                              </div>
+                            </div>
+                            <div className="img-hover-info-text">{img.alt_text}</div>
+                          </div>
                         </div>
                       ))}
                     </div>

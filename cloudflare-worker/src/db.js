@@ -381,11 +381,8 @@ export async function dbGetMediaLibrary(env) {
   return records;
 }
 
-/**
- * Fetch a single media record by slug
- */
 export async function dbGetMediaBySlug(env, slug) {
-  const results = await callSupabase(env, `media_library?select=*&slug=eq.${slug}`);
+  const results = await callSupabase(env, `media_library?select=*&slug=eq.${encodeURIComponent(slug)}`);
   return results && results.length > 0 ? results[0] : null;
 }
 
