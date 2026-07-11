@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const API_URL = process.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = process.env.VITE_API_URL || 'https://prem-backend-9icx.onrender.com';
 
 async function generateSitemapFile(filename) {
   try {

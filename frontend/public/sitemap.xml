@@ -2,241 +2,397 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://mrprem.in</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://mrprem.in/all-projects</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mrprem.in/all-certificates</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memories</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mrprem.in/github-insights</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/articles</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mrprem.in/prem-media-library</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/gamified-stem-learning-platform-for-rural-schools-sih-internal-round-qualifier</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/smart-attendance-system</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/adarsha-pathasala-website</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/clocklive-productivity-dashboard</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/gamified-digital-platform-for-sustainable-farming</loc>
-    <lastmod>2026-06-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://mrprem.in/project/diagnosehub-ai-multispecialty-medical-diagnosis-system</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/project/production-grade-saas-portfolio-ecosystem</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/project/diagnosehub-ai-multispecialty-medical-diagnosis-system</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/certificate/cubex-hackathon-2025</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/certificate/national-agritech-hackathon-2025</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/certificate/backend-development-and-python-internship-asirudh-software-pvt-ltd</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/sih2k25-4049</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/sih2025-presentation-9504</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/national-level-hackathon-7544</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/nath-2025-finalists-7763</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/csir-nal-internship-journey-national-aerospace-laboratories-1066</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/memory/farewell-celebration-at-csir-nal-bangalore-7892</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/memory/tirupati-balaji-darshan-with-friends-at-tirumala-temple-2525</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/samir_vijQNe6mlm</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/sridhara_AD3MIaEK9</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/madhusmita_ByfmtNcWS</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/chandan_uaYCTJhpS</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/satya-narayan-padhi_T7peGRErDp</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/1st-time-at-bengalore_ceryQu5we</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/whatsapp-image-2026-05-11-at-22_xtHKJ_zSE8</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio/gdal53enetv5vkl2oo0n</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778085933113-SIH%202025</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778087778785-SIH_2025_presentation</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778087882678-NATH</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778087920862-NATH_2025</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778518469837-WhatsApp%20Image%202026-05-11%20at%2022.17.14</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1780367366726-WhatsApp%20Image%202026-05-15%20at%2018.39.30</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/h1zeqsz8wy6whqjessma</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/sangita-qc_-u4z94ZpY</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/chandan-qc_UcLtus7mL</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/amit_ZR54gnwxH</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/sidhant_dQadspGe5</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/siddharth_emaUuQK7L</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/ashis_R1AZ5h9Dm</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/sankar_U8vwwVyTy</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio_media/sangita-mam_Lq52Zca4Vn</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://mrprem.in/cdn/portfolio/gakamqfzt0khjj76tg3h</loc>
-    <lastmod>2026-06-05</lastmod>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/fkp93l9tkxixdrju79rv</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/ly2p2g7mrgjeme0wrcqq</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1777988816018-prem%20prasad%20pradhan</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1777989614894-Prem%20Prasad%20Pradhan</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778081242101-AS-INT-094_page-0001</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778328842783-DiagnoseHub-AI</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778333924736-logo</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778333967251-Gamified%20STEM%20Learning%20Platform%20for%20Rural%20Schools</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778333983447-adarsha%20pathasala%20home%20page</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778334007511-Study-Focus-Dashboard</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778334030366-Gamified%20Digital%20Platform%20for%20Sustainable%20Farming</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339536500-WhatsApp%20Image%202026-05-09%20at%2020.20.55</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339536741-WhatsApp%20Image%202026-05-09%20at%2020.18.47</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339536920-WhatsApp%20Image%202026-05-09%20at%2020.17.58</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339537033-WhatsApp%20Image%202026-05-09%20at%2020.16.56</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339537112-WhatsApp%20Image%202026-05-09%20at%2020.16.16</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339537145-WhatsApp%20Image%202026-05-09%20at%2020.14.40</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mrprem.in/cdn/portfolio/1778339537193-WhatsApp%20Image%202026-05-09%20at%2020.14.00</loc>
+    <lastmod>2026-07-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
