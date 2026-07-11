@@ -13,7 +13,7 @@ const Maintenance = ({ settings, onUnlock }) => {
   const [resumeUrl] = useState(
     RESUME_LINK && RESUME_LINK !== "https://your-resume-link-here.pdf" 
       ? RESUME_LINK 
-      : '/Prem_Prasad_Pradhan_CV.pdf'
+      : '/Prem_Prasad_Pradhan_Resume.pdf'
   );
   
   const { isSubscribed, permission, subscribe } = useNotifications();

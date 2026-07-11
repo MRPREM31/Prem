@@ -2382,6 +2382,13 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // --- DYNAMIC SITEMAP ---
+app.get('/sitemap-index.xml', (req, res) => {
+  const lastmod = new Date().toISOString().split('T')[0];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemapindex.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">\n  <sitemap>\n    <loc>https://mrprem.in/sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n  <sitemap>\n    <loc>https://mrprem.in/image-sitemap.xml</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>\n</sitemapindex>`;
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
+});
+
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const [projectsRes, certificatesRes, memoriesRes, imagesRes] = await Promise.all([
@@ -2444,15 +2451,35 @@ app.get('/sitemap.xml', async (req, res) => {
 // --- DYNAMIC IMAGE SITEMAP ---
 app.get('/image-sitemap.xml', async (req, res) => {
   try {
-    const [projectsRes, certificatesRes, memoriesRes] = await Promise.all([
-      supabase.from('projects').select('title, image_alt, image_description'),
-      supabase.from('certificates').select('title, image, image_alt'),
-      supabase.from('memorable_images').select('title, image_url, image_alt, image_description')
+    const [projectsRes, certificatesRes, memoriesRes, mediaRes] = await Promise.all([
+      supabase.from('projects').select('id, slug, title, image_alt, image_description'),
+      supabase.from('certificates').select('id, slug, title, image, image_alt'),
+      supabase.from('memorable_images').select('id, slug, title, image_url, image_alt, image_description'),
+      supabase.from('media_library').select('name, slug, url, direct_image_url')
     ]);
 
     const siteUrl = 'https://mrprem.in';
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n`;
+
+    const xmlEscape = (str) => {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    };
+
+    const imageBlock = (loc, title, caption) => {
+      if (!loc) return '';
+      return `    <image:image>\n` +
+             `      <image:loc>${xmlEscape(loc)}</image:loc>\n` +
+             `      <image:title>${xmlEscape(title)}</image:title>\n` +
+             `      <image:caption>${xmlEscape(caption)}</image:caption>\n` +
+             `    </image:image>\n`;
+    };
 
     // 0. Primary Profile Image
     const { data: profileImgSetting } = await supabase.from('settings').select('value').eq('key', 'profileImage').single();
@@ -2460,59 +2487,86 @@ app.get('/image-sitemap.xml', async (req, res) => {
     
     xml += `  <url>\n`;
     xml += `    <loc>${siteUrl}/</loc>\n`;
-    xml += `    <image:image>\n`;
-    xml += `      <image:loc>${profileImageUrl}</image:loc>\n`;
-    xml += `      <image:title>Prem Prasad Pradhan - Professional Software Developer</image:title>\n`;
-    xml += `      <image:caption>Official profile photo of Prem Prasad Pradhan, a specialist in Full Stack Web Development and AI solutions.</image:caption>\n`;
-    xml += `    </image:image>\n`;
+    xml += imageBlock(
+      profileImageUrl,
+      'Prem Prasad Pradhan - Professional Software Developer',
+      'Official profile photo of Prem Prasad Pradhan, a specialist in Full Stack Web Development and AI solutions.'
+    );
     xml += `  </url>\n`;
 
     // 1. Projects
     const { data: projectImages } = await supabase.from('project_images').select('*');
     projectsRes.data?.forEach(p => {
       const pImages = projectImages ? projectImages.filter(img => img.project_id === p.id) : [];
-      if (pImages.length > 0) {
+      let projectImagesXml = '';
+      pImages.forEach((img, idx) => {
+        projectImagesXml += imageBlock(
+          img.image_url,
+          `${p.title} - Screenshot ${idx + 1}`,
+          `${img.alt_text || p.image_alt || p.title}`
+        );
+      });
+      if (projectImagesXml) {
         xml += `  <url>\n`;
-        xml += `    <loc>${siteUrl}/project/${p.id}</loc>\n`;
-        pImages.forEach(img => {
-          xml += `    <image:image>\n`;
-          xml += `      <image:loc>${img.image_url}</image:loc>\n`;
-          xml += `      <image:title>${p.title}</image:title>\n`;
-          xml += `      <image:caption>${img.alt_text || p.image_alt || p.title}</image:caption>\n`;
-          xml += `    </image:image>\n`;
-        });
+        xml += `    <loc>${siteUrl}/project/${p.slug || p.id}</loc>\n`;
+        xml += projectImagesXml;
         xml += `  </url>\n`;
       }
     });
 
     // 2. Certificates
     certificatesRes.data?.forEach(c => {
-      xml += `  <url>\n`;
-      xml += `    <loc>${siteUrl}/#certificates</loc>\n`;
-      xml += `    <image:image>\n`;
-      xml += `      <image:loc>${c.image}</image:loc>\n`;
-      xml += `      <image:title>${c.title}</image:title>\n`;
-      xml += `      <image:caption>${c.image_alt || c.title}</image:caption>\n`;
-      xml += `    </image:image>\n`;
-      xml += `  </url>\n`;
+      if (c.image) {
+        const certImageXml = imageBlock(
+          c.image,
+          `${c.title} - Certification`,
+          `${c.image_alt || c.title}`
+        );
+        xml += `  <url>\n`;
+        xml += `    <loc>${siteUrl}/certificate/${c.slug || c.id}</loc>\n`;
+        xml += certImageXml;
+        xml += `  </url>\n`;
+      }
     });
 
     // 3. Memories
     memoriesRes.data?.forEach(m => {
-      xml += `  <url>\n`;
-      xml += `    <loc>${siteUrl}/memories</loc>\n`;
-      xml += `    <image:image>\n`;
-      xml += `      <image:loc>${m.image_url}</image:loc>\n`;
-      xml += `      <image:title>${m.title}</image:title>\n`;
-      xml += `      <image:caption>${m.image_alt || m.image_description || m.title}</image:caption>\n`;
-      xml += `    </image:image>\n`;
-      xml += `  </url>\n`;
+      if (m.image_url) {
+        const memoryImageXml = imageBlock(
+          m.image_url,
+          `${m.title} - Memorable Moment`,
+          `${m.image_alt || m.image_description || m.title}`
+        );
+        xml += `  <url>\n`;
+        xml += `    <loc>${siteUrl}/memory/${m.slug || m.id}</loc>\n`;
+        xml += memoryImageXml;
+        xml += `  </url>\n`;
+      }
+    });
+
+    // 4. Dynamic CDN Images (Media Library)
+    mediaRes.data?.forEach(img => {
+      if (img.url || img.direct_image_url) {
+        const brandedUrl = img.url && img.url.startsWith('https://mrprem.in/cdn/') 
+          ? img.url 
+          : `${siteUrl}/cdn/${img.slug}`;
+        const cdnImageXml = imageBlock(
+          brandedUrl,
+          `${img.name} - Premium CDN Asset`,
+          `Branded CDN hosted asset representing ${img.name}.`
+        );
+        xml += `  <url>\n` +
+               `    <loc>${siteUrl}/cdn/${img.slug}</loc>\n` +
+               cdnImageXml +
+               `  </url>\n`;
+      }
     });
 
     xml += `</urlset>`;
     res.header('Content-Type', 'application/xml');
     res.send(xml);
   } catch (error) {
+    console.error('Error generating image sitemap:', error);
     res.status(500).send('Error generating sitemap');
   }
 });

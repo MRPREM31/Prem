@@ -84,14 +84,28 @@ const PublicImageDetail = () => {
 
   if (!image) return null;
 
+  const imageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "contentUrl": image.url && typeof image.url === 'string' && image.url.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${image.url}` : (image.url || ''),
+    "name": image.name,
+    "description": `Professional portfolio CDN asset '${image.name}' by Prem Prasad Pradhan.`,
+    "uploadDate": image.upload_date,
+    "author": {
+      "@type": "Person",
+      "name": "Prem Prasad Pradhan"
+    }
+  };
+
   return (
     <div className="portfolio-page">
       <SEO 
         title={`${image.name} | Asset CDN`}
-        description={`Professional media asset hosted on Prem Prasad Pradhan's private CDN.`}
+        description={`View and download the high-quality portfolio asset '${image.name}' hosted on Prem Prasad Pradhan's private CDN. Specialist in Full Stack Web Development and AI.`}
         image={image.url}
         url={`cdn/${image.slug}`}
         type="article"
+        schema={imageSchema}
       />
       <Navbar />
       

@@ -127,7 +127,7 @@ Looking for a dedicated developer? Download my latest resume below:
 
 <div align="center">
 
-[<img src="https://img.shields.io/badge/Download-My%20Resume%20(PDF)-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" width="250" />](https://mrprem.in/Prem_Prasad_Pradhan_CV.pdf)
+[<img src="https://img.shields.io/badge/Download-My%20Resume%20(PDF)-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" width="250" />](https://mrprem.in/Prem_Prasad_Pradhan_Resume.pdf)
 
 </div>
 

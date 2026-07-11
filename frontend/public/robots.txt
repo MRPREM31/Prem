@@ -7,5 +7,7 @@ Disallow: /dashboard
 Disallow: /prem-login-2026
 Disallow: /prem-dashboard-2026
 
-# Link to the sitemap
+# Link to the sitemaps
+Sitemap: https://mrprem.in/sitemap-index.xml
 Sitemap: https://mrprem.in/sitemap.xml
+Sitemap: https://mrprem.in/image-sitemap.xml
