@@ -103,7 +103,12 @@ const AdminDashboard = () => {
         body: JSON.stringify({ title, message, url })
       });
       if (res.ok) {
-        showToast('Push Notification sent to subscribers successfully! 🚀');
+        const resData = await res.json();
+        if (resData.result && resData.result.simulated) {
+          showToast('Warning: Notification Simulated! Add ONESIGNAL_REST_API_KEY to environment. ⚠️', 'error');
+        } else {
+          showToast('Push Notification sent to subscribers successfully! 🚀');
+        }
       } else {
         const errData = await res.json();
         console.error('Failed to send push notification:', errData.error);
