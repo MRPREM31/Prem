@@ -12,6 +12,7 @@ import {
   fetchMaintenanceSettingsForAdmin,
   saveMaintenanceSettings,
 } from '../services/maintenanceService';
+import { toBrandedCdnUrl } from '../utils/cloudinary';
 import './Admin.css';
 
 const AdminDashboard = () => {
@@ -747,7 +748,7 @@ const AdminDashboard = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify({ imageUrl: secureUrl })
+        body: JSON.stringify({ imageUrl: toBrandedCdnUrl(secureUrl) })
       });
       
       const data = await res.json();
@@ -859,7 +860,7 @@ const AdminDashboard = () => {
 
         const uploadData = await uploadRes.json();
         uploadedImages.push({
-          image_url: uploadData.secure_url,
+          image_url: toBrandedCdnUrl(uploadData.secure_url),
           alt_text: projectForm.image_alt || editingProject.title
         });
       }
@@ -1009,7 +1010,7 @@ const AdminDashboard = () => {
         }
 
         const uploadData = await uploadRes.json();
-        imageUrl = uploadData.secure_url;
+        imageUrl = toBrandedCdnUrl(uploadData.secure_url);
       } else if (!editingCert) {
         return showToast("Please select a certificate image first.", "error");
       }
@@ -1110,7 +1111,7 @@ const AdminDashboard = () => {
       }
 
       const uploadData = await uploadRes.json();
-      const secureUrl = uploadData.secure_url;
+      const secureUrl = toBrandedCdnUrl(uploadData.secure_url);
 
       // 3. Save memory details as JSON
       const res = await fetch(`/api/admin/memorable-images`, {

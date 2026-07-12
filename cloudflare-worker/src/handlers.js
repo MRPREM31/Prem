@@ -24,6 +24,15 @@ import {
 import { jsonResponse, errorResponse, log, parseImageUrl } from './utils.js';
 import { authenticateRequest } from './auth.js';
 
+const toBrandedCdnUrl = (url) => {
+  if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) return url;
+  const match = url.match(/\/image\/upload\/(?:v\d+\/)?([^?#]+)/);
+  if (match && match[1]) {
+    return `https://mrprem.in/cdn/${match[1]}`;
+  }
+  return url;
+};
+
 /**
  * Handle GET /api/projects
  */
@@ -328,7 +337,7 @@ export async function handleSaveSetting(request, env, settingKey) {
       return errorResponse(`Value is required for setting key: ${settingKey}`, 400, request);
     }
 
-    await dbSaveSetting(env, settingKey, value);
+    await dbSaveSetting(env, settingKey, toBrandedCdnUrl(value));
     return jsonResponse({ success: true, message: `Setting ${settingKey} saved successfully` }, 200, request);
   } catch (err) {
     log('error', `Failed to save setting ${settingKey}`, { error: err.message });
@@ -355,7 +364,7 @@ export async function handleSaveCertificate(request, env) {
     const { title, description, date, image, image_alt } = body;
 
     const slug = title ? slugify(title) : '';
-    const certData = { title, description, date, image, image_alt, slug };
+    const certData = { title, description, date, image: toBrandedCdnUrl(image), image_alt, slug };
 
     if (isUpdate) {
       await dbUpdateCertificate(env, id, certData);
@@ -390,7 +399,7 @@ export async function handleSaveMemorableImage(request, env) {
     const slug = (title ? slugify(title) : 'memory') + '-' + Date.now().toString().slice(-4);
     const imgData = { 
       title: title || 'Untitled Memory', 
-      image_url: imageUrl, 
+      image_url: toBrandedCdnUrl(imageUrl), 
       aspect_ratio: aspect_ratio || 'landscape', 
       upload_date: new Date().toISOString(),
       image_alt: image_alt || 'Memory Image', 
@@ -426,13 +435,13 @@ export async function handleSaveProjectImages(request, env) {
     if (body.images && Array.isArray(body.images)) {
       images = body.images.map(img => ({
         project_id: parseInt(projectId),
-        image_url: img.image_url || img.url || img,
+        image_url: toBrandedCdnUrl(img.image_url || img.url || img),
         alt_text: img.alt_text || 'Project Screenshot'
       }));
     } else if (body.image_url || body.url || body.image) {
       images = [{
         project_id: parseInt(projectId),
-        image_url: body.image_url || body.url || body.image,
+        image_url: toBrandedCdnUrl(body.image_url || body.url || body.image),
         alt_text: body.alt_text || 'Project Screenshot'
       }];
     }
@@ -992,12 +1001,18 @@ export async function handleGetCdnImage(request, env, ctx) {
         media = await dbGetMediaBySlug(env, encodedSlug);
       }
     }
-    if (!media) {
-      return errorResponse('Image not found', 404, request);
+
+    let originalUrl = null;
+    if (media) {
+      originalUrl = media.direct_image_url || media.url;
+    } else if (env.CLOUDINARY_CLOUD_NAME && slug.startsWith('portfolio/')) {
+      // Fallback: construct direct Cloudinary URL for portfolio assets
+      const extMatch = fullSlug.match(/\.([a-z0-9]+)$/i);
+      const ext = extMatch ? extMatch[1] : '';
+      const extSuffix = ext ? `.${ext}` : '';
+      originalUrl = `https://res.cloudinary.com/${env.CLOUDINARY_CLOUD_NAME}/image/upload/${slug}${extSuffix}`;
     }
 
-    // Use direct_image_url or fallback to url if direct_image_url is not migrated
-    const originalUrl = media.direct_image_url || media.url;
     if (!originalUrl || originalUrl.startsWith('https://mrprem.in/cdn/')) {
       return errorResponse('Original image source is invalid', 400, request);
     }

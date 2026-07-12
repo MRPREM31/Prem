@@ -19,3 +19,13 @@ export const optimizeCloudinaryUrl = (url, width = 'auto') => {
   
   return url;
 };
+
+export const toBrandedCdnUrl = (url) => {
+  if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) return url;
+
+  const match = url.match(/\/image\/upload\/(?:v\d+\/)?([^?#]+)/);
+  if (match && match[1]) {
+    return `https://mrprem.in/cdn/${match[1]}`;
+  }
+  return url;
+};

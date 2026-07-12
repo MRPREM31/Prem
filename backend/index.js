@@ -359,6 +359,15 @@ const optimizeCloudinaryUrl = (url) => {
   return url;
 };
 
+const toBrandedCdnUrl = (url) => {
+  if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) return url;
+  const match = url.match(/\/image\/upload\/(?:v\d+\/)?([^?#]+)/);
+  if (match && match[1]) {
+    return `https://mrprem.in/cdn/${match[1]}`;
+  }
+  return url;
+};
+
 // Configure Multer Storage for Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -1289,7 +1298,7 @@ app.get('/api/profile-image/direct', async (req, res) => {
 app.post('/api/admin/upload-profile', verifyToken, upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
   
-  const imageUrl = req.file.path; // Cloudinary URL
+  const imageUrl = toBrandedCdnUrl(req.file.path); // Cloudinary URL
   
   try {
     const { error } = await supabase
@@ -1323,7 +1332,7 @@ app.get('/api/navbar-image', async (req, res) => {
 // API: Upload Navbar Image (Protected)
 app.post('/api/admin/upload-navbar', verifyToken, upload.single('navbar'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
-  const imageUrl = req.file.path;
+  const imageUrl = toBrandedCdnUrl(req.file.path);
   try {
     const { error } = await supabase
       .from('settings')
@@ -1408,7 +1417,7 @@ app.get('/api/resume', async (req, res) => {
 app.post('/api/admin/upload-resume', verifyToken, upload.single('resume'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No resume uploaded' });
   
-  const resumeUrl = req.file.path; // Cloudinary URL
+  const resumeUrl = toBrandedCdnUrl(req.file.path); // Cloudinary URL
   
   try {
     const { error } = await supabase
@@ -1643,7 +1652,7 @@ app.post('/api/admin/projects/:id/images', verifyToken, upload.array('images', 1
   const projectId = req.params.id;
   const imageData = req.files.map(file => ({
     project_id: projectId,
-    image_url: file.path,
+    image_url: toBrandedCdnUrl(file.path),
     alt_text: req.body.alt_text || 'Project Screenshot'
   }));
   
@@ -1713,7 +1722,7 @@ app.get('/api/favicon', async (req, res) => {
 // API: Upload Favicon (Protected)
 app.post('/api/admin/upload-favicon', verifyToken, upload.single('favicon'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No favicon uploaded' });
-  const faviconUrl = req.file.path;
+  const faviconUrl = toBrandedCdnUrl(req.file.path);
   try {
     const { error } = await supabase.from('settings').upsert({ key: 'faviconUrl', value: faviconUrl });
     if (error) throw error;
@@ -1738,7 +1747,7 @@ app.get('/api/signature', async (req, res) => {
 // API: Upload Signature (Protected)
 app.post('/api/admin/upload-signature', verifyToken, upload.single('signature'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No signature uploaded' });
-  const signatureUrl = req.file.path;
+  const signatureUrl = toBrandedCdnUrl(req.file.path);
   try {
     const { error } = await supabase.from('settings').upsert({ key: 'signatureUrl', value: signatureUrl });
     if (error) throw error;
@@ -1796,7 +1805,7 @@ app.post('/api/admin/certificates', verifyToken, upload.single('certificate_imag
   const { title, description, date, image_alt } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
-  const imageUrl = req.file.path; // Cloudinary URL
+  const imageUrl = toBrandedCdnUrl(req.file.path); // Cloudinary URL
   const slug = slugify(title, { lower: true, strict: true });
   
   try {
@@ -1820,7 +1829,7 @@ app.put('/api/admin/certificates/:id', verifyToken, upload.single('certificate_i
   const updateData = { title, description, date, image_alt, slug };
   
   if (req.file) {
-    updateData.image = req.file.path;
+    updateData.image = toBrandedCdnUrl(req.file.path);
   }
   
   try {
@@ -1983,7 +1992,7 @@ app.post('/api/admin/memorable-images', verifyToken, upload.single('image'), asy
   const { title, image_alt, image_description } = req.body;
   if (!req.file) return res.status(400).json({ error: 'Image is required' });
   
-  const imageUrl = req.file.path; // Cloudinary URL
+  const imageUrl = toBrandedCdnUrl(req.file.path); // Cloudinary URL
   const slug = slugify(title || 'Untitled Memory', { lower: true, strict: true }) + '-' + Date.now().toString().slice(-4);
   
   let aspectRatio = 'landscape';
