@@ -2429,14 +2429,14 @@ app.get('/sitemap.xml', async (req, res) => {
     addUrl('/articles', '0.9', 'daily');
     addUrl('/prem-media-library', '0.7', 'monthly');
 
+    // Dynamic Certificate Pages
+    certificatesRes.data?.forEach(c => {
+      addUrl(`/certificate/${c.slug || c.id}`, '0.9', 'monthly');
+    });
+
     // Dynamic Project Pages
     projectsRes.data?.forEach(p => {
       addUrl(`/project/${p.slug || p.id}`, '0.8', 'monthly');
-    });
-
-    // Dynamic Certificate Pages
-    certificatesRes.data?.forEach(c => {
-      addUrl(`/certificate/${c.slug || c.id}`, '0.8', 'monthly');
     });
 
     // Dynamic Memory Pages
@@ -2503,7 +2503,22 @@ app.get('/image-sitemap.xml', async (req, res) => {
     );
     xml += `  </url>\n`;
 
-    // 1. Projects
+    // 1. Certificates
+    certificatesRes.data?.forEach(c => {
+      if (c.image) {
+        const certImageXml = imageBlock(
+          c.image,
+          `${c.title} - Certification`,
+          `${c.image_alt || c.title}`
+        );
+        xml += `  <url>\n`;
+        xml += `    <loc>${siteUrl}/certificate/${c.slug || c.id}</loc>\n`;
+        xml += certImageXml;
+        xml += `  </url>\n`;
+      }
+    });
+
+    // 2. Projects
     const { data: projectImages } = await supabase.from('project_images').select('*');
     projectsRes.data?.forEach(p => {
       const pImages = projectImages ? projectImages.filter(img => img.project_id === p.id) : [];
@@ -2519,21 +2534,6 @@ app.get('/image-sitemap.xml', async (req, res) => {
         xml += `  <url>\n`;
         xml += `    <loc>${siteUrl}/project/${p.slug || p.id}</loc>\n`;
         xml += projectImagesXml;
-        xml += `  </url>\n`;
-      }
-    });
-
-    // 2. Certificates
-    certificatesRes.data?.forEach(c => {
-      if (c.image) {
-        const certImageXml = imageBlock(
-          c.image,
-          `${c.title} - Certification`,
-          `${c.image_alt || c.title}`
-        );
-        xml += `  <url>\n`;
-        xml += `    <loc>${siteUrl}/certificate/${c.slug || c.id}</loc>\n`;
-        xml += certImageXml;
         xml += `  </url>\n`;
       }
     });
