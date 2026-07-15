@@ -2400,11 +2400,10 @@ app.get('/sitemap-index.xml', (req, res) => {
 
 app.get('/sitemap.xml', async (req, res) => {
   try {
-    const [projectsRes, certificatesRes, memoriesRes, imagesRes] = await Promise.all([
+    const [projectsRes, certificatesRes, memoriesRes] = await Promise.all([
       supabase.from('projects').select('id, slug'),
       supabase.from('certificates').select('id, slug'),
-      supabase.from('memorable_images').select('id, slug'),
-      supabase.from('media_library').select('slug')
+      supabase.from('memorable_images').select('id, slug')
     ]);
 
     const siteUrl = 'https://mrprem.in';
@@ -2444,11 +2443,6 @@ app.get('/sitemap.xml', async (req, res) => {
       addUrl(`/memory/${m.slug || m.id}`, '0.7', 'monthly');
     });
 
-    // Dynamic CDN Image Pages
-    imagesRes.data?.forEach(img => {
-      addUrl(`/cdn/${img.slug}`, '0.6', 'yearly');
-    });
-
     xml += `</urlset>`;
     res.header('Content-Type', 'application/xml');
     res.send(xml);
@@ -2460,11 +2454,10 @@ app.get('/sitemap.xml', async (req, res) => {
 // --- DYNAMIC IMAGE SITEMAP ---
 app.get('/image-sitemap.xml', async (req, res) => {
   try {
-    const [projectsRes, certificatesRes, memoriesRes, mediaRes] = await Promise.all([
+    const [projectsRes, certificatesRes, memoriesRes] = await Promise.all([
       supabase.from('projects').select('id, slug, title, image_alt, image_description'),
       supabase.from('certificates').select('id, slug, title, image, image_alt'),
-      supabase.from('memorable_images').select('id, slug, title, image_url, image_alt, image_description'),
-      supabase.from('media_library').select('name, slug, url, direct_image_url')
+      supabase.from('memorable_images').select('id, slug, title, image_url, image_alt, image_description')
     ]);
 
     const siteUrl = 'https://mrprem.in';
@@ -2550,24 +2543,6 @@ app.get('/image-sitemap.xml', async (req, res) => {
         xml += `    <loc>${siteUrl}/memory/${m.slug || m.id}</loc>\n`;
         xml += memoryImageXml;
         xml += `  </url>\n`;
-      }
-    });
-
-    // 4. Dynamic CDN Images (Media Library)
-    mediaRes.data?.forEach(img => {
-      if (img.url || img.direct_image_url) {
-        const brandedUrl = img.url && img.url.startsWith('https://mrprem.in/cdn/') 
-          ? img.url 
-          : `${siteUrl}/cdn/${img.slug}`;
-        const cdnImageXml = imageBlock(
-          brandedUrl,
-          `${img.name} - Premium CDN Asset`,
-          `Branded CDN hosted asset representing ${img.name}.`
-        );
-        xml += `  <url>\n` +
-               `    <loc>${siteUrl}/cdn/${img.slug}</loc>\n` +
-               cdnImageXml +
-               `  </url>\n`;
       }
     });
 
