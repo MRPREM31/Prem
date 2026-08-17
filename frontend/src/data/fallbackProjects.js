@@ -30,9 +30,9 @@ export const fallbackProjects = [
   {
     id: 6,
     title: 'Smart Attendance System',
-    description: 'A QR-code based digital attendance management application designed for schools, colleges, and offices. The system simplifies attendance tracking, reduces proxy attendance, and maintains secure digital records. Developed by Team QuantumCoders.',
+    description: 'A QR-code based digital attendance management application designed for schools, colleges, and offices. The system simplifies attendance tracking, reduces proxy attendance, and maintains secure digital records. Developed by Team Zenemoo.in.',
     tags: 'Android ,QR Code ,Firebase, GPS Validation, PDF Reports ,Role-Based Access',
-    link: 'https://www.quantumcoderstechlab.codes/smart-attendance/smart_attendance_index.html',
+    link: 'https://www.zenemoo.in/',
     github: '',
     pptLink: '',
     image_alt: 'Smart Attendance System App',
@@ -74,7 +74,7 @@ export const fallbackProjects = [
   {
     id: 4,
     title: 'Gamified STEM Learning Platform for Rural Schools [SIH Internal Round Qualifier]',
-    description: 'A gamified digital learning platform designed specifically for rural schools to make STEM subjects fun and accessible. This project was developed for Smart India Hackathon 2025 by Team QuantumCodersx.\n\nKey Features:\n- Learn by Playing: STEM lessons as interactive games and challenges\n- Personal Quests: Customized tasks based on grade and subject\n- Progress Tracker: Learning progress through scores and badges\n- Community & Leaderboards: Peer competition and sharing achievements\n- Rewards & Recognition: Badges and certificates to boost confidence\n- Offline Access: Learning without continuous internet\n- Multilingual Content: Available in local languages\n\nTechnologies Used:\n- Frontend: React, TypeScript, Vite\n- Backend: Node.js, JavaScript\n- Database: SQLite\n- Offline-first architecture\n- Responsive design for mobile devices',
+    description: 'A gamified digital learning platform designed specifically for rural schools to make STEM subjects fun and accessible. This project was developed for Smart India Hackathon 2025 by Team Zenemoo.in.\n\nKey Features:\n- Learn by Playing: STEM lessons as interactive games and challenges\n- Personal Quests: Customized tasks based on grade and subject\n- Progress Tracker: Learning progress through scores and badges\n- Community & Leaderboards: Peer competition and sharing achievements\n- Rewards & Recognition: Badges and certificates to boost confidence\n- Offline Access: Learning without continuous internet\n- Multilingual Content: Available in local languages\n\nTechnologies Used:\n- Frontend: React, TypeScript, Vite\n- Backend: Node.js, JavaScript\n- Database: SQLite\n- Offline-first architecture\n- Responsive design for mobile devices',
     tags: 'React ,TypeScript ,Node.js ,SQLite',
     link: 'https://github.com/MRPREM31/Gamified-STEM-Learning-Platform-for-Rural-Areas',
     github: 'https://github.com/MRPREM31/Gamified-STEM-Learning-Platform-for-Rural-Areas',

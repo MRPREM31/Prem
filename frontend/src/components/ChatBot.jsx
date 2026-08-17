@@ -263,7 +263,7 @@ const ChatBot = () => {
                 </div>
                 <div className="header-text">
                   <h3>PremBot AI</h3>
-                  <p>Quantum Intelligence v1.0</p>
+                  <p>Zenemoo Intelligence v1.0</p>
                 </div>
               </div>
               <div className="header-nav">

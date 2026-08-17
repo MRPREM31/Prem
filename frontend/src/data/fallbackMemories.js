@@ -36,7 +36,7 @@ export const fallbackMemories = [
     aspect_ratio: 'landscape',
     upload_date: '2026-05-06T17:16:31.290Z',
     image_alt: 'SIH 2025 Presentation pitch deck team photo',
-    image_description: 'Team QuantumCoders presenting our Gamified STEM Learning Platform for Rural Schools at the Smart India Hackathon internal qualifier round.',
+    image_description: 'Team Zenemoo.in presenting our Gamified STEM Learning Platform for Rural Schools at the Smart India Hackathon internal qualifier round.',
     slug: 'sih2025-presentation-9504'
   },
   {

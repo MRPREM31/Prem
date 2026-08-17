@@ -54,7 +54,7 @@ const Hero = () => {
                 2000,
                 'Team Lead @ DesiCrew Pvt Ltd',
                 2000,
-                'Founder @ QCDS',
+                'Founder @ Zenemoo.in',
                 2000,
                 'Intern @CSIR-NAL',
                 2000,

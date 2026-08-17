@@ -33,7 +33,7 @@ const About = () => {
               <strong>Prem Prasad Pradhan</strong> is a passionate B.Tech student at NIST University, Berhampur, with a strong focus on software development, AI, and startup innovation. He is known for building real-world projects, leading teams, and delivering impactful solutions.
             </p>
             <p>
-              As the founder of QuantumCoders, he combines technical expertise with leadership to create scalable and meaningful technology solutions. His journey is driven by a deep curiosity for how things work and a desire to build products that make a difference.
+              As the founder of Zenemoo.in, he combines technical expertise with leadership to create scalable and meaningful technology solutions. His journey is driven by a deep curiosity for how things work and a desire to build products that make a difference.
             </p>
           </motion.div>
           

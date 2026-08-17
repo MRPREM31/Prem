@@ -53,7 +53,7 @@ export const fallbackGithub = {
       id: 'repo_2',
       name: 'quantum-coders-suite',
       url: 'https://github.com/MRPREM31/quantum-coders-suite',
-      description: 'The primary tech platform for QuantumCoders startup tools and collaborative sandboxes.',
+      description: 'The primary tech platform for Zenemoo.in startup tools and collaborative sandboxes.',
       language: 'JavaScript',
       stars: 4,
       forks: 2

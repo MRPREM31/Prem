@@ -19,7 +19,7 @@
 
 <!-- TYPING ANIMATION -->
 <br />
-<img src="https://readme-typing-svg.demolab.com?font=Outfit&size=24&pause=1000&color=6366F1&center=true&vCenter=true&width=500&lines=Building+Production+Applications;Full-Stack+Web+Developer;Founder+of+QuantumCoders;AI+%26+Automation+Expert" alt="Typing Animation" />
+<img src="https://readme-typing-svg.demolab.com?font=Outfit&size=24&pause=1000&color=6366F1&center=true&vCenter=true&width=500&lines=Building+Production+Applications;Full-Stack+Web+Developer;Founder+of+Zenemoo.in;AI+%26+Automation+Expert" alt="Typing Animation" />
 
 <br />
 
@@ -35,7 +35,8 @@
 
 I am a **B.Tech student** and a passionate **Full-Stack Developer** dedicated to building scalable, high-performance, and user-centric digital solutions. My expertise lies in creating production-ready applications that solve real-world problems through clean code and modern architecture.
 
-- 🏢 **QuantumCoders Data Solutions**: Member and Founder of QCDS, focusing on innovative tech solutions.
+- 🏢 **Zenemoo.in**: Member and Founder of Zenemoo, focusing on innovative tech solutions.
+- 🔗 **Official Website**: [Zenemoo.in](https://www.zenemoo.in/) | **Profile**: [Team Profile](https://www.zenemoo.in/team/prem-prasad-pradhan) | **Email**: [prem@zenemoo.in](mailto:prem@zenemoo.in)
 - ⚡ **Passion**: Deeply interested in **AI, Automation, and Smart Dashboards**.
 - 🛠️ **Commitment**: I specialize in building robust systems with secure authentication, real-time updates, and professional UI/UX.
 - 🎓 **Growth**: Constantly evolving my skill set to stay at the forefront of modern technologies and startup culture.
@@ -149,7 +150,7 @@ Looking for a dedicated developer? Download my latest resume below:
 <div align="center">
 
 ### Built with ❤️ by [Prem Prasad Pradhan](https://mrprem.in/)
-**QuantumCoders Data Solutions**
+**[Zenemoo.in](https://www.zenemoo.in/)**
 
 ![Visitor Count](https://komarev.com/ghpvc/?username=MRPREM31&color=blue&style=plastic)
 

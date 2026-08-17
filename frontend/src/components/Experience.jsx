@@ -5,7 +5,7 @@ import './Experience.css';
 const experiences = [
   {
     title: 'Founder',
-    company: 'QuantumCoders Tech Lab & Data Solutions',
+    company: 'Zenemoo.in',
     date: 'Present',
     description: 'Built a startup ecosystem focusing on AI and data services. Led teams and managed clients globally to deliver impactful tech solutions.',
   },

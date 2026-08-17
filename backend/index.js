@@ -34,7 +34,10 @@ const PREM_KNOWLEDGE = `
 Core Identity:
 Full Name: Prem Prasad Pradhan (Known as LIKU PRADHAN / MR.PREM).
 Birthday: 31st March 2006 (31/03/2006).
-Role: Software Developer, Founder of QuantumCoders Tech Lab & Data Solutions, and Startup-minded Creator.
+Role: Software Developer, Founder of Zenemoo.in (Zenemoo), and Startup-minded Creator.
+Official Website: https://www.zenemoo.in/
+Official Team Profile / ID: https://www.zenemoo.in/team/prem-prasad-pradhan
+Official Email: prem@zenemoo.in
 Education Journey:
 - Early Education: Saraswati Sishu Mandir.
 - Schooling: Odisha Adarsha Vidyalaya (OAV).
@@ -51,7 +54,7 @@ Technical Arsenal:
 
 Professional Experience:
 - Team Lead & Vendor @ DesiCrew: Managed AI data projects, coordinated remote teams, handled reporting and mentoring.
-- Founder @ QuantumCoders: Building AI-powered digital solutions and startup ecosystems.
+- Founder @ Zenemoo (Zenemoo.in): Building AI-powered digital solutions and startup ecosystems.
 
 Major Projects:
 - AI Medical Diagnostics System: An AI healthcare platform using specialist agents for medical report analysis.
@@ -2378,7 +2381,7 @@ app.post('/api/chat', async (req, res) => {
         ...history,
         { role: 'user', content: message }
       ],
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0.7,
       max_tokens: 500,
     });

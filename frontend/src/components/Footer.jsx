@@ -87,8 +87,8 @@ const Footer = () => {
             <div className="footer-links-section">
               <h4>Quick Links</h4>
               <ul>
-                <li><a href="https://www.quantumcoderstechlab.codes/quantumcoders-data-solutions.html" target="_blank" rel="noopener noreferrer">QCDS</a></li>
-                <li><a href="https://www.quantumcoderstechlab.codes/qcds_items/profile.html?uid=9827775230" target="_blank" rel="noopener noreferrer">QCDS ID Card</a></li>
+                <li><a href="https://www.zenemoo.in/" target="_blank" rel="noopener noreferrer">Zenemoo.in</a></li>
+                <li><a href="https://www.zenemoo.in/team/prem-prasad-pradhan" target="_blank" rel="noopener noreferrer">Zenemoo ID Profile</a></li>
                 <li><Link to="/secure-portal">Secure Access</Link></li>
                 <li><a href="/prem-login-2026" target="_blank" rel="noopener noreferrer">Admin Login</a></li>
               </ul>
@@ -96,6 +96,7 @@ const Footer = () => {
 
             <div className="footer-contact-section">
               <h4>Contact</h4>
+              <p><FaEnvelope /> prem@zenemoo.in</p>
               <p><FaEnvelope /> mr.prem2006@gmail.com</p>
               <p>📍 Odisha, India</p>
             </div>

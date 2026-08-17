@@ -23,7 +23,7 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
       "@type": "Person",
       "name": "Prem Prasad Pradhan"
     },
-    "description": "Official Professional Profile Photo of Prem Prasad Pradhan, Software Developer and Founder of QuantumCoders Tech Lab.",
+    "description": "Official Professional Profile Photo of Prem Prasad Pradhan, Software Developer and Founder of Zenemoo.in.",
     "caption": "Prem Prasad Pradhan - Professional Software Developer Profile",
     "representativeOfPage": "True",
     "license": "https://mrprem.in/",
@@ -38,6 +38,7 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
     "alternateName": ["MR.PREM", "mrprem31", "Prem Prasad"],
     "url": "https://mrprem.in/",
     "image": defaultImage,
+    "email": "prem@zenemoo.in",
     "description": "Professional Software Developer specializing in Full Stack Web Development and AI Solutions.",
     "jobTitle": "Software Developer",
     "gender": "male",
@@ -49,6 +50,8 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
       "addressCountry": "India"
     },
     "sameAs": [
+      "https://www.zenemoo.in/",
+      "https://www.zenemoo.in/team/prem-prasad-pradhan",
       "https://github.com/MRPREM31",
       "https://linkedin.com/in/prem-prasad-pradhan-18472b295/",
       "https://youtube.com/@B.techPrem",
@@ -56,7 +59,8 @@ const SEO = ({ title, description, keywords, image, url, type = 'website', noind
     ],
     "worksFor": {
       "@type": "Organization",
-      "name": "QuantumCoders Tech Lab & Data Solutions"
+      "name": "Zenemoo.in",
+      "url": "https://www.zenemoo.in/"
     },
     "knowsAbout": ["Web Development", "React.js", "Node.js", "AI Automation", "Software Engineering"]
   };
